@@ -15,8 +15,8 @@ interface PyramidCanvasProps {
   playClick: () => void;
 }
 
-const CUBE_SIZE = 1.05;
-const SPACING = 1.35;
+const CUBE_SIZE = 0.9;
+const SPACING = 1.15;
 
 interface CleanCubeProps {
   item: PyramidCubeItem;
@@ -44,9 +44,9 @@ function CleanPyramidCube({
   const skyPos = useMemo<[number, number, number]>(() => {
     const seed = item.id.length + item.layer * 9;
     return [
-      (Math.sin(seed * 4.5) - 0.5) * 16,
-      14 + Math.random() * 10 + item.layer * 3.5,
-      (Math.cos(seed * 4.5) - 0.5) * 16,
+      (Math.sin(seed * 4.5) - 0.5) * 14,
+      12 + Math.random() * 8 + item.layer * 3,
+      (Math.cos(seed * 4.5) - 0.5) * 14,
     ];
   }, [item]);
 
@@ -56,7 +56,7 @@ function CleanPyramidCube({
     if (!meshRef.current) return;
 
     const destination = isFormed ? targetPos : skyPos;
-    const speed = 0.055 + item.layer * 0.012;
+    const speed = 0.06 + item.layer * 0.012;
 
     currentPos.current[0] = THREE.MathUtils.lerp(currentPos.current[0], destination[0], speed);
     currentPos.current[1] = THREE.MathUtils.lerp(currentPos.current[1], destination[1], speed);
@@ -65,7 +65,7 @@ function CleanPyramidCube({
     meshRef.current.position.set(...currentPos.current);
 
     // Hover & Selection scale pulse
-    const targetScale = isSelected ? 1.18 : hovered ? 1.1 : 1.0;
+    const targetScale = isSelected ? 1.16 : hovered ? 1.08 : 1.0;
     meshRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), delta * 9);
   });
 
@@ -124,34 +124,34 @@ function StrictPyramidScene({ rotationRad, activeCube, onSelectCube, inView, pla
   const cubeTargets = useMemo(() => {
     const map = new Map<string, [number, number, number]>();
 
-    // Layer 1 (Base - 16 cubes: 4x4) -> Y = -2.025
+    // Layer 1 (Base - 16 cubes: 4x4) -> Y = -1.725
     const layer1 = PYRAMID_CUBE_ITEMS.filter((d) => d.layer === 1);
     layer1.forEach((item, idx) => {
       const row = Math.floor(idx / 4);
       const col = idx % 4;
-      map.set(item.id, [(col - 1.5) * SPACING, -2.025, (row - 1.5) * SPACING]);
+      map.set(item.id, [(col - 1.5) * SPACING, -1.725, (row - 1.5) * SPACING]);
     });
 
-    // Layer 2 (Frontend/APIs - 9 cubes: 3x3) -> Y = -0.675
+    // Layer 2 (Frontend/APIs - 9 cubes: 3x3) -> Y = -0.575
     const layer2 = PYRAMID_CUBE_ITEMS.filter((d) => d.layer === 2);
     layer2.forEach((item, idx) => {
       const row = Math.floor(idx / 3);
       const col = idx % 3;
-      map.set(item.id, [(col - 1.0) * SPACING, -0.675, (row - 1.0) * SPACING]);
+      map.set(item.id, [(col - 1.0) * SPACING, -0.575, (row - 1.0) * SPACING]);
     });
 
-    // Layer 3 (3D & Motion - 4 cubes: 2x2) -> Y = 0.675
+    // Layer 3 (3D & Motion - 4 cubes: 2x2) -> Y = 0.575
     const layer3 = PYRAMID_CUBE_ITEMS.filter((d) => d.layer === 3);
     layer3.forEach((item, idx) => {
       const row = Math.floor(idx / 2);
       const col = idx % 2;
-      map.set(item.id, [(col - 0.5) * SPACING, 0.675, (row - 0.5) * SPACING]);
+      map.set(item.id, [(col - 0.5) * SPACING, 0.575, (row - 0.5) * SPACING]);
     });
 
-    // Layer 4 (Apex - 1 cube: 1x1) -> Y = 2.025
+    // Layer 4 (Apex - 1 cube: 1x1) -> Y = 1.725
     const layer4 = PYRAMID_CUBE_ITEMS.filter((d) => d.layer === 4);
     layer4.forEach((item) => {
-      map.set(item.id, [0, 2.025, 0]);
+      map.set(item.id, [0, 1.725, 0]);
     });
 
     return map;
@@ -160,11 +160,9 @@ function StrictPyramidScene({ rotationRad, activeCube, onSelectCube, inView, pla
   useFrame((_, delta) => {
     if (!pyramidGroupRef.current) return;
 
-    // Strictly lerp rotation Y to rotationRad (controlled by rotation slider)
     const curY = pyramidGroupRef.current.rotation.y;
-    pyramidGroupRef.current.rotation.y = THREE.MathUtils.lerp(curY, rotationRad, delta * 5);
+    pyramidGroupRef.current.rotation.y = THREE.MathUtils.lerp(curY, rotationRad, delta * 6);
 
-    // Keep X/Z tilt locked to a pristine clean isometric angle
     pyramidGroupRef.current.rotation.x = 0.22;
     pyramidGroupRef.current.rotation.z = 0;
   });
@@ -202,18 +200,18 @@ export function PyramidTechCanvas({
   playClick,
 }: PyramidCanvasProps) {
   return (
-    <div className="w-full h-full min-h-[440px] md:min-h-[520px] relative pointer-events-auto">
+    <div className="w-full h-full min-h-[340px] md:min-h-[380px] relative pointer-events-auto">
       <Canvas
-        camera={{ position: [0, 2.5, 9.8], fov: 42 }}
+        camera={{ position: [0, 2.2, 8.4], fov: 38 }}
         gl={{ antialias: true, alpha: true }}
       >
         {/* Volumetric Warm Lighting */}
         <ambientLight intensity={1.1} color="#FAF8F3" />
-        <directionalLight position={[7, 12, 7]} intensity={1.6} color="#FAF5ED" castShadow />
-        <pointLight position={[-7, -5, -7]} intensity={0.9} color="#B85C3B" />
-        <spotLight position={[0, 14, 0]} intensity={1.4} color="#8E9A78" angle={0.7} penumbra={1} />
+        <directionalLight position={[6, 10, 6]} intensity={1.6} color="#FAF5ED" castShadow />
+        <pointLight position={[-6, -4, -6]} intensity={0.9} color="#B85C3B" />
+        <spotLight position={[0, 12, 0]} intensity={1.3} color="#8E9A78" angle={0.7} penumbra={1} />
 
-        {/* 3D Pyramid Locked Scene */}
+        {/* 3D Pyramid Scene */}
         <StrictPyramidScene
           rotationRad={rotationRad}
           activeCube={activeCube}
@@ -224,8 +222,9 @@ export function PyramidTechCanvas({
         />
 
         {/* Contact Shadow Plane */}
-        <ContactShadows position={[0, -3.2, 0]} opacity={0.4} scale={14} blur={2.5} far={6} color="#25231F" />
+        <ContactShadows position={[0, -2.8, 0]} opacity={0.35} scale={12} blur={2.2} far={5} color="#25231F" />
       </Canvas>
     </div>
   );
 }
+
