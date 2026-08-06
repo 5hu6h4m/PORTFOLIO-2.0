@@ -119,11 +119,10 @@ export function ContactSection({ playClick, playHover, playSuccess }: ContactSec
 
         {/* Header */}
         <motion.div
-          ref={headerRef}
-          initial={{ opacity: 0, x: -60 }}
+          initial={{ opacity: 0, x: -90 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          viewport={{ once: false, amount: 0.2 }}
+          transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
           className="mb-16"
         >
           <div className="flex items-center gap-3 mb-6">

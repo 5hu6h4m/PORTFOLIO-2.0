@@ -180,9 +180,10 @@ export function LeadershipSection({ playHover }: LeadershipSectionProps) {
         {/* ── SECTION HEADER WITH KINETIC ANIMATIONS ─────────────────────────── */}
         <div ref={headerRef} className="mb-16 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
           <motion.div
-            initial={{ opacity: 0, x: -60 }}
-            animate={headerInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0, x: -90 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: false, amount: 0.2 }}
+            transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-7"
           >
             <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.3em] text-[#B85C3B] mb-4 font-bold uppercase">

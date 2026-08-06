@@ -105,9 +105,10 @@ export function AwardsSection({ playHover }: AwardsSectionProps) {
         
         {/* ── SECTION HEADER ───────────────────────────────────────────────── */}
         <motion.div
-          initial={{ opacity: 0, x: -60 }}
-          animate={inView ? { opacity: 1, x: 0 } : {}}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          initial={{ opacity: 0, x: -90 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: false, amount: 0.2 }}
+          transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
           className="mb-10 border-b border-[#E2DCD2] pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4"
         >
           <div>

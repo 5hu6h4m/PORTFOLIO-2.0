@@ -105,10 +105,10 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
 
           {/* ── SECTION HEADER ───────────────────────────────────────────────── */}
           <motion.div
-            initial={{ opacity: 0, x: -60 }}
+            initial={{ opacity: 0, x: -90 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            viewport={{ once: false, amount: 0.2 }}
+            transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
             className="text-center flex flex-col items-center justify-center max-w-2xl mx-auto mt-2 mb-4"
           >
             <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.3em] uppercase text-[#B85C3B] mb-2">

@@ -149,10 +149,10 @@ export function LearningJourneySection({ playClick, playHover }: LearningJourney
 
       {/* SECTION HEADING — SCROLLS UP NATURALLY OFF-SCREEN */}
       <motion.div
-        initial={{ opacity: 0, x: -60 }}
+        initial={{ opacity: 0, x: -90 }}
         whileInView={{ opacity: 1, x: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        viewport={{ once: false, amount: 0.2 }}
+        transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
         className="max-w-7xl mx-auto px-6 md:px-12 pt-24 md:pt-28 pb-8 flex flex-col md:flex-row md:items-end justify-between border-b border-[#E2DCD2]"
       >
         <div>
