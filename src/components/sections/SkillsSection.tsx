@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
-import { ArrowUpRight, Code2, Sparkles, CheckCircle2, Layers, Compass, RotateCcw, Sliders } from 'lucide-react';
+import { ArrowUpRight, Code2, Sparkles, Layers, Compass, RotateCcw, Sliders, Eye } from 'lucide-react';
 import { DOMAIN_FACES, DomainFace, PyramidCubeItem } from '@/data/pyramidTechData';
 import { PyramidTechCanvas } from '@/components/3d/PyramidTechCanvas';
 import { PORTFOLIO_DATA } from '@/data/portfolioData';
@@ -13,7 +13,8 @@ interface SkillsSectionProps {
 }
 
 export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
-  const [rotationDeg, setRotationDeg] = useState<number>(0); // 0° to 360°
+  const [rotationDeg, setRotationDeg] = useState<number>(0); // 0° to 360° Y-Rotation
+  const [tiltDeg, setTiltDeg] = useState<number>(14);       // -10° to 50° X-Tilt
   const [activeCube, setActiveCube] = useState<PyramidCubeItem | null>(null);
 
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -30,9 +31,12 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
     setActiveCube(null);
   };
 
-  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = parseInt(e.target.value, 10);
-    setRotationDeg(val);
+  const handleRotationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRotationDeg(parseInt(e.target.value, 10));
+  };
+
+  const handleTiltChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTiltDeg(parseInt(e.target.value, 10));
   };
 
   const scrollToProjects = () => {
@@ -44,6 +48,7 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
   };
 
   const rotationRad = (rotationDeg * Math.PI) / 180;
+  const tiltRad = (tiltDeg * Math.PI) / 180;
 
   return (
     <section
@@ -52,11 +57,11 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
       className="relative pt-28 pb-20 px-6 md:px-12 bg-[#F4F0E8] text-[#25231F] overflow-hidden select-none border-t border-[#E2DCD2] min-h-screen flex flex-col justify-center"
     >
       {/* Volumetric warm background glow */}
-      <div className="absolute top-1/3 left-1/3 -translate-x-1/2 w-[750px] h-[750px] bg-radial from-[#B85C3B]/10 via-[#8E9A78]/5 to-transparent blur-3xl pointer-events-none" />
+      <div className="absolute top-1/3 left-1/3 -translate-x-1/2 w-[700px] h-[700px] bg-radial from-[#B85C3B]/10 via-[#8E9A78]/5 to-transparent blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10 w-full pt-4">
 
-        {/* ── SECTION HEADER (CLEAN BREATHING ROOM WITH ZERO TOP CLIPPING) ──── */}
+        {/* ── SECTION HEADER ───────────────────────────────────────────────── */}
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 25 }}
@@ -77,14 +82,14 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
           </div>
 
           <p className="text-sm text-[#787268] font-light max-w-md leading-relaxed">
-            30 knowledge blocks tumbling down from the Hero section to assemble into a 4-layer 3D pyramid.
+            30 knowledge blocks with tech emblems assembling into a 4-layer 3D pyramid. Use dual sliders or face buttons to inspect architecture.
           </p>
         </motion.div>
 
         {/* ── MAIN DUAL COLUMN LAYOUT (LEFT 3D PYRAMID + RIGHT DETAILS CARD) ── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center min-h-[480px]">
 
-          {/* ── LEFT COLUMN (7 COLS): 3D PYRAMID (TOP) + ROTATION SLIDER (UNDERNEATH) ── */}
+          {/* ── LEFT COLUMN (7 COLS): 3D PYRAMID + DUAL ROTATION & TILT SLIDERS ── */}
           <div className="lg:col-span-7 flex flex-col items-center">
 
             {/* 1. 3D PYRAMID CANVAS CONTAINER (TOP) */}
@@ -92,10 +97,11 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.9, delay: 0.1 }}
-              className="w-full h-[360px] md:h-[420px] rounded-2xl bg-[#FAF8F3]/70 backdrop-blur-md border border-[#E2DCD2] shadow-lg relative overflow-hidden flex items-center justify-center mb-3 pointer-events-auto"
+              className="w-full h-[340px] md:h-[380px] rounded-2xl bg-[#FAF8F3]/70 backdrop-blur-md border border-[#E2DCD2] shadow-lg relative overflow-hidden flex items-center justify-center mb-3 pointer-events-auto"
             >
               <PyramidTechCanvas
                 rotationRad={rotationRad}
+                tiltRad={tiltRad}
                 activeCube={activeCube}
                 onSelectCube={(cube) => {
                   setActiveCube(cube);
@@ -108,32 +114,54 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
               />
             </motion.div>
 
-            {/* 2. SLEEK MINIMAL ROTATION SLIDER CONTROL (DIRECTLY UNDERNEATH PYRAMID) */}
+            {/* 2. DUAL ROTATION & TILT SLIDERS (DIRECTLY UNDERNEATH PYRAMID) */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
               transition={{ duration: 0.7, delay: 0.18 }}
-              className="w-full px-4 py-2.5 rounded-xl bg-[#FAF8F3]/80 border border-[#E2DCD2] flex flex-col gap-1.5 mb-3"
+              className="w-full px-4 py-3 rounded-xl bg-[#FAF8F3]/90 backdrop-blur-md border border-[#E2DCD2] flex flex-col gap-2.5 mb-3 shadow-sm"
             >
-              <div className="flex items-center justify-between text-[11px] font-mono">
-                <span className="text-[#25231F] font-bold tracking-wider uppercase flex items-center gap-1.5">
-                  <Sliders className="w-3 h-3 text-[#B85C3B]" />
-                  <span>Pyramid Rotation Dial</span>
-                </span>
-                <span className="text-[#B85C3B] font-bold tracking-widest text-[10px]">
-                  {rotationDeg}° // {activeDomain.title.toUpperCase()}
-                </span>
+              {/* Rotation Slider */}
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center justify-between text-[10px] font-mono">
+                  <span className="text-[#25231F] font-bold tracking-wider uppercase flex items-center gap-1.5">
+                    <Sliders className="w-3 h-3 text-[#B85C3B]" />
+                    <span>360° Horizontal Rotation Dial</span>
+                  </span>
+                  <span className="text-[#B85C3B] font-bold tracking-widest">
+                    {rotationDeg}° // {activeDomain.title.toUpperCase()}
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={360}
+                  value={rotationDeg}
+                  onChange={handleRotationChange}
+                  className="w-full h-1 bg-[#E2DCD2] rounded-lg appearance-none cursor-pointer accent-[#B85C3B] transition-all"
+                />
               </div>
 
-              {/* Minimal Line Slider */}
-              <input
-                type="range"
-                min={0}
-                max={360}
-                value={rotationDeg}
-                onChange={handleSliderChange}
-                className="w-full h-1 bg-[#E2DCD2] rounded-lg appearance-none cursor-pointer accent-[#B85C3B] transition-all"
-              />
+              {/* Tilt Slider */}
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center justify-between text-[10px] font-mono">
+                  <span className="text-[#25231F] font-bold tracking-wider uppercase flex items-center gap-1.5">
+                    <Eye className="w-3 h-3 text-[#4A6FA5]" />
+                    <span>Isometric View Angle Tilt</span>
+                  </span>
+                  <span className="text-[#4A6FA5] font-bold tracking-widest">
+                    {tiltDeg}° TILT
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={-10}
+                  max={50}
+                  value={tiltDeg}
+                  onChange={handleTiltChange}
+                  className="w-full h-1 bg-[#E2DCD2] rounded-lg appearance-none cursor-pointer accent-[#4A6FA5] transition-all"
+                />
+              </div>
             </motion.div>
 
             {/* 3. DOMAIN FACE SELECTOR BUTTONS */}
@@ -192,9 +220,12 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
                       </button>
                     </div>
 
-                    <h3 className="text-2xl md:text-3xl font-serif font-bold text-[#25231F] mb-2">
-                      {activeCube.name}
-                    </h3>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xl font-mono font-bold text-[#B85C3B]">{activeCube.symbol}</span>
+                      <h3 className="text-2xl md:text-3xl font-serif font-bold text-[#25231F]">
+                        {activeCube.name}
+                      </h3>
+                    </div>
 
                     <p className="text-xs text-[#787268] font-light leading-relaxed mb-4">
                       {activeCube.description}
@@ -249,7 +280,7 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
                         {activeDomain.subtitle}
                       </span>
                       <span className="text-[9px] font-mono text-[#9A948C] tracking-widest uppercase">
-                        Verified
+                        Verified Domain
                       </span>
                     </div>
 
