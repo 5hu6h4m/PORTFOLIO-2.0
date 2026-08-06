@@ -9,7 +9,6 @@ import { Header } from '@/components/sections/Header';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { AboutSection, JourneySection, DiagonalLanesSection } from '@/components/sections/AboutSection';
 import { SkillsSection } from '@/components/sections/SkillsSection';
-import { ProjectsSection } from '@/components/sections/ProjectsSection';
 import { ExperienceSection } from '@/components/sections/ExperienceSection';
 import { LeadershipSection } from '@/components/sections/LeadershipSection';
 import { AwardsSection } from '@/components/sections/AwardsSection';
@@ -75,25 +74,22 @@ export default function Home() {
         {/* 02 / TECH STACK & ECOSYSTEM (5-Card Rainbow Arc Pinning) */}
         <SkillsSection playClick={playClick} playHover={playHover} />
 
-        {/* 03 / FEATURED PROJECTS */}
-        <ProjectsSection playClick={playClick} playHover={playHover} />
-
-        {/* 04 / LEADERSHIP & CONTRIBUTIONS */}
+        {/* 03 / LEADERSHIP & CONTRIBUTIONS */}
         <LeadershipSection playHover={playHover} />
 
-        {/* 05 / EXPERIENCE & ACADEMIC ROADMAP */}
+        {/* 04 / EXPERIENCE & ACADEMIC ROADMAP */}
         <ExperienceSection playHover={playHover} />
 
-        {/* 06 / CERTIFICATIONS & CREDENTIALS */}
+        {/* 05 / CERTIFICATIONS & CREDENTIALS */}
         <AwardsSection playHover={playHover} />
 
-        {/* 07 / BEYOND THE CODE */}
+        {/* 06 / BEYOND THE CODE */}
         <BeyondTheCodeSection playHover={playHover} />
 
-        {/* 08 / CONTACT FORM */}
+        {/* 07 / CONTACT FORM */}
         <ContactSection playClick={playClick} playHover={playHover} playSuccess={playSuccess} />
 
-        {/* 09 / FOOTER */}
+        {/* 08 / FOOTER */}
         <Footer playClick={playClick} playHover={playHover} />
       </div>
     </main>

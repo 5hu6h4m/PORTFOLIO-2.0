@@ -84,12 +84,12 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
     { x: card5X, y: card5Y, rot: card5Rot, opacity: card5Op },
   ];
 
-  const scrollToProjects = () => {
+  const scrollToNext = () => {
     playClick();
     setSelectedCategory(null);
-    const projEl = document.getElementById('projects');
-    if (projEl) {
-      projEl.scrollIntoView({ behavior: 'smooth' });
+    const nextEl = document.getElementById('leadership');
+    if (nextEl) {
+      nextEl.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -302,11 +302,11 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
                   {/* Fixed Bottom Action CTA Buttons */}
                   <div className="flex items-center gap-3 pt-4 border-t border-[#E2DCD2] mt-4 flex-shrink-0">
                     <button
-                      onClick={scrollToProjects}
+                      onClick={scrollToNext}
                       onMouseEnter={playHover}
                       className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-[#B85C3B] text-[#FAF8F3] text-xs font-mono tracking-widest uppercase hover:bg-[#25231F] transition-all duration-300 shadow-md cursor-pointer group font-bold"
                     >
-                      <span>View Projects Built With {selectedCategory.title}</span>
+                      <span>Explore Leadership & Experience</span>
                       <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                     </button>
 
