@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 import { ArrowUpRight, Code2, Sparkles, CheckCircle2, Layers, X } from 'lucide-react';
 import { FIVE_TECH_CATEGORIES, FiveCardCategory } from '@/data/fiveCardsTechData';
 import { PORTFOLIO_DATA } from '@/data/portfolioData';
@@ -20,36 +20,43 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
     offset: ['start start', 'end end'],
   });
 
-  // Staggered ONE-BY-ONE Sequential Fly-In Animations (0.00 to 0.90)
-  // Card 1 arrives: 0.00 -> 0.18
-  const card1X = useTransform(scrollYProgress, [0.00, 0.18], [-950, -380]);
-  const card1Y = useTransform(scrollYProgress, [0.00, 0.18], [150, 35]);
-  const card1Rot = useTransform(scrollYProgress, [0.00, 0.18], [-48, -28]);
-  const card1Op = useTransform(scrollYProgress, [0.00, 0.12], [0, 1]);
+  // Spring physics dampening for butter-smooth scroll response
+  const smoothProgress = useSpring(scrollYProgress, {
+    damping: 24,
+    stiffness: 100,
+    restDelta: 0.001,
+  });
 
-  // Card 2 arrives: 0.18 -> 0.36
-  const card2X = useTransform(scrollYProgress, [0.18, 0.36], [-950, -190]);
-  const card2Y = useTransform(scrollYProgress, [0.18, 0.36], [120, 10]);
-  const card2Rot = useTransform(scrollYProgress, [0.18, 0.36], [-36, -14]);
-  const card2Op = useTransform(scrollYProgress, [0.18, 0.28], [0, 1]);
+  // Staggered ONE-BY-ONE Sequential Fly-In Animations (0.00 to 0.80)
+  // Card 1 arrives: 0.00 -> 0.20
+  const card1X = useTransform(smoothProgress, [0.00, 0.20], [-1000, -420]);
+  const card1Y = useTransform(smoothProgress, [0.00, 0.20], [180, 40]);
+  const card1Rot = useTransform(smoothProgress, [0.00, 0.20], [-45, -20]);
+  const card1Op = useTransform(smoothProgress, [0.00, 0.10], [0, 1]);
 
-  // Card 3 arrives: 0.36 -> 0.54
-  const card3X = useTransform(scrollYProgress, [0.36, 0.54], [-950, 0]);
-  const card3Y = useTransform(scrollYProgress, [0.36, 0.54], [90, 0]);
-  const card3Rot = useTransform(scrollYProgress, [0.36, 0.54], [-24, 0]);
-  const card3Op = useTransform(scrollYProgress, [0.36, 0.44], [0, 1]);
+  // Card 2 arrives: 0.15 -> 0.35
+  const card2X = useTransform(smoothProgress, [0.15, 0.35], [-1000, -210]);
+  const card2Y = useTransform(smoothProgress, [0.15, 0.35], [140, 10]);
+  const card2Rot = useTransform(smoothProgress, [0.15, 0.35], [-35, -10]);
+  const card2Op = useTransform(smoothProgress, [0.15, 0.25], [0, 1]);
 
-  // Card 4 arrives: 0.54 -> 0.72
-  const card4X = useTransform(scrollYProgress, [0.54, 0.72], [-950, 190]);
-  const card4Y = useTransform(scrollYProgress, [0.54, 0.72], [60, 10]);
-  const card4Rot = useTransform(scrollYProgress, [0.54, 0.72], [-12, 14]);
-  const card4Op = useTransform(scrollYProgress, [0.54, 0.62], [0, 1]);
+  // Card 3 arrives: 0.30 -> 0.50
+  const card3X = useTransform(smoothProgress, [0.30, 0.50], [-1000, 0]);
+  const card3Y = useTransform(smoothProgress, [0.30, 0.50], [100, 0]);
+  const card3Rot = useTransform(smoothProgress, [0.30, 0.50], [-25, 0]);
+  const card3Op = useTransform(smoothProgress, [0.30, 0.40], [0, 1]);
 
-  // Card 5 arrives: 0.72 -> 0.90
-  const card5X = useTransform(scrollYProgress, [0.72, 0.90], [-950, 380]);
-  const card5Y = useTransform(scrollYProgress, [0.72, 0.90], [30, 35]);
-  const card5Rot = useTransform(scrollYProgress, [0.72, 0.90], [0, 28]);
-  const card5Op = useTransform(scrollYProgress, [0.72, 0.80], [0, 1]);
+  // Card 4 arrives: 0.45 -> 0.65
+  const card4X = useTransform(smoothProgress, [0.45, 0.65], [-1000, 210]);
+  const card4Y = useTransform(smoothProgress, [0.45, 0.65], [60, 10]);
+  const card4Rot = useTransform(smoothProgress, [0.45, 0.65], [-15, 10]);
+  const card4Op = useTransform(smoothProgress, [0.45, 0.55], [0, 1]);
+
+  // Card 5 arrives: 0.60 -> 0.80
+  const card5X = useTransform(smoothProgress, [0.60, 0.80], [-1000, 420]);
+  const card5Y = useTransform(smoothProgress, [0.60, 0.80], [30, 40]);
+  const card5Rot = useTransform(smoothProgress, [0.60, 0.80], [0, 20]);
+  const card5Op = useTransform(smoothProgress, [0.60, 0.70], [0, 1]);
 
   const cardTransformations = [
     { x: card1X, y: card1Y, rot: card1Rot, opacity: card1Op },
@@ -69,12 +76,12 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
   };
 
   return (
-    <div ref={targetRef} className="relative h-[300vh] bg-[#F4F0E8]" id="skills">
+    <div ref={targetRef} className="relative h-[280vh] bg-[#F4F0E8]" id="skills">
       {/* STICKY SCREEN PINNING CONTAINER */}
       <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-between pt-16 pb-10 px-6 md:px-12 select-none border-t border-[#E2DCD2]">
         
         {/* Volumetric background ambient glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-radial from-[#B85C3B]/10 via-[#8E9A78]/5 to-transparent blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[850px] bg-radial from-[#B85C3B]/10 via-[#8E9A78]/5 to-transparent blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto relative z-10 w-full">
 
@@ -91,14 +98,14 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
               TECH STACK
             </h2>
             <p className="text-xs md:text-sm text-[#787268] font-light max-w-md mt-2 leading-relaxed">
-              Scroll down to watch cards fly in one by one from the left and form a rainbow arc. Click any card to inspect technologies.
+              Scroll down to watch 5 technical cards fly in one by one from the left and form a rainbow arc. Click any card to inspect technologies.
             </p>
           </div>
 
         </div>
 
         {/* ── 5-CARD RAINBOW ARC FAN CONTAINER ─────────────────────────────── */}
-        <div className="relative w-full max-w-6xl mx-auto h-[380px] md:h-[420px] flex items-center justify-center relative z-20 my-auto">
+        <div className="relative w-full max-w-7xl mx-auto h-[380px] md:h-[420px] flex items-center justify-center relative z-20 my-auto">
           {FIVE_TECH_CATEGORIES.map((cat, i) => {
             const transform = cardTransformations[i];
 
@@ -117,15 +124,15 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
                   playClick();
                   setSelectedCategory(cat);
                 }}
-                className="absolute w-[220px] sm:w-[240px] md:w-[260px] h-[330px] md:h-[360px] rounded-3xl bg-[#FAF8F3]/95 backdrop-blur-xl border border-[#E2DCD2] hover:border-[#B85C3B]/70 shadow-xl cursor-pointer p-5 flex flex-col justify-between transition-shadow duration-300 hover:shadow-2xl overflow-hidden group"
+                className="absolute w-[220px] sm:w-[240px] md:w-[260px] h-[340px] md:h-[370px] rounded-3xl bg-[#FCFAF6] border border-[#E2DCD2] hover:border-[#B85C3B] shadow-2xl cursor-pointer p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-2xl overflow-hidden group select-none"
               >
                 {/* Top Badge & Number */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-2xl font-serif font-bold text-[#B85C3B]">
+                    <span className="text-3xl font-serif font-bold text-[#B85C3B]">
                       {cat.number}
                     </span>
-                    <span className="px-2.5 py-0.5 rounded-full text-[9px] font-mono uppercase tracking-widest bg-[#B85C3B]/10 text-[#B85C3B] border border-[#B85C3B]/20">
+                    <span className="px-2.5 py-0.5 rounded-full text-[9px] font-mono uppercase tracking-widest bg-[#B85C3B]/10 text-[#B85C3B] border border-[#B85C3B]/20 font-bold">
                       {cat.badge}
                     </span>
                   </div>
@@ -134,32 +141,32 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
                     {cat.title}
                   </h3>
 
-                  <div className="text-[9px] font-mono text-[#9A948C] uppercase tracking-widest mb-4">
+                  <div className="text-[9px] font-mono text-[#787268] uppercase tracking-widest mb-4 font-semibold">
                     {cat.subtitle}
                   </div>
                 </div>
 
-                {/* Minimal Emblem Pills */}
+                {/* Tech Emblem Badges */}
                 <div>
                   <div className="flex flex-wrap gap-1.5 mb-4">
                     {cat.technologies.map((t, idx) => (
                       <span
                         key={idx}
-                        className="px-2 py-1 rounded-full text-[10px] font-mono bg-[#25231F]/5 text-[#25231F] border border-[#E2DCD2] flex items-center gap-1"
+                        className="px-2.5 py-1 rounded-full text-[10px] font-mono bg-[#25231F]/8 text-[#25231F] border border-[#E2DCD2] flex items-center gap-1 font-bold shadow-2xs"
                       >
                         <span className="text-xs">{t.symbol}</span>
-                        <span className="font-bold">{t.name}</span>
+                        <span>{t.name}</span>
                       </span>
                     ))}
                   </div>
 
                   {/* Bottom Footer Line */}
                   <div className="pt-3 border-t border-[#E2DCD2] flex items-center justify-between">
-                    <div className="text-[10px] font-mono text-[#9A948C] uppercase tracking-widest">
+                    <div className="text-[10px] font-mono text-[#25231F] uppercase tracking-widest font-bold">
                       {cat.shippedBuildsCount}+ Shipped Builds
                     </div>
 
-                    <div className="p-1.5 rounded-full border border-[#E2DCD2] text-[#9A948C] group-hover:text-[#B85C3B] group-hover:border-[#B85C3B] transition-colors">
+                    <div className="p-1.5 rounded-full border border-[#E2DCD2] text-[#25231F] group-hover:text-[#B85C3B] group-hover:border-[#B85C3B] transition-colors bg-[#F4F0E8]">
                       <ArrowUpRight className="w-3.5 h-3.5" />
                     </div>
                   </div>
@@ -170,9 +177,9 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
         </div>
 
         {/* ── FOOTER INSTRUCTION & MASTERY HINT ────────────────────────────── */}
-        <div className="max-w-7xl mx-auto relative z-10 w-full flex items-center justify-between text-[10px] font-mono text-[#9A948C] uppercase tracking-widest pt-2 border-t border-[#E2DCD2]">
+        <div className="max-w-7xl mx-auto relative z-10 w-full flex items-center justify-between text-[10px] font-mono text-[#787268] uppercase tracking-widest pt-2 border-t border-[#E2DCD2] font-semibold">
           <span>Scroll to fan cards one by one</span>
-          <span className="text-[#B85C3B]">Click any card for deep dive modal</span>
+          <span className="text-[#B85C3B] font-bold">Click any card for deep dive modal</span>
           <span>5 Architectural Categories</span>
         </div>
 
@@ -199,7 +206,7 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
                   <span className="text-2xl font-serif font-bold text-[#B85C3B]">{selectedCategory.number}</span>
-                  <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest bg-[#B85C3B]/10 text-[#B85C3B] border border-[#B85C3B]/20">
+                  <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest bg-[#B85C3B]/10 text-[#B85C3B] border border-[#B85C3B]/20 font-bold">
                     {selectedCategory.badge}
                   </span>
                 </div>
