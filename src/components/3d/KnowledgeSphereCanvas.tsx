@@ -171,7 +171,7 @@ function GlassHeroCube({ activeTech }: { activeTech: TechItem }) {
         {/* Inner Glowing Core */}
         <mesh scale={1.2}>
           <boxGeometry args={[1, 1, 1]} />
-          <meshBasicMaterial color={activeTech.accentColor} transparent opacity={0.35} />
+          <meshBasicMaterial color={activeTech.accentColor || '#B55D3D'} transparent opacity={0.35} />
         </mesh>
 
         {/* HTML 3D Floating Badge */}
@@ -179,7 +179,7 @@ function GlassHeroCube({ activeTech }: { activeTech: TechItem }) {
           <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-[#161412]/80 backdrop-blur-xl border border-[#B55D3D]/30 shadow-2xl text-center select-none pointer-events-none w-44">
             <div
               className="w-12 h-12 rounded-xl flex items-center justify-center text-xl font-bold font-mono mb-2 shadow-inner"
-              style={{ backgroundColor: `${activeTech.accentColor}25`, color: activeTech.accentColor, border: `1px solid ${activeTech.accentColor}50` }}
+              style={{ backgroundColor: `${activeTech.accentColor || '#B55D3D'}25`, color: activeTech.accentColor || '#B55D3D', border: `1px solid ${activeTech.accentColor || '#B55D3D'}50` }}
             >
               {activeTech.name.substring(0, 2).toUpperCase()}
             </div>
@@ -187,7 +187,7 @@ function GlassHeroCube({ activeTech }: { activeTech: TechItem }) {
               {activeTech.name}
             </div>
             <div className="text-[9px] font-mono text-[#B55D3D] tracking-widest uppercase">
-              {activeTech.proficiency}% MASTERED
+              {activeTech.proficiency || 95}% MASTERED
             </div>
           </div>
         </Html>

@@ -2,16 +2,15 @@
 
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
-import { ArrowUpRight, Code2, Sparkles, CheckCircle2, Layers, Cpu, Database, Server, Terminal } from 'lucide-react';
-import { TECH_STACK_DATA, TechItem } from '@/data/techStackData';
-import { PORTFOLIO_DATA } from '@/data/portfolioData';
+import { ArrowUpRight, Sparkles, Layers, Cpu, Database, Server, Terminal, Compass, CheckCircle2 } from 'lucide-react';
+import { BAND_1_TECH, BAND_2_TECH, ALL_TECH_ITEMS, TechItem } from '@/data/techStackData';
 
 interface SkillsSectionProps {
   playClick: () => void;
   playHover: () => void;
 }
 
-const CATEGORY_TABS = [
+const CATEGORY_RADAR = [
   { id: 'all', label: 'All Stack', icon: Cpu },
   { id: 'frontend', label: '01 / Frontend', icon: Layers },
   { id: 'backend', label: '02 / Backend', icon: Server },
@@ -21,14 +20,10 @@ const CATEGORY_TABS = [
 
 export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
   const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [selectedTech, setSelectedTech] = useState<TechItem | null>(null);
+  const [hoveredTech, setHoveredTech] = useState<TechItem | null>(ALL_TECH_ITEMS[0]);
 
   const sectionRef = useRef<HTMLDivElement>(null);
   const inView = useInView(sectionRef, { once: true, margin: '-10%' });
-
-  const filteredItems = activeCategory === 'all'
-    ? TECH_STACK_DATA
-    : TECH_STACK_DATA.filter((item) => item.category === activeCategory);
 
   const scrollToProjects = () => {
     playClick();
@@ -38,283 +33,186 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
     }
   };
 
+  const renderTechPill = (item: TechItem) => {
+    const isCategoryMatched = activeCategory === 'all' || item.category === activeCategory;
+    const isHovered = hoveredTech?.id === item.id;
+
+    return (
+      <button
+        key={`${item.id}-${item.name}`}
+        onMouseEnter={() => {
+          playHover();
+          setHoveredTech(item);
+        }}
+        onClick={() => {
+          playClick();
+          setHoveredTech(item);
+        }}
+        className={`px-4 py-2.5 rounded-full text-xs font-mono tracking-wider transition-all duration-300 border flex items-center gap-2.5 cursor-pointer whitespace-nowrap select-none ${
+          isHovered
+            ? 'bg-[#B85C3B] text-[#FAF8F3] border-[#B85C3B] shadow-md scale-105 z-10'
+            : isCategoryMatched
+            ? 'bg-[#FAF8F3] text-[#25231F] border-[#E2DCD2] hover:border-[#B85C3B] hover:scale-105 shadow-sm'
+            : 'bg-[#FAF8F3]/50 text-[#25231F]/40 border-[#E2DCD2]/50 opacity-50'
+        }`}
+      >
+        <span className="text-sm font-bold flex-shrink-0">{item.symbol}</span>
+        <span className="font-bold">{item.name}</span>
+      </button>
+    );
+  };
+
   return (
     <section
       id="skills"
       ref={sectionRef}
-      className="relative pt-28 pb-24 px-6 md:px-12 bg-[#F4F0E8] text-[#25231F] overflow-hidden select-none border-t border-[#E2DCD2]"
+      className="relative py-16 md:py-20 px-6 md:px-12 bg-[#F4F0E8] text-[#25231F] overflow-hidden select-none border-t border-[#E2DCD2] min-h-[85vh] flex flex-col justify-center"
     >
       {/* Volumetric warm background glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[850px] h-[850px] bg-radial from-[#B85C3B]/10 via-[#8E9A78]/5 to-transparent blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-radial from-[#B85C3B]/8 via-[#8E9A78]/5 to-transparent blur-3xl pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div className="max-w-7xl mx-auto relative z-10 w-full">
 
         {/* ── SECTION HEADER ───────────────────────────────────────────────── */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 25 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-12 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between gap-6"
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-8 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between gap-4"
         >
           <div>
-            <div className="flex items-center justify-center md:justify-start gap-2 text-[10px] font-mono tracking-[0.3em] uppercase text-[#B85C3B] mb-3">
+            <div className="flex items-center justify-center md:justify-start gap-2 text-[10px] font-mono tracking-[0.3em] uppercase text-[#B85C3B] mb-2">
               <Sparkles className="w-3.5 h-3.5" />
               <span>02 / TECHNICAL ARSENAL</span>
             </div>
             <h2
-              className="text-5xl md:text-7xl font-serif font-bold tracking-tight text-[#25231F]"
+              className="text-4xl md:text-6xl font-serif font-bold tracking-tight text-[#25231F]"
               style={{ letterSpacing: '-0.03em' }}
             >
-              ENGINEERING STACK
+              TECH STACK
             </h2>
           </div>
 
-          <p className="text-base text-[#787268] font-light max-w-md leading-relaxed">
-            Architectural tools, frameworks, and cloud systems engineered for sub-second web vitals and high-scale production resilience.
+          <p className="text-sm text-[#787268] font-light max-w-md leading-relaxed">
+            Essential tools, languages, and frameworks engineered for production performance. Hover any pill to spotlight metrics.
           </p>
         </motion.div>
 
-        {/* ── CATEGORY PILLAR TABS ────────────────────────────────────────── */}
+        {/* ── DOMAIN RADAR CATEGORY FILTERS ───────────────────────────────── */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.15 }}
-          className="flex flex-wrap items-center justify-center md:justify-start gap-2.5 mb-10"
+          transition={{ duration: 0.7, delay: 0.1 }}
+          className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-8"
         >
-          {CATEGORY_TABS.map((tab) => {
-            const Icon = tab.icon;
-            const isSelected = activeCategory === tab.id;
+          {CATEGORY_RADAR.map((cat) => {
+            const Icon = cat.icon;
+            const isSelected = activeCategory === cat.id;
             return (
               <button
-                key={tab.id}
+                key={cat.id}
                 onClick={() => {
                   playClick();
-                  setActiveCategory(tab.id);
+                  setActiveCategory(cat.id);
                 }}
                 onMouseEnter={playHover}
-                className={`px-5 py-2.5 rounded-full text-xs font-mono tracking-wider transition-all duration-300 border cursor-pointer flex items-center gap-2 ${
+                className={`px-4 py-2 rounded-full text-[11px] font-mono tracking-wider transition-all duration-300 border cursor-pointer flex items-center gap-2 ${
                   isSelected
-                    ? 'bg-[#25231F] text-[#FAF8F3] border-[#25231F] shadow-lg scale-105'
+                    ? 'bg-[#25231F] text-[#FAF8F3] border-[#25231F] shadow-md scale-105'
                     : 'bg-[#FAF8F3]/90 text-[#25231F]/80 border-[#E2DCD2] hover:border-[#25231F]/40 shadow-sm'
                 }`}
               >
-                <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-[#B85C3B]' : 'text-[#9A948C]'}`} />
-                <span>{tab.label}</span>
+                <Icon className={`w-3 h-3 ${isSelected ? 'text-[#B85C3B]' : 'text-[#9A948C]'}`} />
+                <span>{cat.label}</span>
               </button>
             );
           })}
         </motion.div>
 
-        {/* ── BENTO GRID OF TECH CARDS ────────────────────────────────────── */}
+        {/* ── DUAL INFINITE KINETIC MARQUEE BANDS ─────────────────────────── */}
         <motion.div
-          layout
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16"
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={inView ? { opacity: 1, scale: 1 } : {}}
+          transition={{ duration: 0.8, delay: 0.15 }}
+          className="space-y-4 mb-8 relative py-4 overflow-hidden rounded-3xl bg-[#FAF8F3]/60 backdrop-blur-md border border-[#E2DCD2]"
         >
-          <AnimatePresence mode="popLayout">
-            {filteredItems.map((item, i) => (
+          {/* Gradient Edge Fades */}
+          <div className="absolute top-0 bottom-0 left-0 w-16 bg-gradient-to-r from-[#F4F0E8] to-transparent z-10 pointer-events-none" />
+          <div className="absolute top-0 bottom-0 right-0 w-16 bg-gradient-to-l from-[#F4F0E8] to-transparent z-10 pointer-events-none" />
+
+          {/* Marquee Row 1 (Moving Left-to-Right) */}
+          <div className="flex overflow-hidden group">
+            <div className="flex gap-3 animate-marquee whitespace-nowrap group-hover:[animation-play-state:paused]">
+              {BAND_1_TECH.map(renderTechPill)}
+              {BAND_1_TECH.map((item) => renderTechPill({ ...item, id: `${item.id}-dup1` }))}
+              {BAND_1_TECH.map((item) => renderTechPill({ ...item, id: `${item.id}-dup2` }))}
+            </div>
+          </div>
+
+          {/* Marquee Row 2 (Moving Right-to-Left) */}
+          <div className="flex overflow-hidden group">
+            <div className="flex gap-3 animate-marquee-reverse whitespace-nowrap group-hover:[animation-play-state:paused]">
+              {BAND_2_TECH.map(renderTechPill)}
+              {BAND_2_TECH.map((item) => renderTechPill({ ...item, id: `${item.id}-dup1` }))}
+              {BAND_2_TECH.map((item) => renderTechPill({ ...item, id: `${item.id}-dup2` }))}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ── SLEEK MICRO SPOTLIGHT BANNER ────────────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, delay: 0.2 }}
+          className="px-6 py-4 rounded-2xl bg-[#FAF8F3]/90 backdrop-blur-md border border-[#B85C3B]/30 shadow-md flex flex-col md:flex-row items-center justify-between gap-4"
+        >
+          <AnimatePresence mode="wait">
+            {hoveredTech && (
               <motion.div
-                key={item.id}
-                layout
-                initial={{ opacity: 0, y: 25, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.5, delay: i * 0.04, ease: [0.22, 1, 0.36, 1] }}
-                onMouseEnter={playHover}
-                onClick={() => {
-                  playClick();
-                  setSelectedTech(item);
-                }}
-                className={`group p-7 rounded-3xl bg-[#FAF8F3]/90 backdrop-blur-xl border border-[#E2DCD2] hover:border-[#B85C3B]/50 transition-all duration-300 cursor-pointer shadow-md hover:shadow-2xl flex flex-col justify-between relative overflow-hidden ${
-                  item.featured ? 'md:col-span-2 lg:col-span-1 border-l-4 border-l-[#B85C3B]' : ''
-                }`}
+                key={hoveredTech.id}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                transition={{ duration: 0.2 }}
+                className="flex items-center gap-4 flex-wrap"
               >
-                {/* Top Badge & Proficiency */}
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest bg-[#B85C3B]/10 text-[#B85C3B] border border-[#B85C3B]/20">
-                      {item.categoryLabel}
-                    </span>
-                    <span className="text-[10px] font-mono text-[#9A948C] tracking-widest uppercase">
-                      {item.proficiency}% Proficiency
-                    </span>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl font-mono">{hoveredTech.symbol}</span>
+                  <span className="text-xl font-serif font-bold text-[#25231F]">
+                    {hoveredTech.name}
+                  </span>
+                </div>
 
-                  {/* Header Title + Emblem */}
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="text-2xl font-mono font-bold text-[#B85C3B] flex-shrink-0">
-                      {item.symbol}
-                    </span>
-                    <h3 className="text-2xl font-serif font-bold text-[#25231F] group-hover:text-[#B85C3B] transition-colors leading-tight">
-                      {item.name}
-                    </h3>
-                  </div>
+                <span className="px-2.5 py-0.5 rounded-full text-[9px] font-mono uppercase tracking-widest bg-[#B85C3B]/10 text-[#B85C3B] border border-[#B85C3B]/20">
+                  {hoveredTech.categoryLabel}
+                </span>
 
-                  <p className="text-xs text-[#787268] font-light leading-relaxed mb-6">
-                    {item.description}
-                  </p>
-
-                  {/* Animated Proficiency Bar */}
-                  <div className="w-full bg-[#F4F0E8] h-1.5 rounded-full overflow-hidden mb-6 border border-[#E2DCD2]">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${item.proficiency}%` }}
-                      transition={{ duration: 1, delay: 0.2 + i * 0.03 }}
-                      className="h-full bg-gradient-to-r from-[#B85C3B] to-[#8E9A78] rounded-full"
-                    />
-                  </div>
-
-                  {/* Capabilities List */}
-                  <div className="space-y-1.5 mb-6">
-                    {item.capabilities.slice(0, 3).map((cap, capIdx) => (
-                      <div key={capIdx} className="flex items-center gap-2 text-[11px] font-mono text-[#25231F]/80">
-                        <CheckCircle2 className="w-3 h-3 text-[#B85C3B] flex-shrink-0" />
-                        <span>{cap}</span>
-                      </div>
+                <div className="flex items-center gap-2 text-xs font-mono text-[#787268]">
+                  <span>{hoveredTech.experienceYears}+ Yrs Exp</span>
+                  <span>•</span>
+                  <div className="flex items-center gap-1">
+                    {hoveredTech.tags.map((t, idx) => (
+                      <span key={idx} className="px-2 py-0.5 rounded bg-[#F4F0E8] text-[#25231F] text-[10px]">
+                        {t}
+                      </span>
                     ))}
                   </div>
                 </div>
-
-                {/* Bottom Footer Line */}
-                <div className="pt-4 border-t border-[#E2DCD2] flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div>
-                      <span className="text-[9px] font-mono text-[#9A948C] uppercase tracking-widest block">Exp</span>
-                      <span className="text-xs font-mono font-bold text-[#25231F]">{item.experienceYears}+ Yrs</span>
-                    </div>
-                    <div>
-                      <span className="text-[9px] font-mono text-[#9A948C] uppercase tracking-widest block">Builds</span>
-                      <span className="text-xs font-mono font-bold text-[#25231F]">{item.projectsCount}+ MVPs</span>
-                    </div>
-                  </div>
-
-                  <div className="p-2 rounded-full border border-[#E2DCD2] text-[#9A948C] group-hover:text-[#B85C3B] group-hover:border-[#B85C3B] transition-colors">
-                    <ArrowUpRight className="w-4 h-4" />
-                  </div>
-                </div>
-
               </motion.div>
-            ))}
+            )}
           </AnimatePresence>
-        </motion.div>
 
-        {/* ── BOTTOM MASTERY METRICS BAR ──────────────────────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.9, delay: 0.3 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 p-8 rounded-3xl bg-[#FAF8F3]/90 backdrop-blur-xl border border-[#E2DCD2] shadow-lg"
-        >
-          <div>
-            <div className="text-3xl font-serif font-bold text-[#B85C3B] mb-1">98+</div>
-            <div className="text-[10px] font-mono text-[#9A948C] uppercase tracking-widest">Lighthouse Web Vitals</div>
-          </div>
-          <div>
-            <div className="text-3xl font-serif font-bold text-[#25231F] mb-1">4.0+ Yrs</div>
-            <div className="text-[10px] font-mono text-[#9A948C] uppercase tracking-widest">Enterprise Architecture</div>
-          </div>
-          <div>
-            <div className="text-3xl font-serif font-bold text-[#B85C3B] mb-1">25+</div>
-            <div className="text-[10px] font-mono text-[#9A948C] uppercase tracking-widest">Shipped Applications</div>
-          </div>
-          <div>
-            <div className="text-3xl font-serif font-bold text-[#25231F] mb-1">100%</div>
-            <div className="text-[10px] font-mono text-[#9A948C] uppercase tracking-widest">Strict Type Safety</div>
-          </div>
+          <button
+            onClick={scrollToProjects}
+            onMouseEnter={playHover}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#B85C3B] text-[#FAF8F3] text-[11px] font-mono tracking-widest uppercase hover:bg-[#25231F] transition-all duration-300 shadow-sm cursor-pointer whitespace-nowrap group"
+          >
+            <span>View Shipped Projects</span>
+            <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+          </button>
         </motion.div>
 
       </div>
-
-      {/* ── EXPANDABLE TECH DETAIL MODAL ────────────────────────────────── */}
-      <AnimatePresence>
-        {selectedTech && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-[#161412]/60 backdrop-blur-md flex items-center justify-center p-6"
-            onClick={() => setSelectedTech(null)}
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.92, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.92, y: 20 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              onClick={(e) => e.stopPropagation()}
-              className="max-w-2xl w-full p-8 md:p-10 rounded-3xl bg-[#FAF8F3] border border-[#B85C3B]/30 shadow-2xl relative"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest bg-[#B85C3B]/10 text-[#B85C3B] border border-[#B85C3B]/20">
-                  {selectedTech.categoryLabel}
-                </span>
-                <button
-                  onClick={() => setSelectedTech(null)}
-                  className="w-8 h-8 rounded-full border border-[#E2DCD2] flex items-center justify-center text-xs font-mono text-[#25231F] hover:bg-[#25231F] hover:text-[#FAF8F3] transition-colors cursor-pointer"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-3xl font-mono font-bold text-[#B85C3B]">{selectedTech.symbol}</span>
-                <h3 className="text-3xl md:text-4xl font-serif font-bold text-[#25231F]">
-                  {selectedTech.name}
-                </h3>
-              </div>
-
-              <p className="text-sm text-[#787268] font-light leading-relaxed mb-6">
-                {selectedTech.description}
-              </p>
-
-              <div className="grid grid-cols-2 gap-4 mb-6 p-4 rounded-2xl bg-[#F4F0E8] border border-[#E2DCD2]">
-                <div>
-                  <div className="text-2xl font-serif font-bold text-[#B85C3B]">{selectedTech.experienceYears}+ Yrs</div>
-                  <div className="text-[9px] font-mono text-[#9A948C] uppercase tracking-widest">Experience</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-serif font-bold text-[#25231F]">{selectedTech.projectsCount}+ MVPs</div>
-                  <div className="text-[9px] font-mono text-[#9A948C] uppercase tracking-widest">Production Builds</div>
-                </div>
-              </div>
-
-              <div className="mb-8">
-                <div className="text-[10px] font-mono tracking-widest text-[#9A948C] uppercase mb-3">
-                  Core Architectural Capabilities
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {selectedTech.capabilities.map((cap, i) => (
-                    <div key={i} className="flex items-center gap-2 text-xs font-mono text-[#25231F]">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#B85C3B] flex-shrink-0" />
-                      <span>{cap}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 pt-6 border-t border-[#E2DCD2]">
-                <button
-                  onClick={scrollToProjects}
-                  onMouseEnter={playHover}
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-[#B85C3B] text-[#FAF8F3] text-xs font-mono tracking-widest uppercase hover:bg-[#25231F] transition-all duration-300 shadow-md cursor-pointer group"
-                >
-                  <span>View Projects Using {selectedTech.name}</span>
-                  <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                </button>
-                <a
-                  href={PORTFOLIO_DATA.personal.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={playClick}
-                  onMouseEnter={playHover}
-                  className="p-3.5 rounded-full border border-[#E2DCD2] text-[#25231F] hover:bg-[#25231F] hover:text-[#FAF8F3] transition-all duration-300"
-                  title="View GitHub Code"
-                >
-                  <Code2 className="w-4 h-4" />
-                </a>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </section>
   );
 }
