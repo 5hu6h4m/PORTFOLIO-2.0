@@ -52,7 +52,7 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
   const card4Rot = useTransform(smoothProgress, [0.42, 0.55], [-15, 10]);
   const card4Op = useTransform(smoothProgress, [0.42, 0.48], [0, 1]);
 
-  // Card 5 arrives: 0.55 -> 0.68
+  // Card 5 arrives: 0.55 -> 0.68 (Finishes well before the end of the section!)
   const card5X = useTransform(smoothProgress, [0.55, 0.68], [-950, 420]);
   const card5Y = useTransform(smoothProgress, [0.55, 0.68], [30, 40]);
   const card5Rot = useTransform(smoothProgress, [0.55, 0.68], [0, 20]);
@@ -78,34 +78,34 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
   return (
     <div ref={targetRef} className="relative h-[340vh] bg-[#F4F0E8]" id="skills">
       {/* STICKY SCREEN PINNING CONTAINER */}
-      <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-between pt-14 pb-8 px-6 md:px-12 select-none border-t border-[#E2DCD2]">
+      <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-between pt-16 pb-10 px-6 md:px-12 select-none border-t border-[#E2DCD2]">
         
         {/* Volumetric background ambient glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] bg-radial from-[#B85C3B]/10 via-[#8E9A78]/5 to-transparent blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[850px] bg-radial from-[#B85C3B]/10 via-[#8E9A78]/5 to-transparent blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto relative z-10 w-full">
 
-          {/* ── BIG PROMINENT CINEMATIC SECTION HEADER ───────────────────────── */}
-          <div className="text-center flex flex-col items-center justify-center max-w-3xl mx-auto mt-2 mb-2">
-            <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.35em] uppercase text-[#B85C3B] mb-2 font-bold">
-              <Sparkles className="w-4 h-4" />
+          {/* ── SECTION HEADER ───────────────────────────────────────────────── */}
+          <div className="text-center flex flex-col items-center justify-center max-w-2xl mx-auto mt-2 mb-4">
+            <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.3em] uppercase text-[#B85C3B] mb-2">
+              <Sparkles className="w-3.5 h-3.5" />
               <span>02 / TECHNICAL ARSENAL — 5 ARCHITECTURAL CATEGORIES</span>
             </div>
             <h2
-              className="text-6xl md:text-8xl font-serif font-bold tracking-tight text-[#25231F]"
-              style={{ letterSpacing: '-0.04em' }}
+              className="text-4xl md:text-6xl font-serif font-bold tracking-tight text-[#25231F]"
+              style={{ letterSpacing: '-0.03em' }}
             >
               TECH STACK
             </h2>
-            <p className="text-xs md:text-sm text-[#787268] font-light max-w-lg mt-3 leading-relaxed">
+            <p className="text-xs md:text-sm text-[#787268] font-light max-w-md mt-2 leading-relaxed">
               Scroll down to watch 5 technical cards glide softly from the left into a rainbow arc. Click any card to inspect technologies.
             </p>
           </div>
 
         </div>
 
-        {/* ── 5-CARD RAINBOW ARC FAN CONTAINER (DIRECTLY BELOW BIG HEADING) ── */}
-        <div className="relative w-full max-w-7xl mx-auto h-[390px] md:h-[430px] flex items-center justify-center relative z-20 my-auto">
+        {/* ── 5-CARD RAINBOW ARC FAN CONTAINER ─────────────────────────────── */}
+        <div className="relative w-full max-w-7xl mx-auto h-[380px] md:h-[420px] flex items-center justify-center relative z-20 my-auto">
           {FIVE_TECH_CATEGORIES.map((cat, i) => {
             const transform = cardTransformations[i];
 
@@ -124,15 +124,12 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
                   playClick();
                   setSelectedCategory(cat);
                 }}
-                className="absolute w-[230px] sm:w-[250px] md:w-[270px] h-[350px] md:h-[380px] rounded-3xl bg-[#FCFAF6] border border-[#E2DCD2] hover:border-[#B85C3B] shadow-2xl cursor-pointer p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-2xl overflow-hidden group select-none relative"
+                className="absolute w-[220px] sm:w-[240px] md:w-[260px] h-[340px] md:h-[370px] rounded-3xl bg-[#FCFAF6] border border-[#E2DCD2] hover:border-[#B85C3B] shadow-2xl cursor-pointer p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-2xl overflow-hidden group select-none"
               >
-                {/* Subtle Terracotta Accent Light Bar */}
-                <div className="absolute top-0 left-6 right-6 h-1 bg-[#B85C3B]/20 group-hover:bg-[#B85C3B] transition-colors rounded-b-full" />
-
                 {/* Top Badge & Number */}
-                <div className="pt-1">
+                <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-3xl md:text-4xl font-serif font-bold text-[#B85C3B]">
+                    <span className="text-3xl font-serif font-bold text-[#B85C3B]">
                       {cat.number}
                     </span>
                     <span className="px-2.5 py-0.5 rounded-full text-[9px] font-mono uppercase tracking-widest bg-[#B85C3B]/10 text-[#B85C3B] border border-[#B85C3B]/20 font-bold">
@@ -149,13 +146,13 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
                   </div>
                 </div>
 
-                {/* Clean Tech Emblem Badges Grid */}
+                {/* Tech Emblem Badges */}
                 <div>
                   <div className="flex flex-wrap gap-1.5 mb-4">
                     {cat.technologies.map((t, idx) => (
                       <span
                         key={idx}
-                        className="px-2.5 py-1 rounded-full text-[10px] font-mono bg-[#25231F]/8 text-[#25231F] border border-[#E2DCD2] flex items-center gap-1 font-bold shadow-2xs group-hover:border-[#B85C3B]/40 transition-colors"
+                        className="px-2.5 py-1 rounded-full text-[10px] font-mono bg-[#25231F]/8 text-[#25231F] border border-[#E2DCD2] flex items-center gap-1 font-bold shadow-2xs"
                       >
                         <span className="text-xs">{t.symbol}</span>
                         <span>{t.name}</span>
