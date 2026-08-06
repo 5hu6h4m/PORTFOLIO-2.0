@@ -153,7 +153,13 @@ export function JourneySection() {
       <div id="timeline" className="absolute top-0 left-0 w-full h-1 pointer-events-none" />
 
       {/* SECTION HEADING — SCROLLS UP NATURALLY OFF-SCREEN */}
-      <div className="max-w-7xl mx-auto px-6 md:px-12 pt-24 md:pt-28 pb-8 flex flex-col md:flex-row md:items-end justify-between border-b border-[#E2DCD2]">
+      <motion.div
+        initial={{ opacity: 0, x: -60 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        className="max-w-7xl mx-auto px-6 md:px-12 pt-24 md:pt-28 pb-8 flex flex-col md:flex-row md:items-end justify-between border-b border-[#E2DCD2]"
+      >
         <div>
           <div className="flex items-center gap-2 text-xs md:text-sm font-mono tracking-[0.3em] text-[#B85C3B] font-bold uppercase mb-2">
             <Sparkles className="w-4.5 h-4.5 text-[#B85C3B]" />
@@ -181,7 +187,7 @@ export function JourneySection() {
             );
           })}
         </div>
-      </div>
+      </motion.div>
 
       {/* STICKY 100VH HORIZONTAL SLIDER (100% VIEWPORT HEIGHT FOR CARDS ONLY) */}
       <div ref={containerRef} className="relative w-full" style={{ height: '480vh' }}>

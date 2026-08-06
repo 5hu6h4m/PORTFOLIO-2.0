@@ -74,9 +74,9 @@ export function BeyondTheCodeSection({ playHover }: BeyondTheCodeSectionProps) {
         {/* ── SECTION HEADER ───────────────────────────────────────────────── */}
         <motion.div
           ref={headerRef}
-          initial={{ opacity: 0, y: 30 }}
-          animate={headerInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
+          initial={{ opacity: 0, x: -60 }}
+          animate={headerInView ? { opacity: 1, x: 0 } : {}}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           className="text-center flex flex-col items-center justify-center max-w-3xl mx-auto mb-16"
         >
           <div className="flex items-center gap-2 text-[10px] md:text-[11px] font-mono tracking-[0.35em] uppercase text-[#B85C3B] mb-3 font-bold bg-[#B85C3B]/10 px-3.5 py-1 rounded-full border border-[#B85C3B]/20">

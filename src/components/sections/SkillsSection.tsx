@@ -104,7 +104,13 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
         <div className="max-w-7xl mx-auto relative z-10 w-full">
 
           {/* ── SECTION HEADER ───────────────────────────────────────────────── */}
-          <div className="text-center flex flex-col items-center justify-center max-w-2xl mx-auto mt-2 mb-4">
+          <motion.div
+            initial={{ opacity: 0, x: -60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="text-center flex flex-col items-center justify-center max-w-2xl mx-auto mt-2 mb-4"
+          >
             <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.3em] uppercase text-[#B85C3B] mb-2">
               <Sparkles className="w-3.5 h-3.5" />
               <span>02 / TECHNICAL ARSENAL — 5 ARCHITECTURAL CATEGORIES</span>
@@ -118,7 +124,7 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
             <p className="text-xs md:text-sm text-[#787268] font-light max-w-md mt-2 leading-relaxed">
               Scroll down to watch 5 technical cards glide softly from the left into a rainbow arc. Click any card to inspect technologies.
             </p>
-          </div>
+          </motion.div>
 
         </div>
 
