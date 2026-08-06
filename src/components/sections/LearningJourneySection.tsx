@@ -142,6 +142,9 @@ export function LearningJourneySection({ playClick, playHover }: LearningJourney
 
   return (
     <section id="journey-roadmap" ref={containerRef} className="relative bg-[#F4F0E8] border-t border-[#E2DCD2]" style={{ height: '480vh' }}>
+      {/* Anchor targets for both #projects and #journey nav links */}
+      <div id="projects" className="absolute top-0 left-0 w-full h-1 pointer-events-none" />
+      <div id="journey" className="absolute top-0 left-0 w-full h-1 pointer-events-none" />
       
       {/* ── STICKY VIEWPORT CONTAINER (CLEAN TOP MARGIN FOR FLOATING NAVBAR) ── */}
       <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-between pt-24 md:pt-28 pb-8 select-none">
@@ -156,13 +159,13 @@ export function LearningJourneySection({ playClick, playHover }: LearningJourney
             <div>
               <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.3em] uppercase text-[#B85C3B] mb-1.5 font-bold">
                 <Compass className="w-3.5 h-3.5" />
-                <span>05 / EVOLUTION ARCHIVE — HORIZONTAL SCROLL JOURNEY</span>
+                <span>05 / EVOLUTION ARCHIVE — FEATURED BUILDS &amp; HORIZONTAL JOURNEY</span>
               </div>
               <h2
                 className="text-4xl md:text-6xl font-serif font-bold tracking-tight text-[#25231F]"
                 style={{ letterSpacing: '-0.03em' }}
               >
-                THE LEARNING <span className="italic font-normal text-[#B85C3B]">JOURNEY</span>
+                THE LEARNING JOURNEY <span className="italic font-normal text-[#B85C3B]">&amp; PROJECTS</span>
               </h2>
             </div>
 
@@ -293,7 +296,7 @@ export function LearningJourneySection({ playClick, playHover }: LearningJourney
                       {/* CHAPTER 3 VISUAL: Project Cards Preview */}
                       {ch.visualType === 'projects' && (
                         <div className="space-y-3 pt-1">
-                          <div className="text-[10px] font-mono text-[#B85C3B] uppercase tracking-widest font-bold mb-2">SHIPPED BUILDS & PRODUCTS</div>
+                          <div className="text-[10px] font-mono text-[#B85C3B] uppercase tracking-widest font-bold mb-2">SHIPPED BUILDS &amp; PRODUCTS</div>
                           {ch.projects?.map((p, pIdx) => (
                             <div key={pIdx} className="p-3.5 rounded-2xl bg-[#F4F0E8] border border-[#E2DCD2] flex items-center justify-between hover:border-[#B85C3B] transition-colors">
                               <div>
@@ -311,7 +314,7 @@ export function LearningJourneySection({ playClick, playHover }: LearningJourney
                       {/* CHAPTER 4 VISUAL: Leadership Badges */}
                       {ch.visualType === 'leadership' && (
                         <div className="space-y-3 pt-1">
-                          <div className="text-[10px] font-mono text-[#B85C3B] uppercase tracking-widest font-bold mb-2">LEADERSHIP & INITIATIVES</div>
+                          <div className="text-[10px] font-mono text-[#B85C3B] uppercase tracking-widest font-bold mb-2">LEADERSHIP &amp; INITIATIVES</div>
                           {ch.roles?.map((r, rIdx) => (
                             <div key={rIdx} className="p-3.5 rounded-2xl bg-[#F4F0E8] border border-[#E2DCD2] space-y-1">
                               <div className="text-xs font-serif font-bold text-[#25231F] flex items-center gap-1.5">
@@ -327,7 +330,7 @@ export function LearningJourneySection({ playClick, playHover }: LearningJourney
                       {/* CHAPTER 5 VISUAL: Tech Stack Matrix */}
                       {ch.visualType === 'stack' && (
                         <div className="space-y-3 pt-1">
-                          <div className="text-[10px] font-mono text-[#B85C3B] uppercase tracking-widest font-bold mb-2">CORE TECHNOLOGIES & TOOLING</div>
+                          <div className="text-[10px] font-mono text-[#B85C3B] uppercase tracking-widest font-bold mb-2">CORE TECHNOLOGIES &amp; TOOLING</div>
                           <div className="grid grid-cols-3 gap-2">
                             {ch.technologies?.map((t, tIdx) => (
                               <div key={tIdx} className="p-3 rounded-xl bg-[#F4F0E8] border border-[#E2DCD2] text-center space-y-1 hover:border-[#B85C3B] transition-colors">
