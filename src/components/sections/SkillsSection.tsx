@@ -2,9 +2,8 @@
 
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
-import { ArrowUpRight, Code2, Sparkles, Layers, Compass, RotateCcw, Sliders, Eye } from 'lucide-react';
-import { DOMAIN_FACES, DomainFace, PyramidCubeItem } from '@/data/pyramidTechData';
-import { PyramidTechCanvas } from '@/components/3d/PyramidTechCanvas';
+import { ArrowUpRight, Code2, Sparkles, CheckCircle2, Layers, Cpu, Database, Server, Terminal } from 'lucide-react';
+import { TECH_STACK_DATA, TechItem } from '@/data/techStackData';
 import { PORTFOLIO_DATA } from '@/data/portfolioData';
 
 interface SkillsSectionProps {
@@ -12,32 +11,24 @@ interface SkillsSectionProps {
   playHover: () => void;
 }
 
+const CATEGORY_TABS = [
+  { id: 'all', label: 'All Stack', icon: Cpu },
+  { id: 'frontend', label: '01 / Frontend', icon: Layers },
+  { id: 'backend', label: '02 / Backend', icon: Server },
+  { id: 'database', label: '03 / Databases', icon: Database },
+  { id: 'devops', label: '04 / DevOps', icon: Terminal },
+];
+
 export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
-  const [rotationDeg, setRotationDeg] = useState<number>(0); // 0° to 360° Y-Rotation
-  const [tiltDeg, setTiltDeg] = useState<number>(14);       // -10° to 50° X-Tilt
-  const [activeCube, setActiveCube] = useState<PyramidCubeItem | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [selectedTech, setSelectedTech] = useState<TechItem | null>(null);
 
   const sectionRef = useRef<HTMLDivElement>(null);
-  const inView = useInView(sectionRef, { once: false, margin: '-15%' });
+  const inView = useInView(sectionRef, { once: true, margin: '-10%' });
 
-  // Map current rotation degree to active domain face
-  const activeDomainIndex = Math.floor(((rotationDeg % 360 + 45) % 360) / 90);
-  const activeDomain = DOMAIN_FACES[activeDomainIndex % 4];
-
-  const handleDomainSelect = (domain: DomainFace) => {
-    playClick();
-    const targetDeg = Math.round((domain.angle * 180) / Math.PI);
-    setRotationDeg(targetDeg);
-    setActiveCube(null);
-  };
-
-  const handleRotationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setRotationDeg(parseInt(e.target.value, 10));
-  };
-
-  const handleTiltChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTiltDeg(parseInt(e.target.value, 10));
-  };
+  const filteredItems = activeCategory === 'all'
+    ? TECH_STACK_DATA
+    : TECH_STACK_DATA.filter((item) => item.category === activeCategory);
 
   const scrollToProjects = () => {
     playClick();
@@ -47,315 +38,283 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
     }
   };
 
-  const rotationRad = (rotationDeg * Math.PI) / 180;
-  const tiltRad = (tiltDeg * Math.PI) / 180;
-
   return (
     <section
       id="skills"
       ref={sectionRef}
-      className="relative pt-28 pb-20 px-6 md:px-12 bg-[#F4F0E8] text-[#25231F] overflow-hidden select-none border-t border-[#E2DCD2] min-h-screen flex flex-col justify-center"
+      className="relative pt-28 pb-24 px-6 md:px-12 bg-[#F4F0E8] text-[#25231F] overflow-hidden select-none border-t border-[#E2DCD2]"
     >
       {/* Volumetric warm background glow */}
-      <div className="absolute top-1/3 left-1/3 -translate-x-1/2 w-[700px] h-[700px] bg-radial from-[#B85C3B]/10 via-[#8E9A78]/5 to-transparent blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[850px] h-[850px] bg-radial from-[#B85C3B]/10 via-[#8E9A78]/5 to-transparent blur-3xl pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto relative z-10 w-full pt-4">
+      <div className="max-w-7xl mx-auto relative z-10">
 
         {/* ── SECTION HEADER ───────────────────────────────────────────────── */}
         <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 25 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-8 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between gap-4"
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-12 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between gap-6"
         >
           <div>
-            <div className="flex items-center justify-center md:justify-start gap-2 text-[10px] font-mono tracking-[0.3em] uppercase text-[#B85C3B] mb-2">
+            <div className="flex items-center justify-center md:justify-start gap-2 text-[10px] font-mono tracking-[0.3em] uppercase text-[#B85C3B] mb-3">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>02 / KNOWLEDGE STRUCTURE — 4-DOMAIN 3D PYRAMID</span>
+              <span>02 / TECHNICAL ARSENAL</span>
             </div>
             <h2
-              className="text-4xl md:text-6xl font-serif font-bold tracking-tight text-[#25231F]"
+              className="text-5xl md:text-7xl font-serif font-bold tracking-tight text-[#25231F]"
               style={{ letterSpacing: '-0.03em' }}
             >
-              TECH STACK
+              ENGINEERING STACK
             </h2>
           </div>
 
-          <p className="text-sm text-[#787268] font-light max-w-md leading-relaxed">
-            30 knowledge blocks with tech emblems assembling into a 4-layer 3D pyramid. Use dual sliders or face buttons to inspect architecture.
+          <p className="text-base text-[#787268] font-light max-w-md leading-relaxed">
+            Architectural tools, frameworks, and cloud systems engineered for sub-second web vitals and high-scale production resilience.
           </p>
         </motion.div>
 
-        {/* ── MAIN DUAL COLUMN LAYOUT (LEFT 3D PYRAMID + RIGHT DETAILS CARD) ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center min-h-[480px]">
-
-          {/* ── LEFT COLUMN (7 COLS): 3D PYRAMID + DUAL ROTATION & TILT SLIDERS ── */}
-          <div className="lg:col-span-7 flex flex-col items-center">
-
-            {/* 1. 3D PYRAMID CANVAS CONTAINER (TOP) */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.9, delay: 0.1 }}
-              className="w-full h-[340px] md:h-[380px] rounded-2xl bg-[#FAF8F3]/70 backdrop-blur-md border border-[#E2DCD2] shadow-lg relative overflow-hidden flex items-center justify-center mb-3 pointer-events-auto"
-            >
-              <PyramidTechCanvas
-                rotationRad={rotationRad}
-                tiltRad={tiltRad}
-                activeCube={activeCube}
-                onSelectCube={(cube) => {
-                  setActiveCube(cube);
-                  const foundDomain = DOMAIN_FACES.find((d) => d.id === cube.domainId);
-                  if (foundDomain) handleDomainSelect(foundDomain);
+        {/* ── CATEGORY PILLAR TABS ────────────────────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.15 }}
+          className="flex flex-wrap items-center justify-center md:justify-start gap-2.5 mb-10"
+        >
+          {CATEGORY_TABS.map((tab) => {
+            const Icon = tab.icon;
+            const isSelected = activeCategory === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  playClick();
+                  setActiveCategory(tab.id);
                 }}
-                inView={inView}
-                playHover={playHover}
-                playClick={playClick}
-              />
-            </motion.div>
+                onMouseEnter={playHover}
+                className={`px-5 py-2.5 rounded-full text-xs font-mono tracking-wider transition-all duration-300 border cursor-pointer flex items-center gap-2 ${
+                  isSelected
+                    ? 'bg-[#25231F] text-[#FAF8F3] border-[#25231F] shadow-lg scale-105'
+                    : 'bg-[#FAF8F3]/90 text-[#25231F]/80 border-[#E2DCD2] hover:border-[#25231F]/40 shadow-sm'
+                }`}
+              >
+                <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-[#B85C3B]' : 'text-[#9A948C]'}`} />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </motion.div>
 
-            {/* 2. DUAL ROTATION & TILT SLIDERS (DIRECTLY UNDERNEATH PYRAMID) */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-              transition={{ duration: 0.7, delay: 0.18 }}
-              className="w-full px-4 py-3 rounded-xl bg-[#FAF8F3]/90 backdrop-blur-md border border-[#E2DCD2] flex flex-col gap-2.5 mb-3 shadow-sm"
-            >
-              {/* Rotation Slider */}
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center justify-between text-[10px] font-mono">
-                  <span className="text-[#25231F] font-bold tracking-wider uppercase flex items-center gap-1.5">
-                    <Sliders className="w-3 h-3 text-[#B85C3B]" />
-                    <span>360° Horizontal Rotation Dial</span>
-                  </span>
-                  <span className="text-[#B85C3B] font-bold tracking-widest">
-                    {rotationDeg}° // {activeDomain.title.toUpperCase()}
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min={0}
-                  max={360}
-                  value={rotationDeg}
-                  onChange={handleRotationChange}
-                  className="w-full h-1 bg-[#E2DCD2] rounded-lg appearance-none cursor-pointer accent-[#B85C3B] transition-all"
-                />
-              </div>
-
-              {/* Tilt Slider */}
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center justify-between text-[10px] font-mono">
-                  <span className="text-[#25231F] font-bold tracking-wider uppercase flex items-center gap-1.5">
-                    <Eye className="w-3 h-3 text-[#4A6FA5]" />
-                    <span>Isometric View Angle Tilt</span>
-                  </span>
-                  <span className="text-[#4A6FA5] font-bold tracking-widest">
-                    {tiltDeg}° TILT
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min={-10}
-                  max={50}
-                  value={tiltDeg}
-                  onChange={handleTiltChange}
-                  className="w-full h-1 bg-[#E2DCD2] rounded-lg appearance-none cursor-pointer accent-[#4A6FA5] transition-all"
-                />
-              </div>
-            </motion.div>
-
-            {/* 3. DOMAIN FACE SELECTOR BUTTONS */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-              transition={{ duration: 0.7, delay: 0.22 }}
-              className="flex flex-wrap items-center justify-center gap-1.5 w-full"
-            >
-              {DOMAIN_FACES.map((domain) => {
-                const isSelected = activeDomain.id === domain.id && !activeCube;
-                return (
-                  <button
-                    key={domain.id}
-                    onClick={() => handleDomainSelect(domain)}
-                    onMouseEnter={playHover}
-                    className={`px-3 py-1 rounded-full text-[10px] font-mono tracking-wider transition-all duration-300 border cursor-pointer flex items-center gap-1.5 ${
-                      isSelected
-                        ? 'bg-[#25231F] text-[#FAF8F3] border-[#25231F] shadow-sm scale-105'
-                        : 'bg-[#FAF8F3]/90 text-[#25231F]/80 border-[#E2DCD2] hover:border-[#25231F]/40'
-                    }`}
-                  >
-                    <Compass className={`w-3 h-3 ${isSelected ? 'text-[#B85C3B]' : 'text-[#9A948C]'}`} />
-                    <span>{domain.title}</span>
-                  </button>
-                );
-              })}
-            </motion.div>
-
-          </div>
-
-          {/* ── RIGHT COLUMN (5 COLS): FLOATING GLASS INSPECTOR PANEL ────────── */}
-          <div className="lg:col-span-5 h-full">
-            <AnimatePresence mode="wait">
-              {activeCube ? (
-                /* CUBE INSPECTOR CARD */
-                <motion.div
-                  key={activeCube.id}
-                  initial={{ opacity: 0, x: 20, filter: 'blur(6px)' }}
-                  animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-                  exit={{ opacity: 0, x: -20, filter: 'blur(6px)' }}
-                  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                  className="p-6 md:p-8 rounded-3xl bg-[#FAF8F3]/90 backdrop-blur-xl border border-[#B85C3B]/25 shadow-xl relative overflow-hidden flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="px-2.5 py-0.5 rounded-full text-[9px] font-mono uppercase tracking-widest bg-[#B85C3B]/10 text-[#B85C3B] border border-[#B85C3B]/20">
-                        {activeCube.layerName}
-                      </span>
-                      <button
-                        onClick={() => setActiveCube(null)}
-                        className="inline-flex items-center gap-1 text-[9px] font-mono text-[#9A948C] hover:text-[#25231F] uppercase tracking-widest cursor-pointer"
-                      >
-                        <RotateCcw className="w-3 h-3" />
-                        <span>Domain View</span>
-                      </button>
-                    </div>
-
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-xl font-mono font-bold text-[#B85C3B]">{activeCube.symbol}</span>
-                      <h3 className="text-2xl md:text-3xl font-serif font-bold text-[#25231F]">
-                        {activeCube.name}
-                      </h3>
-                    </div>
-
-                    <p className="text-xs text-[#787268] font-light leading-relaxed mb-4">
-                      {activeCube.description}
-                    </p>
-
-                    <div className="p-3 rounded-xl bg-[#F4F0E8] border border-[#E2DCD2] mb-4">
-                      <div className="text-[9px] font-mono text-[#9A948C] uppercase tracking-widest mb-0.5">
-                        Selected Knowledge Block
-                      </div>
-                      <div className="text-xs font-mono text-[#25231F] font-bold">
-                        {activeCube.name}
-                      </div>
-                    </div>
+        {/* ── BENTO GRID OF TECH CARDS ────────────────────────────────────── */}
+        <motion.div
+          layout
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16"
+        >
+          <AnimatePresence mode="popLayout">
+            {filteredItems.map((item, i) => (
+              <motion.div
+                key={item.id}
+                layout
+                initial={{ opacity: 0, y: 25, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.5, delay: i * 0.04, ease: [0.22, 1, 0.36, 1] }}
+                onMouseEnter={playHover}
+                onClick={() => {
+                  playClick();
+                  setSelectedTech(item);
+                }}
+                className={`group p-7 rounded-3xl bg-[#FAF8F3]/90 backdrop-blur-xl border border-[#E2DCD2] hover:border-[#B85C3B]/50 transition-all duration-300 cursor-pointer shadow-md hover:shadow-2xl flex flex-col justify-between relative overflow-hidden ${
+                  item.featured ? 'md:col-span-2 lg:col-span-1 border-l-4 border-l-[#B85C3B]' : ''
+                }`}
+              >
+                {/* Top Badge & Proficiency */}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest bg-[#B85C3B]/10 text-[#B85C3B] border border-[#B85C3B]/20">
+                      {item.categoryLabel}
+                    </span>
+                    <span className="text-[10px] font-mono text-[#9A948C] tracking-widest uppercase">
+                      {item.proficiency}% Proficiency
+                    </span>
                   </div>
 
-                  <div className="flex items-center gap-2 pt-3 border-t border-[#E2DCD2]">
-                    <button
-                      onClick={scrollToProjects}
-                      onMouseEnter={playHover}
-                      className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-[#B85C3B] text-[#FAF8F3] text-[11px] font-mono tracking-widest uppercase hover:bg-[#25231F] transition-all duration-300 shadow-sm cursor-pointer group"
-                    >
-                      <span>View Projects</span>
-                      <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                    </button>
-
-                    <a
-                      href={PORTFOLIO_DATA.personal.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={playClick}
-                      onMouseEnter={playHover}
-                      className="p-2.5 rounded-full border border-[#E2DCD2] text-[#25231F] hover:bg-[#25231F] hover:text-[#FAF8F3] transition-all duration-300"
-                      title="View Code on GitHub"
-                    >
-                      <Code2 className="w-3.5 h-3.5" />
-                    </a>
-                  </div>
-                </motion.div>
-              ) : (
-                /* DOMAIN OVERVIEW CARD */
-                <motion.div
-                  key={activeDomain.id}
-                  initial={{ opacity: 0, x: 20, filter: 'blur(6px)' }}
-                  animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-                  exit={{ opacity: 0, x: -20, filter: 'blur(6px)' }}
-                  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                  className="p-6 md:p-8 rounded-3xl bg-[#FAF8F3]/90 backdrop-blur-xl border border-[#B85C3B]/25 shadow-xl relative overflow-hidden flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="px-2.5 py-0.5 rounded-full text-[9px] font-mono uppercase tracking-widest bg-[#B85C3B]/10 text-[#B85C3B] border border-[#B85C3B]/20">
-                        {activeDomain.subtitle}
-                      </span>
-                      <span className="text-[9px] font-mono text-[#9A948C] tracking-widest uppercase">
-                        Verified Domain
-                      </span>
-                    </div>
-
-                    <h3 className="text-2xl md:text-3xl font-serif font-bold text-[#25231F] mb-2">
-                      {activeDomain.title}
+                  {/* Header Title + Emblem */}
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-2xl font-mono font-bold text-[#B85C3B] flex-shrink-0">
+                      {item.symbol}
+                    </span>
+                    <h3 className="text-2xl font-serif font-bold text-[#25231F] group-hover:text-[#B85C3B] transition-colors leading-tight">
+                      {item.name}
                     </h3>
+                  </div>
 
-                    <p className="text-xs text-[#787268] font-light leading-relaxed mb-4">
-                      {activeDomain.description}
-                    </p>
+                  <p className="text-xs text-[#787268] font-light leading-relaxed mb-6">
+                    {item.description}
+                  </p>
 
-                    {/* Domain Metrics Grid */}
-                    <div className="grid grid-cols-2 gap-2 mb-4 p-3 rounded-xl bg-[#F4F0E8] border border-[#E2DCD2]">
-                      {activeDomain.metrics.map((m, i) => (
-                        <div key={i}>
-                          <div className="text-lg font-serif font-bold text-[#B85C3B]">
-                            {m.value}
-                          </div>
-                          <div className="text-[8px] font-mono text-[#9A948C] uppercase tracking-widest">
-                            {m.label}
-                          </div>
-                        </div>
-                      ))}
+                  {/* Animated Proficiency Bar */}
+                  <div className="w-full bg-[#F4F0E8] h-1.5 rounded-full overflow-hidden mb-6 border border-[#E2DCD2]">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${item.proficiency}%` }}
+                      transition={{ duration: 1, delay: 0.2 + i * 0.03 }}
+                      className="h-full bg-gradient-to-r from-[#B85C3B] to-[#8E9A78] rounded-full"
+                    />
+                  </div>
+
+                  {/* Capabilities List */}
+                  <div className="space-y-1.5 mb-6">
+                    {item.capabilities.slice(0, 3).map((cap, capIdx) => (
+                      <div key={capIdx} className="flex items-center gap-2 text-[11px] font-mono text-[#25231F]/80">
+                        <CheckCircle2 className="w-3 h-3 text-[#B85C3B] flex-shrink-0" />
+                        <span>{cap}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Bottom Footer Line */}
+                <div className="pt-4 border-t border-[#E2DCD2] flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div>
+                      <span className="text-[9px] font-mono text-[#9A948C] uppercase tracking-widest block">Exp</span>
+                      <span className="text-xs font-mono font-bold text-[#25231F]">{item.experienceYears}+ Yrs</span>
                     </div>
-
-                    {/* Domain Technologies List */}
-                    <div className="mb-6">
-                      <div className="text-[9px] font-mono tracking-widest text-[#9A948C] uppercase mb-2 flex items-center gap-1.5">
-                        <Layers className="w-3 h-3 text-[#B85C3B]" />
-                        <span>Core Domain Stack</span>
-                      </div>
-                      <div className="flex flex-wrap gap-1">
-                        {activeDomain.technologies.map((t, i) => (
-                          <span
-                            key={i}
-                            className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-[#25231F]/5 text-[#25231F] border border-[#E2DCD2]"
-                          >
-                            {t}
-                          </span>
-                        ))}
-                      </div>
+                    <div>
+                      <span className="text-[9px] font-mono text-[#9A948C] uppercase tracking-widest block">Builds</span>
+                      <span className="text-xs font-mono font-bold text-[#25231F]">{item.projectsCount}+ MVPs</span>
                     </div>
                   </div>
 
-                  {/* Action CTA Buttons */}
-                  <div className="flex items-center gap-2 pt-3 border-t border-[#E2DCD2]">
-                    <button
-                      onClick={scrollToProjects}
-                      onMouseEnter={playHover}
-                      className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-[#B85C3B] text-[#FAF8F3] text-[11px] font-mono tracking-widest uppercase hover:bg-[#25231F] transition-all duration-300 shadow-sm cursor-pointer group"
-                    >
-                      <span>View Projects</span>
-                      <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                    </button>
-
-                    <a
-                      href={PORTFOLIO_DATA.personal.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={playClick}
-                      onMouseEnter={playHover}
-                      className="p-2.5 rounded-full border border-[#E2DCD2] text-[#25231F] hover:bg-[#25231F] hover:text-[#FAF8F3] transition-all duration-300"
-                      title="View Code on GitHub"
-                    >
-                      <Code2 className="w-3.5 h-3.5" />
-                    </a>
+                  <div className="p-2 rounded-full border border-[#E2DCD2] text-[#9A948C] group-hover:text-[#B85C3B] group-hover:border-[#B85C3B] transition-colors">
+                    <ArrowUpRight className="w-4 h-4" />
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                </div>
+
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+
+        {/* ── BOTTOM MASTERY METRICS BAR ──────────────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.9, delay: 0.3 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 p-8 rounded-3xl bg-[#FAF8F3]/90 backdrop-blur-xl border border-[#E2DCD2] shadow-lg"
+        >
+          <div>
+            <div className="text-3xl font-serif font-bold text-[#B85C3B] mb-1">98+</div>
+            <div className="text-[10px] font-mono text-[#9A948C] uppercase tracking-widest">Lighthouse Web Vitals</div>
           </div>
-
-        </div>
+          <div>
+            <div className="text-3xl font-serif font-bold text-[#25231F] mb-1">4.0+ Yrs</div>
+            <div className="text-[10px] font-mono text-[#9A948C] uppercase tracking-widest">Enterprise Architecture</div>
+          </div>
+          <div>
+            <div className="text-3xl font-serif font-bold text-[#B85C3B] mb-1">25+</div>
+            <div className="text-[10px] font-mono text-[#9A948C] uppercase tracking-widest">Shipped Applications</div>
+          </div>
+          <div>
+            <div className="text-3xl font-serif font-bold text-[#25231F] mb-1">100%</div>
+            <div className="text-[10px] font-mono text-[#9A948C] uppercase tracking-widest">Strict Type Safety</div>
+          </div>
+        </motion.div>
 
       </div>
+
+      {/* ── EXPANDABLE TECH DETAIL MODAL ────────────────────────────────── */}
+      <AnimatePresence>
+        {selectedTech && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-[#161412]/60 backdrop-blur-md flex items-center justify-center p-6"
+            onClick={() => setSelectedTech(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 20 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              onClick={(e) => e.stopPropagation()}
+              className="max-w-2xl w-full p-8 md:p-10 rounded-3xl bg-[#FAF8F3] border border-[#B85C3B]/30 shadow-2xl relative"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest bg-[#B85C3B]/10 text-[#B85C3B] border border-[#B85C3B]/20">
+                  {selectedTech.categoryLabel}
+                </span>
+                <button
+                  onClick={() => setSelectedTech(null)}
+                  className="w-8 h-8 rounded-full border border-[#E2DCD2] flex items-center justify-center text-xs font-mono text-[#25231F] hover:bg-[#25231F] hover:text-[#FAF8F3] transition-colors cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-3xl font-mono font-bold text-[#B85C3B]">{selectedTech.symbol}</span>
+                <h3 className="text-3xl md:text-4xl font-serif font-bold text-[#25231F]">
+                  {selectedTech.name}
+                </h3>
+              </div>
+
+              <p className="text-sm text-[#787268] font-light leading-relaxed mb-6">
+                {selectedTech.description}
+              </p>
+
+              <div className="grid grid-cols-2 gap-4 mb-6 p-4 rounded-2xl bg-[#F4F0E8] border border-[#E2DCD2]">
+                <div>
+                  <div className="text-2xl font-serif font-bold text-[#B85C3B]">{selectedTech.experienceYears}+ Yrs</div>
+                  <div className="text-[9px] font-mono text-[#9A948C] uppercase tracking-widest">Experience</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-serif font-bold text-[#25231F]">{selectedTech.projectsCount}+ MVPs</div>
+                  <div className="text-[9px] font-mono text-[#9A948C] uppercase tracking-widest">Production Builds</div>
+                </div>
+              </div>
+
+              <div className="mb-8">
+                <div className="text-[10px] font-mono tracking-widest text-[#9A948C] uppercase mb-3">
+                  Core Architectural Capabilities
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {selectedTech.capabilities.map((cap, i) => (
+                    <div key={i} className="flex items-center gap-2 text-xs font-mono text-[#25231F]">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#B85C3B] flex-shrink-0" />
+                      <span>{cap}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 pt-6 border-t border-[#E2DCD2]">
+                <button
+                  onClick={scrollToProjects}
+                  onMouseEnter={playHover}
+                  className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-[#B85C3B] text-[#FAF8F3] text-xs font-mono tracking-widest uppercase hover:bg-[#25231F] transition-all duration-300 shadow-md cursor-pointer group"
+                >
+                  <span>View Projects Using {selectedTech.name}</span>
+                  <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </button>
+                <a
+                  href={PORTFOLIO_DATA.personal.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={playClick}
+                  onMouseEnter={playHover}
+                  className="p-3.5 rounded-full border border-[#E2DCD2] text-[#25231F] hover:bg-[#25231F] hover:text-[#FAF8F3] transition-all duration-300"
+                  title="View GitHub Code"
+                >
+                  <Code2 className="w-4 h-4" />
+                </a>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

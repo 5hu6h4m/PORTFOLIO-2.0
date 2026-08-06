@@ -187,7 +187,7 @@ function GlassHeroCube({ activeTech }: { activeTech: TechItem }) {
               {activeTech.name}
             </div>
             <div className="text-[9px] font-mono text-[#B55D3D] tracking-widest uppercase">
-              {activeTech.confidence}% MASTERED
+              {activeTech.proficiency}% MASTERED
             </div>
           </div>
         </Html>
