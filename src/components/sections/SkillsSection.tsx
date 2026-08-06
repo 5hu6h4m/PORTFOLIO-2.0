@@ -84,42 +84,15 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
         {/* ── MAIN DUAL COLUMN LAYOUT (LEFT 3D PYRAMID + RIGHT DETAILS CARD) ── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center min-h-[460px]">
 
-          {/* ── LEFT COLUMN (7 COLS): 3D PYRAMID + SLEEK ROTATION SLIDER ────── */}
+          {/* ── LEFT COLUMN (7 COLS): 3D PYRAMID (TOP) + ROTATION SLIDER (UNDERNEATH) ── */}
           <div className="lg:col-span-7 flex flex-col items-center">
 
-            {/* DOMAIN FACE SELECTOR BUTTONS */}
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
-              transition={{ duration: 0.7, delay: 0.1 }}
-              className="flex flex-wrap items-center justify-center gap-1.5 mb-3 w-full"
-            >
-              {DOMAIN_FACES.map((domain) => {
-                const isSelected = activeDomain.id === domain.id && !activeCube;
-                return (
-                  <button
-                    key={domain.id}
-                    onClick={() => handleDomainSelect(domain)}
-                    onMouseEnter={playHover}
-                    className={`px-3.5 py-1.5 rounded-full text-[11px] font-mono tracking-wider transition-all duration-300 border cursor-pointer flex items-center gap-1.5 ${
-                      isSelected
-                        ? 'bg-[#25231F] text-[#FAF8F3] border-[#25231F] shadow-sm scale-105'
-                        : 'bg-[#FAF8F3]/90 text-[#25231F]/80 border-[#E2DCD2] hover:border-[#25231F]/40'
-                    }`}
-                  >
-                    <Compass className={`w-3 h-3 ${isSelected ? 'text-[#B85C3B]' : 'text-[#9A948C]'}`} />
-                    <span>{domain.title}</span>
-                  </button>
-                );
-              })}
-            </motion.div>
-
-            {/* 3D PYRAMID CANVAS CONTAINER */}
+            {/* 1. 3D PYRAMID CANVAS CONTAINER (MOVED TO TOP) */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.9, delay: 0.15 }}
-              className="w-full h-[340px] md:h-[380px] rounded-2xl bg-[#FAF8F3]/70 backdrop-blur-md border border-[#E2DCD2] shadow-lg relative overflow-hidden flex items-center justify-center mb-4 pointer-events-auto"
+              transition={{ duration: 0.9, delay: 0.1 }}
+              className="w-full h-[340px] md:h-[380px] rounded-2xl bg-[#FAF8F3]/70 backdrop-blur-md border border-[#E2DCD2] shadow-lg relative overflow-hidden flex items-center justify-center mb-3 pointer-events-auto"
             >
               <PyramidTechCanvas
                 rotationRad={rotationRad}
@@ -135,19 +108,19 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
               />
             </motion.div>
 
-            {/* ── SLEEK MINIMAL ROTATION SLIDER CONTROL ─────────────────────── */}
+            {/* 2. SLEEK MINIMAL ROTATION SLIDER CONTROL (DIRECTLY UNDERNEATH PYRAMID) */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="w-full px-4 py-3 rounded-xl bg-[#FAF8F3]/80 border border-[#E2DCD2] flex flex-col gap-2"
+              transition={{ duration: 0.7, delay: 0.18 }}
+              className="w-full px-4 py-2.5 rounded-xl bg-[#FAF8F3]/80 border border-[#E2DCD2] flex flex-col gap-1.5 mb-3"
             >
               <div className="flex items-center justify-between text-[11px] font-mono">
                 <span className="text-[#25231F] font-bold tracking-wider uppercase flex items-center gap-1.5">
                   <Sliders className="w-3 h-3 text-[#B85C3B]" />
-                  <span>Rotation Dial</span>
+                  <span>Pyramid Rotation Dial</span>
                 </span>
-                <span className="text-[#B85C3B] font-bold tracking-widest">
+                <span className="text-[#B85C3B] font-bold tracking-widest text-[10px]">
                   {rotationDeg}° // {activeDomain.title.toUpperCase()}
                 </span>
               </div>
@@ -161,6 +134,33 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
                 onChange={handleSliderChange}
                 className="w-full h-1 bg-[#E2DCD2] rounded-lg appearance-none cursor-pointer accent-[#B85C3B] transition-all"
               />
+            </motion.div>
+
+            {/* 3. DOMAIN FACE SELECTOR BUTTONS */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+              transition={{ duration: 0.7, delay: 0.22 }}
+              className="flex flex-wrap items-center justify-center gap-1.5 w-full"
+            >
+              {DOMAIN_FACES.map((domain) => {
+                const isSelected = activeDomain.id === domain.id && !activeCube;
+                return (
+                  <button
+                    key={domain.id}
+                    onClick={() => handleDomainSelect(domain)}
+                    onMouseEnter={playHover}
+                    className={`px-3 py-1 rounded-full text-[10px] font-mono tracking-wider transition-all duration-300 border cursor-pointer flex items-center gap-1.5 ${
+                      isSelected
+                        ? 'bg-[#25231F] text-[#FAF8F3] border-[#25231F] shadow-sm scale-105'
+                        : 'bg-[#FAF8F3]/90 text-[#25231F]/80 border-[#E2DCD2] hover:border-[#25231F]/40'
+                    }`}
+                  >
+                    <Compass className={`w-3 h-3 ${isSelected ? 'text-[#B85C3B]' : 'text-[#9A948C]'}`} />
+                    <span>{domain.title}</span>
+                  </button>
+                );
+              })}
             </motion.div>
 
           </div>
