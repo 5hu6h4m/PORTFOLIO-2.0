@@ -20,43 +20,43 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
     offset: ['start start', 'end end'],
   });
 
-  // Spring physics dampening for butter-smooth scroll response
+  // Spring physics dampening for butter-smooth, controlled scroll pacing
   const smoothProgress = useSpring(scrollYProgress, {
-    damping: 24,
-    stiffness: 100,
+    damping: 30,
+    stiffness: 90,
     restDelta: 0.001,
   });
 
-  // Staggered ONE-BY-ONE Sequential Fly-In Animations (0.00 to 0.80)
-  // Card 1 arrives: 0.00 -> 0.20
-  const card1X = useTransform(smoothProgress, [0.00, 0.20], [-1000, -420]);
-  const card1Y = useTransform(smoothProgress, [0.00, 0.20], [180, 40]);
-  const card1Rot = useTransform(smoothProgress, [0.00, 0.20], [-45, -20]);
+  // Gradual 4-5 Scroll Wheel Staggered Timelines (0.00 to 0.90 across 550vh track)
+  // Card 1 arrives: 0.00 -> 0.18 (Scroll 1)
+  const card1X = useTransform(smoothProgress, [0.00, 0.18], [-1100, -420]);
+  const card1Y = useTransform(smoothProgress, [0.00, 0.18], [180, 40]);
+  const card1Rot = useTransform(smoothProgress, [0.00, 0.18], [-45, -20]);
   const card1Op = useTransform(smoothProgress, [0.00, 0.10], [0, 1]);
 
-  // Card 2 arrives: 0.15 -> 0.35
-  const card2X = useTransform(smoothProgress, [0.15, 0.35], [-1000, -210]);
-  const card2Y = useTransform(smoothProgress, [0.15, 0.35], [140, 10]);
-  const card2Rot = useTransform(smoothProgress, [0.15, 0.35], [-35, -10]);
-  const card2Op = useTransform(smoothProgress, [0.15, 0.25], [0, 1]);
+  // Card 2 arrives: 0.18 -> 0.36 (Scroll 2)
+  const card2X = useTransform(smoothProgress, [0.18, 0.36], [-1100, -210]);
+  const card2Y = useTransform(smoothProgress, [0.18, 0.36], [140, 10]);
+  const card2Rot = useTransform(smoothProgress, [0.18, 0.36], [-35, -10]);
+  const card2Op = useTransform(smoothProgress, [0.18, 0.26], [0, 1]);
 
-  // Card 3 arrives: 0.30 -> 0.50
-  const card3X = useTransform(smoothProgress, [0.30, 0.50], [-1000, 0]);
-  const card3Y = useTransform(smoothProgress, [0.30, 0.50], [100, 0]);
-  const card3Rot = useTransform(smoothProgress, [0.30, 0.50], [-25, 0]);
-  const card3Op = useTransform(smoothProgress, [0.30, 0.40], [0, 1]);
+  // Card 3 arrives: 0.36 -> 0.54 (Scroll 3)
+  const card3X = useTransform(smoothProgress, [0.36, 0.54], [-1100, 0]);
+  const card3Y = useTransform(smoothProgress, [0.36, 0.54], [100, 0]);
+  const card3Rot = useTransform(smoothProgress, [0.36, 0.54], [-25, 0]);
+  const card3Op = useTransform(smoothProgress, [0.36, 0.44], [0, 1]);
 
-  // Card 4 arrives: 0.45 -> 0.65
-  const card4X = useTransform(smoothProgress, [0.45, 0.65], [-1000, 210]);
-  const card4Y = useTransform(smoothProgress, [0.45, 0.65], [60, 10]);
-  const card4Rot = useTransform(smoothProgress, [0.45, 0.65], [-15, 10]);
-  const card4Op = useTransform(smoothProgress, [0.45, 0.55], [0, 1]);
+  // Card 4 arrives: 0.54 -> 0.72 (Scroll 4)
+  const card4X = useTransform(smoothProgress, [0.54, 0.72], [-1100, 210]);
+  const card4Y = useTransform(smoothProgress, [0.54, 0.72], [60, 10]);
+  const card4Rot = useTransform(smoothProgress, [0.54, 0.72], [-15, 10]);
+  const card4Op = useTransform(smoothProgress, [0.54, 0.62], [0, 1]);
 
-  // Card 5 arrives: 0.60 -> 0.80
-  const card5X = useTransform(smoothProgress, [0.60, 0.80], [-1000, 420]);
-  const card5Y = useTransform(smoothProgress, [0.60, 0.80], [30, 40]);
-  const card5Rot = useTransform(smoothProgress, [0.60, 0.80], [0, 20]);
-  const card5Op = useTransform(smoothProgress, [0.60, 0.70], [0, 1]);
+  // Card 5 arrives: 0.72 -> 0.90 (Scroll 5)
+  const card5X = useTransform(smoothProgress, [0.72, 0.90], [-1100, 420]);
+  const card5Y = useTransform(smoothProgress, [0.72, 0.90], [30, 40]);
+  const card5Rot = useTransform(smoothProgress, [0.72, 0.90], [0, 20]);
+  const card5Op = useTransform(smoothProgress, [0.72, 0.80], [0, 1]);
 
   const cardTransformations = [
     { x: card1X, y: card1Y, rot: card1Rot, opacity: card1Op },
@@ -76,7 +76,7 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
   };
 
   return (
-    <div ref={targetRef} className="relative h-[280vh] bg-[#F4F0E8]" id="skills">
+    <div ref={targetRef} className="relative h-[550vh] bg-[#F4F0E8]" id="skills">
       {/* STICKY SCREEN PINNING CONTAINER */}
       <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-between pt-16 pb-10 px-6 md:px-12 select-none border-t border-[#E2DCD2]">
         
@@ -178,7 +178,7 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
 
         {/* ── FOOTER INSTRUCTION & MASTERY HINT ────────────────────────────── */}
         <div className="max-w-7xl mx-auto relative z-10 w-full flex items-center justify-between text-[10px] font-mono text-[#787268] uppercase tracking-widest pt-2 border-t border-[#E2DCD2] font-semibold">
-          <span>Scroll to fan cards one by one</span>
+          <span>Scroll down slowly to fan cards one by one</span>
           <span className="text-[#B85C3B] font-bold">Click any card for deep dive modal</span>
           <span>5 Architectural Categories</span>
         </div>
