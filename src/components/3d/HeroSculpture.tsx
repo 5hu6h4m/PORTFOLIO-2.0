@@ -15,16 +15,16 @@ interface HeroSculptureProps {
   mouse: { normalizedX: number; normalizedY: number };
 }
 
-// Ease functions
-function easeOutExpo(t: number): number {
-  return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
-}
-
+// Ease functions for weightless cinematic motion
 function easeInOutCubic(t: number): number {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
-const ASSEMBLY_DURATION = 2.0; // 2.0s cinematic scattered red assembly
+function easeOutQuart(t: number): number {
+  return 1 - Math.pow(1 - t, 4);
+}
+
+const ASSEMBLY_DURATION = 3.0; // 3.0s smooth weightless red scatter assembly
 const MOVE_DURATION = 0.48; // Snappy speedcube layer turns
 const PAUSE_DURATION = 0.15; // Quick pause between turns
 const SOLVED_HOLD_DURATION = 2.5; // Brief hold when solved
@@ -39,7 +39,7 @@ const COLOR_FRONT  = new THREE.Color('#93E9BE'); // Light Soft Mint Pastel Green
 const COLOR_BACK   = new THREE.Color('#B3D8FF'); // Light Soft Ice Pastel Blue
 const COLOR_INNER  = new THREE.Color('#2A2B30'); // Light Charcoal Core Plastic
 
-// Red Scatter Burst Palette (Initial 2s screen spread)
+// Red Scatter Burst Palette (Initial 3s screen spread)
 const COLOR_RED_SCATTER = new THREE.Color('#B85C3B'); // Warm Terracotta Red
 const EMISSIVE_RED_SCATTER = new THREE.Color('#8A2E2B'); // Rich Deep Crimson Glow
 
@@ -122,7 +122,6 @@ function applyMoveToState(
 
     if (Math.abs(val - move.layer * step) < 0.08) {
       st.pos.applyQuaternion(dQuat);
-      // Snap position to exact grid steps to eliminate floating-point drift
       st.pos.x = Math.round(st.pos.x / step) * step;
       st.pos.y = Math.round(st.pos.y / step) * step;
       st.pos.z = Math.round(st.pos.z / step) * step;
@@ -154,10 +153,7 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
   const launchPositions = useRef<[number, number, number][]>([]);
   const launchRotations = useRef<THREE.Quaternion[]>([]);
 
-  // Hero section visibility state
-  const isHeroVisibleRef = useRef(true);
-
-  // About section activation (0 = not visible, 1 = fully visible)
+  // About section activation
   const aboutActivationRef = useRef(0);
   const isAboutVisibleRef = useRef(false);
 
@@ -244,11 +240,20 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
     isSolvedHoldRef.current = false;
   };
 
-  // Trigger initial scatter burst on mount (reload)
+  // Trigger initial scatter burst on mount & listen for preloader finish
   useEffect(() => {
     initScrambleAndSolver();
     assemblyTRef.current = 0;
     isAssemblingRef.current = true;
+
+    const handlePreloaderComplete = () => {
+      initScrambleAndSolver();
+      assemblyTRef.current = 0;
+      isAssemblingRef.current = true;
+    };
+
+    window.addEventListener('portfolio-preloader-complete', handlePreloaderComplete);
+    return () => window.removeEventListener('portfolio-preloader-complete', handlePreloaderComplete);
   }, []);
 
   // ── Generate 3x3x3 sub-cube metadata & face materials ─────────────────────
@@ -269,7 +274,6 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
     for (let x = -1; x <= 1; x++) {
       for (let y = -1; y <= 1; y++) {
         for (let z = -1; z <= 1; z++) {
-          // 6 Face materials per cubie: [ +X, -X, +Y, -Y, +Z, -Z ]
           const mats = [
             new THREE.MeshPhysicalMaterial({
               color: x === 1 ? COLOR_RIGHT : COLOR_INNER,
@@ -376,7 +380,7 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
     return cubeData.map((item) => item.materials.map((m) => m.color.clone()));
   }, [cubeData]);
 
-  // ── IntersectionObserver: detect when #about and top Hero section are in viewport ──
+  // ── IntersectionObserver: detect when #about is in viewport ───────────────
   useEffect(() => {
     const aboutEl = document.getElementById('about');
     if (!aboutEl) return;
@@ -471,7 +475,7 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
     const mouseY = mouse.normalizedY;
     const scrollP = scrollProgressRef.current;
 
-    // 1. Advance return-home / initial mount 2s red scatter assembly
+    // 1. Advance return-home / initial mount 3s weightless red scatter assembly
     if (isAssemblingRef.current && assemblyTRef.current < 1) {
       assemblyTRef.current = Math.min(assemblyTRef.current + delta / ASSEMBLY_DURATION, 1);
       if (assemblyTRef.current >= 1) {
@@ -562,7 +566,10 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
       const moves = solveMovesRef.current;
       const currentMoveIdx = solveMoveIdxRef.current;
       const activeMove = moves[currentMoveIdx];
-      const redFactor = 1 - easeOutExpo(assemblyTRef.current); // 1 at t=0 (full red), 0 at t=1 (normal colors)
+      
+      // Butter-smooth cubic ease for weightless particle gliding
+      const smoothT = easeInOutCubic(assemblyTRef.current);
+      const redFactor = 1 - easeOutQuart(assemblyTRef.current); // 1 at t=0 (full red), 0 at t=1 (normal colors)
 
       cubeData.forEach((item, idx) => {
         const meshObj = cubieMeshRefs.current[idx];
@@ -574,7 +581,7 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
           const targetAboutColor = idx % 2 === 0 ? COLOR_ABOUT_EVEN : COLOR_ABOUT_ODD;
 
           if (redFactor > 0.01) {
-            // First 2 seconds: particles scattered in red across screen, blending to normal face colors as they assemble!
+            // First 3 seconds: particles scattered in red across screen, blending smoothly to normal face colors!
             mat.color.lerpColors(baseCol, COLOR_RED_SCATTER, redFactor);
             mat.emissive.lerpColors(baseCol, EMISSIVE_RED_SCATTER, redFactor);
             mat.emissiveIntensity = THREE.MathUtils.lerp(0.10, 0.50, redFactor);
@@ -614,17 +621,16 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
           meshObj.position.y = THREE.MathUtils.lerp(meshObj.position.y, targetP[1], 0.08);
           meshObj.position.z = THREE.MathUtils.lerp(meshObj.position.z, targetP[2], 0.08);
         } else if (isDoingAssembly) {
-          // ── INITIAL 2-SECOND RED SCATTER & ASSEMBLY ────────────────────────
-          const t = easeOutExpo(assemblyTRef.current);
+          // ── SMOOTH WEIGHTLESS 3-SECOND RED SCATTER & ASSEMBLY ─────────────
           const launchP = launchPositions.current[idx] || [0, 0, 0];
           const homeState = activeCubieStatesRef.current[idx] || { pos: new THREE.Vector3(...item.initialPos), rot: new THREE.Quaternion() };
 
-          meshObj.position.x = THREE.MathUtils.lerp(launchP[0], homeState.pos.x, t);
-          meshObj.position.y = THREE.MathUtils.lerp(launchP[1], homeState.pos.y, t);
-          meshObj.position.z = THREE.MathUtils.lerp(launchP[2], homeState.pos.z, t);
+          meshObj.position.x = THREE.MathUtils.lerp(launchP[0], homeState.pos.x, smoothT);
+          meshObj.position.y = THREE.MathUtils.lerp(launchP[1], homeState.pos.y, smoothT);
+          meshObj.position.z = THREE.MathUtils.lerp(launchP[2], homeState.pos.z, smoothT);
 
           const launchQ = launchRotations.current[idx] || new THREE.Quaternion();
-          meshObj.quaternion.slerpQuaternions(launchQ, homeState.rot, t);
+          meshObj.quaternion.slerpQuaternions(launchQ, homeState.rot, smoothT);
         } else if (aboutT > 0.01) {
           // ── ABOUT SECTION ORBITAL SPREAD ───────────────────────────────────
           const homeState = activeCubieStatesRef.current[idx] || { pos: new THREE.Vector3(...item.initialPos), rot: new THREE.Quaternion() };
@@ -640,7 +646,7 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
           meshObj.position.set(targetX, targetY, targetZ);
           meshObj.quaternion.slerp(homeState.rot, 0.1);
         } else {
-          // ── NORMAL SOLVER & LAYER TURNS (After 2 Seconds) ─────────────────
+          // ── NORMAL SOLVER & LAYER TURNS (After 3 Seconds) ─────────────────
           const stateObj = activeCubieStatesRef.current[idx];
           if (!stateObj) return;
 

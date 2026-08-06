@@ -18,6 +18,9 @@ export function Preloader({ onComplete }: PreloaderProps) {
           clearInterval(timer);
           setTimeout(() => {
             setIsFinished(true);
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('portfolio-preloader-complete'));
+            }
             setTimeout(onComplete, 800);
           }, 300);
           return 100;
@@ -49,23 +52,17 @@ export function Preloader({ onComplete }: PreloaderProps) {
               animate={{ opacity: 1, y: 0 }}
               className="text-2xl md:text-4xl font-serif font-light text-[#E8E2D5]/90 leading-tight mb-4"
             >
-              "Crafting fast, scalable, and immersive web experiences."
+              Architecting high-performance digital experiences.
             </motion.p>
-            <div className="h-0.5 w-full bg-white/10 rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-[#C87D46]"
-                style={{ width: `${Math.min(progress, 100)}%` }}
-              />
-            </div>
           </div>
 
-          {/* Bottom Counter */}
-          <div className="flex justify-between items-end">
-            <div className="text-xs tracking-widest uppercase font-mono text-[#C87D46]">
-              INITIALIZING APPLICATION & 3D CANVAS
+          {/* Bottom Progress Counter */}
+          <div className="flex items-end justify-between border-t border-[#E8E2D5]/20 pt-6">
+            <div className="text-[10px] font-mono text-[#E8E2D5]/50 tracking-widest uppercase">
+              INITIALIZING REACT 19 &amp; 3D KINETIC ENGINE
             </div>
-            <div className="text-6xl md:text-8xl font-mono font-light tracking-tighter text-[#FAF7F2]">
-              {Math.min(progress, 100)}<span className="text-3xl text-[#C87D46]">%</span>
+            <div className="text-4xl md:text-6xl font-serif font-bold text-[#B85C3B] font-mono">
+              {Math.min(progress, 100)}%
             </div>
           </div>
         </motion.div>
