@@ -89,15 +89,32 @@ export default function Home() {
 
         {/*
           FULLSCREEN HORIZONTAL TIMELINE SECTION:
-          Now positioned right below the Current Focus!
+          Positioned right below Current Focus!
         */}
         <div className="relative w-full">
           <JourneySection />
         </div>
 
         {/*
+          INTERACTIVE 3D KNOWLEDGE SPHERE & TECH STACK:
+        */}
+        <SkillsSection playClick={playClick} playHover={playHover} />
+
+        {/*
+          PROJECTS SECTION (Case Files + View More GitHub Chapter):
+        */}
+        <ProjectsSection playClick={playClick} playHover={playHover} />
+
+        {/*
+          EXPERIENCE & LEADERSHIP & AWARDS:
+        */}
+        <ExperienceSection playHover={playHover} />
+        <LeadershipSection playHover={playHover} />
+        <AwardsSection playHover={playHover} />
+
+        {/*
           HOBBIES SECTION (Beyond Code):
-          Positioned below the Horizontal Timeline.
+          Moved to the end right before Contact!
         */}
         <section className="py-24 px-6 md:px-12 relative overflow-hidden bg-[#F4F0E8]">
           <div className="max-w-6xl mx-auto">
@@ -105,11 +122,6 @@ export default function Home() {
           </div>
         </section>
 
-        <SkillsSection playClick={playClick} playHover={playHover} />
-        <ProjectsSection playClick={playClick} playHover={playHover} />
-        <ExperienceSection playHover={playHover} />
-        <LeadershipSection playHover={playHover} />
-        <AwardsSection playHover={playHover} />
         <ContactSection playClick={playClick} playHover={playHover} playSuccess={playSuccess} />
         <Footer playClick={playClick} playHover={playHover} />
       </div>
