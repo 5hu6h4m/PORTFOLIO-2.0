@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 import { ArrowUpRight, Code2, Sparkles, CheckCircle2, Layers, X } from 'lucide-react';
 import { FIVE_TECH_CATEGORIES, FiveCardCategory } from '@/data/fiveCardsTechData';
@@ -13,6 +13,18 @@ interface SkillsSectionProps {
 
 export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
   const [selectedCategory, setSelectedCategory] = useState<FiveCardCategory | null>(null);
+
+  // Lock body scroll when deep dive modal is active
+  useEffect(() => {
+    if (selectedCategory) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selectedCategory]);
 
   const targetRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -104,7 +116,7 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
 
         </div>
 
-        {/* ── 5-CARD RAINBOW ARC FAN CONTAINER (WITH GENEROUS BOTTOM MARGIN) ── */}
+        {/* ── 5-CARD RAINBOW ARC FAN CONTAINER ─────────────────────────────── */}
         <div className="relative w-full max-w-7xl mx-auto h-[380px] md:h-[420px] flex items-center justify-center relative z-20 my-auto mb-8 md:mb-12">
           {FIVE_TECH_CATEGORIES.map((cat, i) => {
             const transform = cardTransformations[i];
@@ -185,25 +197,26 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
 
       </div>
 
-      {/* ── CATEGORY DEEP DIVE MODAL ────────────────────────────────────── */}
+      {/* ── CATEGORY DEEP DIVE MODAL (z-[9999] ABOVE EVERYTHING) ──────────── */}
       <AnimatePresence>
         {selectedCategory && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-[#161412]/60 backdrop-blur-md flex items-center justify-center p-6"
+            className="fixed inset-0 z-[9999] bg-[#161412]/80 backdrop-blur-lg flex items-center justify-center p-4 sm:p-6 overflow-hidden"
             onClick={() => setSelectedCategory(null)}
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.92, y: 20 }}
+              initial={{ opacity: 0, scale: 0.94, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.92, y: 20 }}
+              exit={{ opacity: 0, scale: 0.94, y: 20 }}
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
               onClick={(e) => e.stopPropagation()}
-              className="max-w-3xl w-full p-8 md:p-10 rounded-3xl bg-[#FAF8F3] border border-[#B85C3B]/30 shadow-2xl relative max-h-[90vh] overflow-y-auto"
+              className="max-w-3xl w-full p-6 md:p-8 rounded-3xl bg-[#FAF8F3] border border-[#B85C3B]/30 shadow-2xl relative max-h-[85vh] overflow-y-auto"
             >
-              <div className="flex items-center justify-between mb-6">
+              {/* Sticky Modal Top Bar with High-Contrast Close Button */}
+              <div className="sticky top-0 z-30 bg-[#FAF8F3]/95 backdrop-blur-md pt-2 pb-4 -mx-6 md:-mx-8 -mt-6 md:-mt-8 px-6 md:px-8 border-b border-[#E2DCD2] flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
                   <span className="text-2xl font-serif font-bold text-[#B85C3B]">{selectedCategory.number}</span>
                   <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest bg-[#B85C3B]/10 text-[#B85C3B] border border-[#B85C3B]/20 font-bold">
@@ -211,17 +224,22 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
                   </span>
                 </div>
                 <button
-                  onClick={() => setSelectedCategory(null)}
-                  className="w-8 h-8 rounded-full border border-[#E2DCD2] flex items-center justify-center text-xs font-mono text-[#25231F] hover:bg-[#25231F] hover:text-[#FAF8F3] transition-colors cursor-pointer"
+                  onClick={() => {
+                    playClick();
+                    setSelectedCategory(null);
+                  }}
+                  onMouseEnter={playHover}
+                  className="w-10 h-10 rounded-full bg-[#25231F] text-[#FAF8F3] hover:bg-[#B85C3B] transition-colors flex items-center justify-center cursor-pointer shadow-md"
+                  title="Close Modal (Esc)"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
               <h3 className="text-3xl md:text-4xl font-serif font-bold text-[#25231F] mb-2">
                 {selectedCategory.title}
               </h3>
-              <p className="text-xs font-mono text-[#9A948C] uppercase tracking-widest mb-4">
+              <p className="text-xs font-mono text-[#9A948C] uppercase tracking-widest mb-4 font-semibold">
                 {selectedCategory.subtitle} — {selectedCategory.readinessScore}
               </p>
 
@@ -231,7 +249,7 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
 
               {/* Technologies List Grid */}
               <div className="space-y-4 mb-8">
-                <div className="text-[10px] font-mono tracking-widest text-[#9A948C] uppercase flex items-center gap-1.5">
+                <div className="text-[10px] font-mono tracking-widest text-[#9A948C] uppercase flex items-center gap-1.5 font-bold">
                   <Layers className="w-3.5 h-3.5 text-[#B85C3B]" />
                   <span>Core Technologies & Frameworks</span>
                 </div>
@@ -270,7 +288,7 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
                 <button
                   onClick={scrollToProjects}
                   onMouseEnter={playHover}
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-[#B85C3B] text-[#FAF8F3] text-xs font-mono tracking-widest uppercase hover:bg-[#25231F] transition-all duration-300 shadow-md cursor-pointer group"
+                  className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-[#B85C3B] text-[#FAF8F3] text-xs font-mono tracking-widest uppercase hover:bg-[#25231F] transition-all duration-300 shadow-md cursor-pointer group font-bold"
                 >
                   <span>View Projects Built With {selectedCategory.title}</span>
                   <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -282,7 +300,7 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
                   rel="noopener noreferrer"
                   onClick={playClick}
                   onMouseEnter={playHover}
-                  className="p-3.5 rounded-full border border-[#E2DCD2] text-[#25231F] hover:bg-[#25231F] hover:text-[#FAF8F3] transition-all duration-300"
+                  className="p-3.5 rounded-full border border-[#E2DCD2] text-[#25231F] hover:bg-[#25231F] hover:text-[#FAF8F3] transition-all duration-300 bg-[#F4F0E8]"
                   title="View GitHub Code"
                 >
                   <Code2 className="w-4 h-4" />
