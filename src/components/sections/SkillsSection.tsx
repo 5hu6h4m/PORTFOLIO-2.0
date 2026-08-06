@@ -20,31 +20,36 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
     offset: ['start start', 'end end'],
   });
 
-  // Staggered Fly-In from Offscreen LEFT (-850px) to Rainbow Arc Positions
-  const card1X = useTransform(scrollYProgress, [0, 0.65], [-850, -380]);
-  const card1Y = useTransform(scrollYProgress, [0, 0.65], [160, 35]);
-  const card1Rot = useTransform(scrollYProgress, [0, 0.65], [-55, -28]);
-  const card1Op = useTransform(scrollYProgress, [0, 0.15], [0, 1]);
+  // Staggered ONE-BY-ONE Sequential Fly-In Animations (0.00 to 0.90)
+  // Card 1 arrives: 0.00 -> 0.18
+  const card1X = useTransform(scrollYProgress, [0.00, 0.18], [-950, -380]);
+  const card1Y = useTransform(scrollYProgress, [0.00, 0.18], [150, 35]);
+  const card1Rot = useTransform(scrollYProgress, [0.00, 0.18], [-48, -28]);
+  const card1Op = useTransform(scrollYProgress, [0.00, 0.12], [0, 1]);
 
-  const card2X = useTransform(scrollYProgress, [0.08, 0.70], [-850, -190]);
-  const card2Y = useTransform(scrollYProgress, [0.08, 0.70], [130, 10]);
-  const card2Rot = useTransform(scrollYProgress, [0.08, 0.70], [-42, -14]);
-  const card2Op = useTransform(scrollYProgress, [0.08, 0.22], [0, 1]);
+  // Card 2 arrives: 0.18 -> 0.36
+  const card2X = useTransform(scrollYProgress, [0.18, 0.36], [-950, -190]);
+  const card2Y = useTransform(scrollYProgress, [0.18, 0.36], [120, 10]);
+  const card2Rot = useTransform(scrollYProgress, [0.18, 0.36], [-36, -14]);
+  const card2Op = useTransform(scrollYProgress, [0.18, 0.28], [0, 1]);
 
-  const card3X = useTransform(scrollYProgress, [0.15, 0.75], [-850, 0]);
-  const card3Y = useTransform(scrollYProgress, [0.15, 0.75], [100, 0]);
-  const card3Rot = useTransform(scrollYProgress, [0.15, 0.75], [-30, 0]);
-  const card3Op = useTransform(scrollYProgress, [0.15, 0.30], [0, 1]);
+  // Card 3 arrives: 0.36 -> 0.54
+  const card3X = useTransform(scrollYProgress, [0.36, 0.54], [-950, 0]);
+  const card3Y = useTransform(scrollYProgress, [0.36, 0.54], [90, 0]);
+  const card3Rot = useTransform(scrollYProgress, [0.36, 0.54], [-24, 0]);
+  const card3Op = useTransform(scrollYProgress, [0.36, 0.44], [0, 1]);
 
-  const card4X = useTransform(scrollYProgress, [0.22, 0.80], [-850, 190]);
-  const card4Y = useTransform(scrollYProgress, [0.22, 0.80], [70, 10]);
-  const card4Rot = useTransform(scrollYProgress, [0.22, 0.80], [-18, 14]);
-  const card4Op = useTransform(scrollYProgress, [0.22, 0.38], [0, 1]);
+  // Card 4 arrives: 0.54 -> 0.72
+  const card4X = useTransform(scrollYProgress, [0.54, 0.72], [-950, 190]);
+  const card4Y = useTransform(scrollYProgress, [0.54, 0.72], [60, 10]);
+  const card4Rot = useTransform(scrollYProgress, [0.54, 0.72], [-12, 14]);
+  const card4Op = useTransform(scrollYProgress, [0.54, 0.62], [0, 1]);
 
-  const card5X = useTransform(scrollYProgress, [0.30, 0.85], [-850, 380]);
-  const card5Y = useTransform(scrollYProgress, [0.30, 0.85], [40, 35]);
-  const card5Rot = useTransform(scrollYProgress, [0.30, 0.85], [-5, 28]);
-  const card5Op = useTransform(scrollYProgress, [0.30, 0.45], [0, 1]);
+  // Card 5 arrives: 0.72 -> 0.90
+  const card5X = useTransform(scrollYProgress, [0.72, 0.90], [-950, 380]);
+  const card5Y = useTransform(scrollYProgress, [0.72, 0.90], [30, 35]);
+  const card5Rot = useTransform(scrollYProgress, [0.72, 0.90], [0, 28]);
+  const card5Op = useTransform(scrollYProgress, [0.72, 0.80], [0, 1]);
 
   const cardTransformations = [
     { x: card1X, y: card1Y, rot: card1Rot, opacity: card1Op },
@@ -64,7 +69,7 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
   };
 
   return (
-    <div ref={targetRef} className="relative h-[250vh] bg-[#F4F0E8]" id="skills">
+    <div ref={targetRef} className="relative h-[300vh] bg-[#F4F0E8]" id="skills">
       {/* STICKY SCREEN PINNING CONTAINER */}
       <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-between pt-16 pb-10 px-6 md:px-12 select-none border-t border-[#E2DCD2]">
         
@@ -73,7 +78,7 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
 
         <div className="max-w-7xl mx-auto relative z-10 w-full">
 
-          {/* ── SECTION HEADER (CLEAN BREATHING ROOM WITH ZERO TOP CLIPPING) ──── */}
+          {/* ── SECTION HEADER ───────────────────────────────────────────────── */}
           <div className="text-center flex flex-col items-center justify-center max-w-2xl mx-auto mt-2 mb-4">
             <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.3em] uppercase text-[#B85C3B] mb-2">
               <Sparkles className="w-3.5 h-3.5" />
@@ -86,7 +91,7 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
               TECH STACK
             </h2>
             <p className="text-xs md:text-sm text-[#787268] font-light max-w-md mt-2 leading-relaxed">
-              Scroll down to watch 5 technical cards fly in from the left and fan into a rainbow arc. Click any card to inspect technologies.
+              Scroll down to watch cards fly in one by one from the left and form a rainbow arc. Click any card to inspect technologies.
             </p>
           </div>
 
@@ -166,7 +171,7 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
 
         {/* ── FOOTER INSTRUCTION & MASTERY HINT ────────────────────────────── */}
         <div className="max-w-7xl mx-auto relative z-10 w-full flex items-center justify-between text-[10px] font-mono text-[#9A948C] uppercase tracking-widest pt-2 border-t border-[#E2DCD2]">
-          <span>Scroll down to fan rainbow cards</span>
+          <span>Scroll to fan cards one by one</span>
           <span className="text-[#B85C3B]">Click any card for deep dive modal</span>
           <span>5 Architectural Categories</span>
         </div>
