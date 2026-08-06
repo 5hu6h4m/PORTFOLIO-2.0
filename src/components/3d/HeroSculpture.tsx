@@ -24,7 +24,7 @@ function easeInOutCubic(t: number): number {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
-const ASSEMBLY_DURATION = 2.2; // 2.2s cinematic scattered red assembly
+const ASSEMBLY_DURATION = 2.0; // 2.0s cinematic scattered red assembly
 const MOVE_DURATION = 0.48; // Snappy speedcube layer turns
 const PAUSE_DURATION = 0.15; // Quick pause between turns
 const SOLVED_HOLD_DURATION = 2.5; // Brief hold when solved
@@ -154,6 +154,9 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
   const launchPositions = useRef<[number, number, number][]>([]);
   const launchRotations = useRef<THREE.Quaternion[]>([]);
 
+  // Hero section visibility state
+  const isHeroVisibleRef = useRef(true);
+
   // About section activation (0 = not visible, 1 = fully visible)
   const aboutActivationRef = useRef(0);
   const isAboutVisibleRef = useRef(false);
@@ -187,8 +190,29 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
   const holdSolvedTimerRef = useRef(0);
   const isSolvedHoldRef = useRef(false);
 
+  // Helper to randomize red scatter launch positions across screen
+  const randomizeRedScatterPositions = () => {
+    launchPositions.current = Array.from({ length: 27 }, () => {
+      const spreadX = (Math.random() - 0.5) * 16.0;
+      const spreadY = (Math.random() - 0.5) * 12.0;
+      const spreadZ = (Math.random() - 0.5) * 6.0;
+      return [spreadX, spreadY, spreadZ] as [number, number, number];
+    });
+
+    launchRotations.current = Array.from({ length: 27 }, () => {
+      return new THREE.Quaternion().setFromEuler(
+        new THREE.Euler(
+          Math.random() * Math.PI * 4,
+          Math.random() * Math.PI * 4,
+          Math.random() * Math.PI * 4
+        )
+      );
+    });
+  };
+
   // Function to generate a new scramble & set up solver moves
   const initScrambleAndSolver = () => {
+    randomizeRedScatterPositions();
     const homeStates = getHomeCubieStates();
     const scrambleMoves = generateScrambleMoves(10);
 
@@ -220,7 +244,7 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
     isSolvedHoldRef.current = false;
   };
 
-  // Initialize scramble on mount
+  // Trigger initial scatter burst on mount (reload)
   useEffect(() => {
     initScrambleAndSolver();
     assemblyTRef.current = 0;
@@ -352,28 +376,7 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
     return cubeData.map((item) => item.materials.map((m) => m.color.clone()));
   }, [cubeData]);
 
-  // Wide screen launch positions & rotations for red scatter burst (0s -> 2s)
-  useEffect(() => {
-    launchPositions.current = cubeData.map(() => {
-      // Wide screen spread across full viewport boundaries
-      const spreadX = (Math.random() - 0.5) * 14.0;
-      const spreadY = (Math.random() - 0.5) * 10.0;
-      const spreadZ = (Math.random() - 0.5) * 6.0;
-      return [spreadX, spreadY, spreadZ] as [number, number, number];
-    });
-
-    launchRotations.current = cubeData.map(() => {
-      return new THREE.Quaternion().setFromEuler(
-        new THREE.Euler(
-          Math.random() * Math.PI * 4,
-          Math.random() * Math.PI * 4,
-          Math.random() * Math.PI * 4
-        )
-      );
-    });
-  }, [cubeData]);
-
-  // ── IntersectionObserver: detect when #about is in viewport ───────────────
+  // ── IntersectionObserver: detect when #about and top Hero section are in viewport ──
   useEffect(() => {
     const aboutEl = document.getElementById('about');
     if (!aboutEl) return;
@@ -430,7 +433,7 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
     };
   }, []);
 
-  // Scroll tracking + return-home assembly detection
+  // Scroll tracking + Return-to-Hero scatter burst trigger
   useEffect(() => {
     const ctx = gsap.context(() => {
       ScrollTrigger.create({
@@ -447,8 +450,8 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
             setShatteredMap({});
           }
 
-          // Return home detection: snapped back near top
-          if (prev > 0.08 && curr < 0.03 && !isAssemblingRef.current) {
+          // Return to Hero section detection: whenever scrolling back up to top (< 0.03)
+          if (prev > 0.06 && curr < 0.03 && !isAssemblingRef.current) {
             initScrambleAndSolver();
             assemblyTRef.current = 0;
             isAssemblingRef.current = true;
@@ -571,7 +574,7 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
           const targetAboutColor = idx % 2 === 0 ? COLOR_ABOUT_EVEN : COLOR_ABOUT_ODD;
 
           if (redFactor > 0.01) {
-            // First 2 seconds: particles scattered in red, blending to normal face colors as they assemble!
+            // First 2 seconds: particles scattered in red across screen, blending to normal face colors as they assemble!
             mat.color.lerpColors(baseCol, COLOR_RED_SCATTER, redFactor);
             mat.emissive.lerpColors(baseCol, EMISSIVE_RED_SCATTER, redFactor);
             mat.emissiveIntensity = THREE.MathUtils.lerp(0.10, 0.50, redFactor);
