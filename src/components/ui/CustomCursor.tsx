@@ -70,41 +70,53 @@ export function CustomCursor() {
     );
   }
 
-  // Mode 2: Hide custom ring over HTML UI buttons/links
+  // Mode 2: Hide custom cursor over HTML UI buttons/links
   if (cursorMode === 'interactive') return null;
 
-  // Mode 3: Default follower ring with 3 Trailing Floating Micro-Cubes behind mouse!
+  // 9 Facelet colors for authentic 3x3 Rubik's Cube Cursor
+  const RUBIK_FACELETS = [
+    'bg-[#B55D3D]', 'bg-[#25231F]', 'bg-[#B55D3D]',
+    'bg-[#25231F]', 'bg-[#FAF8F3]', 'bg-[#8A2E2B]',
+    'bg-[#B55D3D]', 'bg-[#25231F]', 'bg-[#B55D3D]',
+  ];
+
+  // Mode 3: Mini 3x3 Rubik's Cube Cursor (Circle Ring removed per user request)
   return (
     <>
-      {/* Standard Outer Spring Follower Ring */}
+      {/* ── MINI 3x3 RUBIK'S CUBE CURSOR FOLLOWER (REPLACES CIRCLE RING) ── */}
       <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-50 rounded-full border border-[#B85C3B]/50 backdrop-blur-[2px] shadow-lg hidden md:block"
+        className="fixed top-0 left-0 pointer-events-none z-50 w-9 h-9 p-0.5 rounded-lg bg-[#25231F]/90 border border-[#B55D3D]/60 shadow-[0_8px_25px_rgba(181,93,61,0.35)] backdrop-blur-md hidden md:flex flex-col justify-between"
         animate={{
           x: x - 18,
           y: y - 18,
-          width: 36,
-          height: 36,
-          backgroundColor: 'rgba(244, 240, 232, 0.15)',
+          rotate: [0, 90, 180, 270, 360],
           scale: 1,
-          opacity: 0.85,
         }}
         transition={{
-          type: 'spring',
-          damping: 28,
-          stiffness: 350,
-          mass: 0.5,
+          x: { type: 'spring', damping: 28, stiffness: 350, mass: 0.4 },
+          y: { type: 'spring', damping: 28, stiffness: 350, mass: 0.4 },
+          rotate: { duration: 8, repeat: Infinity, ease: 'linear' },
         }}
-      />
+      >
+        <div className="grid grid-cols-3 gap-0.5 w-full h-full">
+          {RUBIK_FACELETS.map((bg, idx) => (
+            <div
+              key={idx}
+              className={`w-full h-full rounded-[1.5px] ${bg} border border-[#25231F]/40 shadow-2xs`}
+            />
+          ))}
+        </div>
+      </motion.div>
 
-      {/* Inner Precision Dot */}
+      {/* Inner Precision Center Point Dot */}
       <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-50 rounded-full bg-[#B85C3B] hidden md:block"
+        className="fixed top-0 left-0 pointer-events-none z-50 rounded-full bg-[#B55D3D] hidden md:block shadow-sm"
         animate={{
           x: x - 3,
           y: y - 3,
           width: 6,
           height: 6,
-          opacity: 0.9,
+          opacity: 0.95,
         }}
         transition={{
           type: 'spring',
@@ -117,10 +129,10 @@ export function CustomCursor() {
       {/* ── 3 TRAILING FLOATING MICRO-CUBES BEHIND MOUSE ── */}
       {/* Trailing Micro-Cube 1 (Nearest Terracotta Red Cube) */}
       <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-40 w-3 h-3 rounded-xs bg-[#B85C3B] border border-[#B85C3B]/80 shadow-md hidden md:block"
+        className="fixed top-0 left-0 pointer-events-none z-40 w-3 h-3 rounded-xs bg-[#B55D3D] border border-[#B55D3D]/80 shadow-md hidden md:block"
         animate={{
-          x: x + 12,
-          y: y + 14,
+          x: x + 14,
+          y: y + 16,
           rotate: [0, 90, 180, 270, 360],
         }}
         transition={{
@@ -134,8 +146,8 @@ export function CustomCursor() {
       <motion.div
         className="fixed top-0 left-0 pointer-events-none z-40 w-2.5 h-2.5 rounded-xs bg-[#25231F] border border-[#FAF8F3]/60 shadow-sm hidden md:block opacity-90"
         animate={{
-          x: x - 14,
-          y: y + 18,
+          x: x - 16,
+          y: y + 20,
           rotate: [360, 270, 180, 90, 0],
         }}
         transition={{
@@ -147,10 +159,10 @@ export function CustomCursor() {
 
       {/* Trailing Micro-Cube 3 (Farthest Micro Cube) */}
       <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-40 w-2 h-2 rounded-xs bg-[#B85C3B]/80 border border-[#B85C3B]/40 shadow-xs hidden md:block opacity-75"
+        className="fixed top-0 left-0 pointer-events-none z-40 w-2 h-2 rounded-xs bg-[#B55D3D]/80 border border-[#B55D3D]/40 shadow-xs hidden md:block opacity-75"
         animate={{
-          x: x + 18,
-          y: y - 10,
+          x: x + 20,
+          y: y - 12,
           rotate: [0, 180, 360],
         }}
         transition={{
