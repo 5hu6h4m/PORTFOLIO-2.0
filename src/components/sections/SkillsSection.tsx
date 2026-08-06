@@ -49,14 +49,14 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
     <section
       id="skills"
       ref={sectionRef}
-      className="relative py-16 md:py-20 px-6 md:px-12 bg-[#F4F0E8] text-[#25231F] overflow-hidden select-none border-t border-[#E2DCD2] min-h-screen flex flex-col justify-center"
+      className="relative pt-28 pb-20 px-6 md:px-12 bg-[#F4F0E8] text-[#25231F] overflow-hidden select-none border-t border-[#E2DCD2] min-h-screen flex flex-col justify-center"
     >
       {/* Volumetric warm background glow */}
-      <div className="absolute top-1/3 left-1/3 -translate-x-1/2 w-[700px] h-[700px] bg-radial from-[#B85C3B]/10 via-[#8E9A78]/5 to-transparent blur-3xl pointer-events-none" />
+      <div className="absolute top-1/3 left-1/3 -translate-x-1/2 w-[750px] h-[750px] bg-radial from-[#B85C3B]/10 via-[#8E9A78]/5 to-transparent blur-3xl pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto relative z-10 w-full">
+      <div className="max-w-7xl mx-auto relative z-10 w-full pt-4">
 
-        {/* ── SECTION HEADER ───────────────────────────────────────────────── */}
+        {/* ── SECTION HEADER (CLEAN BREATHING ROOM WITH ZERO TOP CLIPPING) ──── */}
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 25 }}
@@ -77,22 +77,22 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
           </div>
 
           <p className="text-sm text-[#787268] font-light max-w-md leading-relaxed">
-            30 knowledge blocks forming a 3D pyramid. Use the rotation slider or domain face buttons to inspect technical capabilities.
+            30 knowledge blocks tumbling down from the Hero section to assemble into a 4-layer 3D pyramid.
           </p>
         </motion.div>
 
         {/* ── MAIN DUAL COLUMN LAYOUT (LEFT 3D PYRAMID + RIGHT DETAILS CARD) ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center min-h-[460px]">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center min-h-[480px]">
 
           {/* ── LEFT COLUMN (7 COLS): 3D PYRAMID (TOP) + ROTATION SLIDER (UNDERNEATH) ── */}
           <div className="lg:col-span-7 flex flex-col items-center">
 
-            {/* 1. 3D PYRAMID CANVAS CONTAINER (MOVED TO TOP) */}
+            {/* 1. 3D PYRAMID CANVAS CONTAINER (TOP) */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.9, delay: 0.1 }}
-              className="w-full h-[340px] md:h-[380px] rounded-2xl bg-[#FAF8F3]/70 backdrop-blur-md border border-[#E2DCD2] shadow-lg relative overflow-hidden flex items-center justify-center mb-3 pointer-events-auto"
+              className="w-full h-[360px] md:h-[420px] rounded-2xl bg-[#FAF8F3]/70 backdrop-blur-md border border-[#E2DCD2] shadow-lg relative overflow-hidden flex items-center justify-center mb-3 pointer-events-auto"
             >
               <PyramidTechCanvas
                 rotationRad={rotationRad}
