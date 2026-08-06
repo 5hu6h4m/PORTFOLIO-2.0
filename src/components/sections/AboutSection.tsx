@@ -156,14 +156,14 @@ export function JourneySection() {
       <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col justify-between bg-[#F4F0E8] select-none z-20">
         
         {/* Fixed Header Bar across timeline pages with clear FEATURED PROJECTS heading */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#E2DCD2] py-4 px-6 md:px-12 w-full z-40 bg-[#F4F0E8]/95 backdrop-blur-md pt-20 md:pt-6 gap-3">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 text-xs font-mono tracking-[0.25em] text-[#B85C3B] font-bold uppercase">
-              <Sparkles className="w-4 h-4 text-[#B85C3B]" />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#E2DCD2] py-4 md:py-6 px-6 md:px-12 w-full z-40 bg-[#F4F0E8]/95 backdrop-blur-md pt-20 md:pt-6 gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex items-center gap-2 text-xs sm:text-sm font-mono tracking-[0.3em] text-[#B85C3B] font-bold uppercase">
+              <Sparkles className="w-4.5 h-4.5 text-[#B85C3B]" />
               <span>03 / SHIPPED BUILDS</span>
             </div>
-            <div className="h-4 w-px bg-[#E2DCD2]" />
-            <h2 className="text-xl md:text-3xl font-serif font-bold text-[#25231F] tracking-tight">
+            <div className="hidden sm:block h-6 w-px bg-[#E2DCD2]" />
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-[#25231F] tracking-tight">
               FEATURED <span className="italic font-normal text-[#B85C3B]">PROJECTS</span>
             </h2>
           </div>
