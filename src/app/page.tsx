@@ -46,11 +46,11 @@ export default function Home() {
       <div className="relative z-10 pointer-events-none" style={{ height: '200vh' }}>
         <div className="sticky top-0 h-screen relative">
           <HeroSection playClick={playClick} playHover={playHover} />
-          {/* Subtle bottom fade transition into next section — trimmed to 12% height so buttons are 100% visible */}
+          {/* Smooth 38% bottom gradient overlay fade — sitting underneath hero buttons */}
           <div
-            className="absolute inset-x-0 bottom-0 pointer-events-none h-[8%] md:h-[12%]"
+            className="absolute inset-x-0 bottom-0 pointer-events-none h-[25%] md:h-[38%]"
             style={{
-              background: 'linear-gradient(to bottom, transparent 0%, #F4F0E8 100%)',
+              background: 'linear-gradient(to bottom, transparent 0%, #F4F0E8 85%)',
               zIndex: 5,
             }}
           />
