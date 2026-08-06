@@ -3,86 +3,108 @@
 import { useState, useRef, useMemo } from 'react';
 import { motion, AnimatePresence, useInView, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Float } from '@react-three/drei';
+import { Float, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
-import { ShieldCheck, Award, Sparkles, X, ExternalLink, FileCheck, Lock, CheckCircle2, Box } from 'lucide-react';
+import { ShieldCheck, Award, Sparkles, X, ExternalLink, Lock, CheckCircle2, Box, Layers } from 'lucide-react';
 import { PORTFOLIO_DATA } from '@/data/portfolioData';
 
 interface AwardsSectionProps {
   playHover: () => void;
 }
 
-// ── 3D FLOATING RUBIK CUBE PIECES STAGE ───────────────────────────────────────
-function VaultCubeParticles() {
-  const meshRef = useRef<THREE.InstancedMesh>(null);
-  const count = 75;
+// ── 3D INTERACTIVE 3x3 RUBIK'S CUBE ASSEMBLY (PARTICLES FALL & ASSEMBLE) ───
+function Rubik3x3Assembly() {
+  const groupRef = useRef<THREE.Group>(null);
+  
+  // Build 27 cubelets for a complete 3x3x3 Rubik's Cube grid
+  const cubelets = useMemo(() => {
+    const list = [];
+    const colors = ['#B55D3D', '#23201C', '#FAF8F3', '#8A2E2B', '#E2DCD2'];
+    let id = 0;
+    
+    for (let x = -1; x <= 1; x++) {
+      for (let y = -1; y <= 1; y++) {
+        for (let z = -1; z <= 1; z++) {
+          list.push({
+            id: id++,
+            targetPos: [x * 0.78, y * 0.78, z * 0.78] as [number, number, number],
+            startPos: [
+              (Math.random() - 0.5) * 8,
+              7 + Math.random() * 6, // Rain down from above
+              (Math.random() - 0.5) * 6
+            ] as [number, number, number],
+            color: colors[Math.abs(x + y + z) % colors.length],
+            delay: Math.random() * 2.5,
+          });
+        }
+      }
+    }
+    return list;
+  }, []);
 
-  const dummy = useMemo(() => new THREE.Object3D(), []);
-  const particles = useMemo(() => {
-    return Array.from({ length: count }, (_, i) => {
-      let x = 0;
-      if (i % 3 === 0) x = -5.5 - Math.random() * 4.5;
-      else if (i % 3 === 1) x = 5.5 + Math.random() * 4.5;
-      else x = (Math.random() - 0.5) * 6;
-
-      return {
-        x,
-        y: (Math.random() - 0.5) * 9,
-        z: (Math.random() - 0.5) * 5,
-        rotX: Math.random() * Math.PI,
-        rotY: Math.random() * Math.PI,
-        scale: 0.18 + Math.random() * 0.32,
-        speed: 0.15 + Math.random() * 0.35,
-      };
-    });
-  }, [count]);
+  const meshRefs = useRef<(THREE.Mesh | null)[]>([]);
 
   useFrame((state) => {
-    if (!meshRef.current) return;
-    const time = state.clock.getElapsedTime();
+    if (groupRef.current) {
+      // Gentle continuous 3D rotation of assembled 3x3 Rubik's Cube
+      groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.4;
+      groupRef.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.3) * 0.25;
+    }
 
-    particles.forEach((p, i) => {
-      dummy.position.set(
-        p.x + Math.sin(time * p.speed + i) * 0.45,
-        p.y + Math.cos(time * p.speed * 0.8 + i) * 0.45,
-        p.z + Math.sin(time * p.speed * 0.5 + i) * 0.3
-      );
-      dummy.rotation.set(
-        p.rotX + time * 0.25,
-        p.rotY + time * 0.35,
-        time * 0.15
-      );
-      dummy.scale.setScalar(p.scale);
-      dummy.updateMatrix();
-      meshRef.current?.setMatrixAt(i, dummy.matrix);
+    const t = state.clock.getElapsedTime();
+
+    cubelets.forEach((c, i) => {
+      const mesh = meshRefs.current[i];
+      if (!mesh) return;
+
+      // Particle convergence progress (loops smoothly every 6 seconds)
+      const loopTime = (t + c.delay) % 6;
+      const progress = Math.min(1, loopTime / 2.2);
+
+      // Smooth cubic ease out assembly interpolation from sky particle -> 3x3 target grid
+      const easeP = 1 - Math.pow(1 - progress, 3);
+
+      mesh.position.x = THREE.MathUtils.lerp(c.startPos[0], c.targetPos[0], easeP);
+      mesh.position.y = THREE.MathUtils.lerp(c.startPos[1], c.targetPos[1], easeP);
+      mesh.position.z = THREE.MathUtils.lerp(c.startPos[2], c.targetPos[2], easeP);
+
+      // Micro-spin while assembling into the cube
+      if (progress < 1) {
+        mesh.rotation.x = (1 - easeP) * Math.PI * 2;
+        mesh.rotation.y = (1 - easeP) * Math.PI * 2;
+      } else {
+        mesh.rotation.set(0, 0, 0);
+      }
     });
-
-    meshRef.current.instanceMatrix.needsUpdate = true;
   });
 
   return (
-    <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
-      <boxGeometry args={[0.45, 0.45, 0.45]} />
-      <meshStandardMaterial
-        color="#B55D3D"
-        roughness={0.25}
-        metalness={0.5}
-        transparent
-        opacity={0.5}
-      />
-    </instancedMesh>
+    <group ref={groupRef}>
+      {cubelets.map((c, i) => (
+        <mesh
+          key={c.id}
+          ref={(el) => { meshRefs.current[i] = el; }}
+          position={c.startPos}
+        >
+          <boxGeometry args={[0.72, 0.72, 0.72]} />
+          <meshStandardMaterial
+            color={c.color}
+            roughness={0.25}
+            metalness={0.5}
+          />
+        </mesh>
+      ))}
+    </group>
   );
 }
 
-// ── DOM FLOATING CUBE ACCENTS (THEME RELATABLE PIECES) ────────────────────────
+// ── DOM FLOATING CUBE ACCENTS ON MARGINS ─────────────────────────────────────
 function FloatingSideCubes() {
   const cubeAccents = [
     { top: '12%', left: '2%', size: 'w-10 h-10', color: 'bg-[#B55D3D]/15 border-[#B55D3D]/40', delay: 0 },
     { top: '28%', right: '3%', size: 'w-12 h-12', color: 'bg-[#23201C]/10 border-[#23201C]/30', delay: 0.8 },
     { top: '54%', left: '4%', size: 'w-14 h-14', color: 'bg-[#B55D3D]/20 border-[#B55D3D]/50', delay: 1.5 },
     { top: '72%', right: '2.5%', size: 'w-10 h-10', color: 'bg-[#8A2E2B]/15 border-[#8A2E2B]/40', delay: 0.4 },
-    { top: '42%', right: '12%', size: 'w-8 h-8', color: 'bg-[#B55D3D]/10 border-[#B55D3D]/30', delay: 1.2 },
-    { top: '85%', left: '8%', size: 'w-11 h-11', color: 'bg-[#23201C]/15 border-[#23201C]/40', delay: 1.8 },
   ];
 
   return (
@@ -113,7 +135,7 @@ function FloatingSideCubes() {
   );
 }
 
-// ── COMPACT FLOATING GLASS DOCUMENT CARD WITH 3D RUBIK CUBE BADGE ───────────
+// ── SLEEK COMPACT CERTIFICATE DOCUMENT CARD ──────────────────────────────────
 interface GlassDocumentProps {
   cert: typeof PORTFOLIO_DATA.certifications[0];
   index: number;
@@ -124,7 +146,6 @@ interface GlassDocumentProps {
 function FloatingGlassDocument({ cert, index, onSelect, playHover }: GlassDocumentProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   
-  // 3D Spring Mouse Tilt Physics
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -166,21 +187,21 @@ function FloatingGlassDocument({ cert, index, onSelect, playHover }: GlassDocume
       transition={{ duration: 0.6, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
       className="group relative rounded-2xl bg-[#FCFAF6]/90 backdrop-blur-xl border border-[#B55D3D]/30 shadow-[0_15px_35px_rgba(35,32,28,0.06)] p-5 md:p-6 cursor-pointer overflow-hidden transition-all duration-400 hover:border-[#B55D3D] hover:shadow-[0_25px_50px_rgba(181,93,61,0.16)] select-none flex flex-col justify-between min-h-[240px]"
     >
-      {/* Dynamic Champagne Light Reflection Overlay */}
+      {/* Light Reflection Overlay */}
       <motion.div
         className="absolute inset-0 bg-gradient-to-r from-transparent via-[#FAF8F3]/60 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
         style={{ x: reflectX, transform: 'skewX(-20deg)' }}
       />
 
-      {/* Top Metallic Accent Bar */}
+      {/* Top Accent Line */}
       <div className="absolute top-0 left-6 right-6 h-0.5 bg-gradient-to-r from-transparent via-[#B55D3D] to-transparent rounded-b-full opacity-60 group-hover:opacity-100 transition-opacity" />
 
       <div>
-        {/* Compact Header Strip with 3D Rubik's Cube Emblem Badge */}
+        {/* Compact Header Strip */}
         <div className="flex items-center justify-between pb-3 border-b border-[#E2DCD2]/70 mb-4">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-[#23201C] text-[#FCFAF6] flex items-center justify-center font-bold text-xs shadow-sm group-hover:bg-[#B55D3D] transition-colors">
-              <Box className="w-4 h-4 text-[#FCFAF6] animate-pulse" />
+              <Box className="w-4 h-4 text-[#FCFAF6]" />
             </div>
             <span className="text-xs font-mono font-bold text-[#23201C] uppercase tracking-wider">
               {cert.organization}
@@ -188,8 +209,8 @@ function FloatingGlassDocument({ cert, index, onSelect, playHover }: GlassDocume
           </div>
           
           <div className="flex items-center gap-2">
-            {/* 3D Mini Rubik Cube Facelet Accent Badge */}
-            <div className="w-4 h-4 grid grid-cols-2 gap-0.5 opacity-80 group-hover:rotate-45 transition-transform duration-500">
+            {/* 3D Mini Cube Facelet Badge Accent */}
+            <div className="w-4 h-4 grid grid-cols-2 gap-0.5 opacity-80 group-hover:rotate-90 transition-transform duration-500">
               <div className="bg-[#B55D3D] rounded-[1px]" />
               <div className="bg-[#23201C] rounded-[1px]" />
               <div className="bg-[#23201C] rounded-[1px]" />
@@ -219,7 +240,7 @@ function FloatingGlassDocument({ cert, index, onSelect, playHover }: GlassDocume
         </div>
       </div>
 
-      {/* Bottom Verification Footer */}
+      {/* Bottom Footer */}
       <div className="pt-4 border-t border-[#E2DCD2]/70 flex items-center justify-between mt-3">
         <div className="flex items-center gap-1 text-[9px] font-mono text-[#787268] font-bold">
           <ShieldCheck className="w-3.5 h-3.5 text-[#8A2E2B]" />
@@ -257,27 +278,16 @@ export function AwardsSection({ playHover }: AwardsSectionProps) {
       <div id="certificates" className="absolute top-0 left-0 w-full h-1 pointer-events-none" />
       <div id="achievements" className="absolute top-0 left-0 w-full h-1 pointer-events-none" />
 
-      {/* Floating Theme Cube Pieces (Left, Right & Interspersed) */}
+      {/* Floating Theme Cube Pieces on Margins */}
       <FloatingSideCubes />
-
-      {/* Fullscreen 3D Ambient Cube Particles Stage */}
-      <div className="absolute inset-0 pointer-events-none z-0 opacity-80">
-        <Canvas camera={{ position: [0, 0, 7], fov: 45 }}>
-          <ambientLight intensity={0.7} />
-          <directionalLight position={[5, 5, 5]} intensity={1.2} />
-          <Float speed={1.5} rotationIntensity={0.5} floatIntensity={0.8}>
-            <VaultCubeParticles />
-          </Float>
-        </Canvas>
-      </div>
 
       {/* Volumetric Warm Ambient Spotlights */}
       <div className="absolute top-1/4 left-10 w-[650px] h-[650px] bg-[#B55D3D]/8 rounded-full blur-[160px] pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-[550px] h-[550px] bg-[#8A2E2B]/6 rounded-full blur-[140px] pointer-events-none" />
 
-      <div className="max-w-6xl mx-auto relative z-10">
+      <div className="max-w-7xl mx-auto relative z-10">
         
-        {/* ── SECTION HEADER WITH 3D CUBE EMBLEM ───────────────────────────── */}
+        {/* ── SECTION HEADER ───────────────────────────────────────────────── */}
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -286,7 +296,7 @@ export function AwardsSection({ playHover }: AwardsSectionProps) {
         >
           <div>
             <div className="flex items-center gap-2 text-xs font-mono tracking-[0.3em] text-[#B55D3D] uppercase mb-2 font-bold">
-              <Box className="w-4 h-4 text-[#B55D3D] animate-spin" style={{ animationDuration: '8s' }} />
+              <Lock className="w-4 h-4 text-[#B55D3D]" />
               <span>06 / THE CREDENTIAL VAULT — ARCHIVAL SIGNALS</span>
             </div>
             <h2
@@ -305,51 +315,92 @@ export function AwardsSection({ playHover }: AwardsSectionProps) {
           </div>
         </motion.div>
 
-        {/* ── CATEGORY FILTER TABS ─────────────────────────────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.15 }}
-          className="flex flex-wrap items-center gap-2 mb-10"
-        >
-          {categories.map((cat) => {
-            const isActive = selectedCategory === cat;
-            return (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                onMouseEnter={playHover}
-                className={`relative px-4 py-2 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider transition-colors duration-300 cursor-pointer ${
-                  isActive ? 'text-[#FCFAF6]' : 'text-[#787268] hover:text-[#23201C] bg-[#FCFAF6] border border-[#E2DCD2]'
-                }`}
-              >
-                {isActive && (
-                  <motion.div
-                    layoutId="activeVaultTab"
-                    className="absolute inset-0 rounded-full bg-[#23201C]"
-                    transition={{ type: 'spring', stiffness: 380, damping: 28 }}
-                  />
-                )}
-                <span className="relative z-10">{cat}</span>
-              </button>
-            );
-          })}
-        </motion.div>
+        {/* ── MAIN 2-COLUMN LAYOUT: 3D 3x3 RUBIK CUBE STAGE (LEFT) + CERTIFICATES (RIGHT) ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          {/* LEFT COLUMN: 3D 3x3 RUBIK'S CUBE ASSEMBLY STAGE */}
+          <div className="lg:col-span-5 relative w-full h-[440px] rounded-3xl bg-[#FCFAF6]/90 border-2 border-[#B55D3D]/30 shadow-xl overflow-hidden p-6 flex flex-col justify-between group">
+            
+            {/* Top Stage Header */}
+            <div className="flex items-center justify-between border-b border-[#E2DCD2] pb-3 z-10">
+              <div className="flex items-center gap-2 text-xs font-mono text-[#B55D3D] font-bold uppercase">
+                <Box className="w-4 h-4 text-[#B55D3D]" />
+                <span>3x3 CUBE ASSEMBLY ENGINE</span>
+              </div>
+              <span className="text-[10px] font-mono text-[#787268] uppercase font-bold">PARTICLES CONVERGE ↓</span>
+            </div>
 
-        {/* ── COMPACT STAGGERED FLOATING GLASS DOCUMENTS ARCHIVE ──────────── */}
-        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          <AnimatePresence mode="popLayout">
-            {filteredCerts.map((cert, index) => (
-              <FloatingGlassDocument
-                key={cert.id}
-                cert={cert}
-                index={index}
-                onSelect={(c) => setSelectedCert(c)}
-                playHover={playHover}
-              />
-            ))}
-          </AnimatePresence>
-        </motion.div>
+            {/* 3D WebGL Canvas Stage */}
+            <div className="absolute inset-0 pointer-events-auto">
+              <Canvas camera={{ position: [0, 0, 7.5], fov: 45 }}>
+                <ambientLight intensity={0.8} />
+                <directionalLight position={[5, 6, 5]} intensity={1.4} />
+                <directionalLight position={[-5, -4, -3]} intensity={0.5} />
+                <Float speed={1.2} rotationIntensity={0.3} floatIntensity={0.5}>
+                  <Rubik3x3Assembly />
+                </Float>
+              </Canvas>
+            </div>
+
+            {/* Bottom Interactive Tag */}
+            <div className="mt-auto z-10 pt-3 border-t border-[#E2DCD2] flex items-center justify-between text-[10px] font-mono text-[#787268] bg-[#FCFAF6]/90 backdrop-blur-md px-3 py-2 rounded-xl">
+              <span>REAL-TIME 3D MATRIX</span>
+              <span className="text-[#B55D3D] font-bold">27 CUBELETS SNAP IN PLACE</span>
+            </div>
+          </div>
+
+          {/* RIGHT COLUMN: CATEGORY FILTERS + COMPACT CERTIFICATE CARDS */}
+          <div className="lg:col-span-7 space-y-6">
+            
+            {/* Category Filter Tabs */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.8, delay: 0.15 }}
+              className="flex flex-wrap items-center gap-2"
+            >
+              {categories.map((cat) => {
+                const isActive = selectedCategory === cat;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    onMouseEnter={playHover}
+                    className={`relative px-4 py-2 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider transition-colors duration-300 cursor-pointer ${
+                      isActive ? 'text-[#FCFAF6]' : 'text-[#787268] hover:text-[#23201C] bg-[#FCFAF6] border border-[#E2DCD2]'
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeVaultTab"
+                        className="absolute inset-0 rounded-full bg-[#23201C]"
+                        transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+                      />
+                    )}
+                    <span className="relative z-10">{cat}</span>
+                  </button>
+                );
+              })}
+            </motion.div>
+
+            {/* Compact Staggered Floating Glass Documents */}
+            <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <AnimatePresence mode="popLayout">
+                {filteredCerts.map((cert, index) => (
+                  <FloatingGlassDocument
+                    key={cert.id}
+                    cert={cert}
+                    index={index}
+                    onSelect={(c) => setSelectedCert(c)}
+                    playHover={playHover}
+                  />
+                ))}
+              </AnimatePresence>
+            </motion.div>
+
+          </div>
+
+        </div>
 
       </div>
 
@@ -371,7 +422,6 @@ export function AwardsSection({ playHover }: AwardsSectionProps) {
               onClick={(e) => e.stopPropagation()}
               className="max-w-3xl w-full p-6 md:p-10 rounded-3xl bg-[#FCFAF6] text-[#23201C] border-2 border-[#B55D3D]/40 shadow-2xl relative overflow-hidden my-auto border-double"
             >
-              {/* Close Button */}
               <button
                 onClick={() => setSelectedCert(null)}
                 className="absolute top-5 right-5 w-9 h-9 rounded-full bg-[#23201C] text-[#FCFAF6] hover:bg-[#B55D3D] transition-colors flex items-center justify-center cursor-pointer shadow-md"
@@ -379,9 +429,7 @@ export function AwardsSection({ playHover }: AwardsSectionProps) {
                 <X className="w-4 h-4" />
               </button>
 
-              {/* Certificate Border Frame */}
               <div className="border-2 border-[#E2DCD2] p-6 sm:p-8 rounded-2xl relative bg-[#FAF8F3] shadow-inner">
-                {/* Top Certificate Header */}
                 <div className="text-center space-y-2 pb-5 border-b border-[#E2DCD2]">
                   <div className="w-10 h-10 rounded-full bg-[#B55D3D]/12 text-[#B55D3D] flex items-center justify-center mx-auto mb-1 border border-[#B55D3D]/30 shadow-xs">
                     <ShieldCheck className="w-5 h-5" />
@@ -397,7 +445,6 @@ export function AwardsSection({ playHover }: AwardsSectionProps) {
                   </div>
                 </div>
 
-                {/* Recipient Line */}
                 <div className="text-center py-6 space-y-1.5">
                   <div className="text-[10px] font-mono text-[#787268] uppercase tracking-widest font-semibold">
                     THIS CREDENTIAL CERTIFIES THAT
@@ -410,7 +457,6 @@ export function AwardsSection({ playHover }: AwardsSectionProps) {
                   </p>
                 </div>
 
-                {/* Bottom Signature & Credential ID Strip */}
                 <div className="pt-5 border-t border-[#E2DCD2] grid grid-cols-1 sm:grid-cols-3 gap-4 items-center text-center sm:text-left">
                   <div>
                     <div className="text-[9px] font-mono text-[#787268] uppercase font-bold">CREDENTIAL VERIFICATION HASH</div>
@@ -431,7 +477,6 @@ export function AwardsSection({ playHover }: AwardsSectionProps) {
                 </div>
               </div>
 
-              {/* Action Buttons */}
               <div className="flex items-center justify-end gap-3 pt-5">
                 <button
                   onClick={() => setSelectedCert(null)}
