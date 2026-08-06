@@ -2,7 +2,7 @@
 
 import { useRef, useMemo, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import { OrbitControls, ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
 import { DOMAIN_FACES, DomainFace, PYRAMID_CUBE_ITEMS, PyramidCubeItem } from '@/data/pyramidTechData';
 
@@ -15,8 +15,8 @@ interface PyramidCanvasProps {
   playClick: () => void;
 }
 
-const CUBE_SIZE = 1.0;
-const SPACING = 1.25;
+const CUBE_SIZE = 1.05;
+const SPACING = 1.35;
 
 interface CleanCubeProps {
   item: PyramidCubeItem;
@@ -40,13 +40,13 @@ function CleanPyramidCube({
   const meshRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
 
-  // Scattered initial sky position for fly-in assembly animation
+  // Scattered sky position for fly-in assembly physics
   const skyPos = useMemo<[number, number, number]>(() => {
-    const seed = item.id.length + item.layer * 7;
+    const seed = item.id.length + item.layer * 9;
     return [
-      (Math.sin(seed * 4) - 0.5) * 14,
-      12 + Math.random() * 8 + item.layer * 3, // Fly down from sky
-      (Math.cos(seed * 4) - 0.5) * 14,
+      (Math.sin(seed * 4.5) - 0.5) * 16,
+      14 + Math.random() * 10 + item.layer * 3.5,
+      (Math.cos(seed * 4.5) - 0.5) * 16,
     ];
   }, [item]);
 
@@ -55,23 +55,21 @@ function CleanPyramidCube({
   useFrame((_, delta) => {
     if (!meshRef.current) return;
 
-    // Destination target depends on isFormed (inView)
     const destination = isFormed ? targetPos : skyPos;
+    const speed = 0.055 + item.layer * 0.012;
 
-    // Smooth lerp for assembly/scattering physics
-    const speed = 0.05 + item.layer * 0.012;
     currentPos.current[0] = THREE.MathUtils.lerp(currentPos.current[0], destination[0], speed);
     currentPos.current[1] = THREE.MathUtils.lerp(currentPos.current[1], destination[1], speed);
     currentPos.current[2] = THREE.MathUtils.lerp(currentPos.current[2], destination[2], speed);
 
     meshRef.current.position.set(...currentPos.current);
 
-    // Hover / Select scale pulse
-    const targetScale = isSelected ? 1.15 : hovered ? 1.08 : 1.0;
-    meshRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), delta * 8);
+    // Hover & Selection scale pulse
+    const targetScale = isSelected ? 1.18 : hovered ? 1.1 : 1.0;
+    meshRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), delta * 9);
   });
 
-  // Sleek clean color logic
+  // Warm luxury color palette logic
   const isApex = item.layer === 4;
   const is3D = item.layer === 3;
   const baseColor = isApex
@@ -97,22 +95,22 @@ function CleanPyramidCube({
         onSelect(item);
       }}
     >
-      {/* Sleek rounded-corner 3D cube mesh (No text clutter!) */}
+      {/* 3D Cube Mesh */}
       <mesh castShadow receiveShadow>
         <boxGeometry args={[CUBE_SIZE, CUBE_SIZE, CUBE_SIZE]} />
         <meshStandardMaterial
           color={baseColor}
-          roughness={isSelected || hovered ? 0.15 : 0.35}
-          metalness={isSelected || hovered ? 0.5 : 0.15}
-          envMapIntensity={1.2}
+          roughness={isSelected || hovered ? 0.12 : 0.3}
+          metalness={isSelected || hovered ? 0.55 : 0.15}
+          envMapIntensity={1.4}
         />
       </mesh>
 
       {/* Terracotta wireframe highlight on hover/select */}
       {(isSelected || hovered) && (
         <lineSegments>
-          <edgesGeometry args={[new THREE.BoxGeometry(CUBE_SIZE * 1.02, CUBE_SIZE * 1.02, CUBE_SIZE * 1.02)]} />
-          <lineBasicMaterial color="#B85C3B" linewidth={2} />
+          <edgesGeometry args={[new THREE.BoxGeometry(CUBE_SIZE * 1.03, CUBE_SIZE * 1.03, CUBE_SIZE * 1.03)]} />
+          <lineBasicMaterial color="#B85C3B" linewidth={2.5} />
         </lineSegments>
       )}
     </group>
@@ -129,41 +127,40 @@ function PyramidScene({ activeDomain, activeCube, onSelectCube, inView, playHove
   const cubeTargets = useMemo(() => {
     const map = new Map<string, [number, number, number]>();
 
-    // Layer 1 (Base - 16 cubes: 4x4) -> Y = -1.875
+    // Layer 1 (Base - 16 cubes: 4x4) -> Y = -2.025
     const layer1 = PYRAMID_CUBE_ITEMS.filter((d) => d.layer === 1);
     layer1.forEach((item, idx) => {
       const row = Math.floor(idx / 4);
       const col = idx % 4;
-      map.set(item.id, [(col - 1.5) * SPACING, -1.875, (row - 1.5) * SPACING]);
+      map.set(item.id, [(col - 1.5) * SPACING, -2.025, (row - 1.5) * SPACING]);
     });
 
-    // Layer 2 (Frontend/APIs - 9 cubes: 3x3) -> Y = -0.625
+    // Layer 2 (Frontend/APIs - 9 cubes: 3x3) -> Y = -0.675
     const layer2 = PYRAMID_CUBE_ITEMS.filter((d) => d.layer === 2);
     layer2.forEach((item, idx) => {
       const row = Math.floor(idx / 3);
       const col = idx % 3;
-      map.set(item.id, [(col - 1.0) * SPACING, -0.625, (row - 1.0) * SPACING]);
+      map.set(item.id, [(col - 1.0) * SPACING, -0.675, (row - 1.0) * SPACING]);
     });
 
-    // Layer 3 (3D & Motion - 4 cubes: 2x2) -> Y = 0.625
+    // Layer 3 (3D & Motion - 4 cubes: 2x2) -> Y = 0.675
     const layer3 = PYRAMID_CUBE_ITEMS.filter((d) => d.layer === 3);
     layer3.forEach((item, idx) => {
       const row = Math.floor(idx / 2);
       const col = idx % 2;
-      map.set(item.id, [(col - 0.5) * SPACING, 0.625, (row - 0.5) * SPACING]);
+      map.set(item.id, [(col - 0.5) * SPACING, 0.675, (row - 0.5) * SPACING]);
     });
 
-    // Layer 4 (Apex - 1 cube: 1x1) -> Y = 1.875
+    // Layer 4 (Apex - 1 cube: 1x1) -> Y = 2.025
     const layer4 = PYRAMID_CUBE_ITEMS.filter((d) => d.layer === 4);
     layer4.forEach((item) => {
-      map.set(item.id, [0, 1.875, 0]);
+      map.set(item.id, [0, 2.025, 0]);
     });
 
     return map;
   }, []);
 
   useEffect(() => {
-    // Sync Y rotation target angle with activeDomain (0°, 90°, 180°, 270°)
     targetRotationY.current = activeDomain.angle;
   }, [activeDomain]);
 
@@ -179,10 +176,10 @@ function PyramidScene({ activeDomain, activeCube, onSelectCube, inView, playHove
   useFrame((_, delta) => {
     if (!pyramidGroupRef.current) return;
 
-    // Smoothly lerp to target domain face rotation + slow continuous ambient idle turn
+    // Smoothly lerp to target domain face rotation angle
     const curY = pyramidGroupRef.current.rotation.y;
     const destY = targetRotationY.current;
-    pyramidGroupRef.current.rotation.y = THREE.MathUtils.lerp(curY, destY, delta * 2.5);
+    pyramidGroupRef.current.rotation.y = THREE.MathUtils.lerp(curY, destY, delta * 2.8);
 
     // Subtle mouse tilt for depth
     pyramidGroupRef.current.rotation.x = THREE.MathUtils.lerp(
@@ -220,7 +217,7 @@ function PyramidScene({ activeDomain, activeCube, onSelectCube, inView, playHove
   );
 }
 
-// ── MAIN CANVAS EXPORT ──────────────────────────────────────────────────────
+// ── MAIN UNCONSTRAINED CANVAS EXPORT ────────────────────────────────────────
 export function PyramidTechCanvas({
   activeDomain,
   activeCube,
@@ -230,16 +227,16 @@ export function PyramidTechCanvas({
   playClick,
 }: PyramidCanvasProps) {
   return (
-    <div className="w-full h-full min-h-[500px] relative">
+    <div className="w-full h-full min-h-[520px] md:min-h-[620px] relative pointer-events-auto">
       <Canvas
-        camera={{ position: [0, 2.2, 9.2], fov: 45 }}
+        camera={{ position: [0, 2.5, 9.8], fov: 42 }}
         gl={{ antialias: true, alpha: true }}
       >
-        {/* Soft Volumetric Warm Lighting */}
-        <ambientLight intensity={0.9} color="#FAF8F3" />
-        <directionalLight position={[6, 10, 6]} intensity={1.5} color="#FAF5ED" castShadow />
-        <pointLight position={[-6, -4, -6]} intensity={0.8} color="#B85C3B" />
-        <spotLight position={[0, 12, 0]} intensity={1.2} color="#8E9A78" angle={0.6} penumbra={1} />
+        {/* Soft Volumetric Lighting */}
+        <ambientLight intensity={1.1} color="#FAF8F3" />
+        <directionalLight position={[7, 12, 7]} intensity={1.6} color="#FAF5ED" castShadow />
+        <pointLight position={[-7, -5, -7]} intensity={0.9} color="#B85C3B" />
+        <spotLight position={[0, 14, 0]} intensity={1.4} color="#8E9A78" angle={0.7} penumbra={1} />
 
         {/* 3D 4-Domain Pyramid Scene */}
         <PyramidScene
@@ -251,7 +248,10 @@ export function PyramidTechCanvas({
           playClick={playClick}
         />
 
-        <OrbitControls enableZoom={false} enablePan={false} autoRotate={false} maxPolarAngle={Math.PI / 1.8} minPolarAngle={Math.PI / 4} />
+        {/* Soft Contact Shadow Plane Ground */}
+        <ContactShadows position={[0, -3.2, 0]} opacity={0.4} scale={14} blur={2.5} far={6} color="#25231F" />
+
+        <OrbitControls enableZoom={false} enablePan={false} autoRotate={false} maxPolarAngle={Math.PI / 1.7} minPolarAngle={Math.PI / 4} />
       </Canvas>
     </div>
   );
