@@ -5,29 +5,37 @@ import { motion, AnimatePresence, useInView, useMotionValue, useSpring, useTrans
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Float } from '@react-three/drei';
 import * as THREE from 'three';
-import { ShieldCheck, Award, Sparkles, X, ExternalLink, FileCheck, Lock, CheckCircle2, QrCode } from 'lucide-react';
+import { ShieldCheck, Award, Sparkles, X, ExternalLink, FileCheck, Lock, CheckCircle2 } from 'lucide-react';
 import { PORTFOLIO_DATA } from '@/data/portfolioData';
 
 interface AwardsSectionProps {
   playHover: () => void;
 }
 
-// ── 3D FLOATING CUBE PARTICLES STAGE ─────────────────────────────────────────
+// ── 3D FLOATING RUBIK CUBE PIECES STAGE ───────────────────────────────────────
 function VaultCubeParticles() {
   const meshRef = useRef<THREE.InstancedMesh>(null);
-  const count = 35;
+  const count = 75;
 
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const particles = useMemo(() => {
-    return Array.from({ length: count }, () => ({
-      x: (Math.random() - 0.5) * 14,
-      y: (Math.random() - 0.5) * 8,
-      z: (Math.random() - 0.5) * 6,
-      rotX: Math.random() * Math.PI,
-      rotY: Math.random() * Math.PI,
-      scale: 0.15 + Math.random() * 0.25,
-      speed: 0.2 + Math.random() * 0.4,
-    }));
+    return Array.from({ length: count }, (_, i) => {
+      // Distribute pieces across sides (left/right) and center spaces
+      let x = 0;
+      if (i % 3 === 0) x = -5.5 - Math.random() * 4.5; // Left margin
+      else if (i % 3 === 1) x = 5.5 + Math.random() * 4.5; // Right margin
+      else x = (Math.random() - 0.5) * 6; // Center spaces
+
+      return {
+        x,
+        y: (Math.random() - 0.5) * 9,
+        z: (Math.random() - 0.5) * 5,
+        rotX: Math.random() * Math.PI,
+        rotY: Math.random() * Math.PI,
+        scale: 0.18 + Math.random() * 0.32,
+        speed: 0.15 + Math.random() * 0.35,
+      };
+    });
   }, [count]);
 
   useFrame((state) => {
@@ -36,14 +44,14 @@ function VaultCubeParticles() {
 
     particles.forEach((p, i) => {
       dummy.position.set(
-        p.x + Math.sin(time * p.speed + i) * 0.4,
-        p.y + Math.cos(time * p.speed * 0.8 + i) * 0.4,
+        p.x + Math.sin(time * p.speed + i) * 0.45,
+        p.y + Math.cos(time * p.speed * 0.8 + i) * 0.45,
         p.z + Math.sin(time * p.speed * 0.5 + i) * 0.3
       );
       dummy.rotation.set(
-        p.rotX + time * 0.2,
-        p.rotY + time * 0.3,
-        time * 0.1
+        p.rotX + time * 0.25,
+        p.rotY + time * 0.35,
+        time * 0.15
       );
       dummy.scale.setScalar(p.scale);
       dummy.updateMatrix();
@@ -55,15 +63,55 @@ function VaultCubeParticles() {
 
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
-      <boxGeometry args={[0.4, 0.4, 0.4]} />
+      <boxGeometry args={[0.45, 0.45, 0.45]} />
       <meshStandardMaterial
         color="#B55D3D"
-        roughness={0.2}
-        metalness={0.6}
+        roughness={0.25}
+        metalness={0.5}
         transparent
-        opacity={0.35}
+        opacity={0.5}
       />
     </instancedMesh>
+  );
+}
+
+// ── DOM FLOATING CUBE ACCENTS (THEME RELATABLE PIECES) ────────────────────────
+function FloatingSideCubes() {
+  const cubeAccents = [
+    { top: '12%', left: '2%', size: 'w-10 h-10', color: 'bg-[#B55D3D]/15 border-[#B55D3D]/40', delay: 0 },
+    { top: '28%', right: '3%', size: 'w-12 h-12', color: 'bg-[#23201C]/10 border-[#23201C]/30', delay: 0.8 },
+    { top: '54%', left: '4%', size: 'w-14 h-14', color: 'bg-[#B55D3D]/20 border-[#B55D3D]/50', delay: 1.5 },
+    { top: '72%', right: '2.5%', size: 'w-10 h-10', color: 'bg-[#8A2E2B]/15 border-[#8A2E2B]/40', delay: 0.4 },
+    { top: '42%', right: '12%', size: 'w-8 h-8', color: 'bg-[#B55D3D]/10 border-[#B55D3D]/30', delay: 1.2 },
+    { top: '85%', left: '8%', size: 'w-11 h-11', color: 'bg-[#23201C]/15 border-[#23201C]/40', delay: 1.8 },
+  ];
+
+  return (
+    <>
+      {cubeAccents.map((c, i) => (
+        <motion.div
+          key={i}
+          className={`absolute ${c.size} rounded-xl border backdrop-blur-md pointer-events-none z-10 shadow-lg ${c.color}`}
+          style={{ top: c.top, left: c.left, right: c.right }}
+          animate={{
+            y: [-12, 12, -12],
+            rotate: [0, 45, 0],
+            scale: [1, 1.06, 1],
+          }}
+          transition={{
+            duration: 6 + i,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: c.delay,
+          }}
+        >
+          {/* Internal bevel cube face lines */}
+          <div className="w-full h-full p-1 flex items-center justify-center opacity-60">
+            <div className="w-full h-full border border-dashed border-[#B55D3D]/40 rounded-lg" />
+          </div>
+        </motion.div>
+      ))}
+    </>
   );
 }
 
@@ -201,6 +249,9 @@ export function AwardsSection({ playHover }: AwardsSectionProps) {
       {/* Anchor targets for #certificates & #achievements nav links */}
       <div id="certificates" className="absolute top-0 left-0 w-full h-1 pointer-events-none" />
       <div id="achievements" className="absolute top-0 left-0 w-full h-1 pointer-events-none" />
+
+      {/* Floating Theme Cube Pieces (Left, Right & Interspersed) */}
+      <FloatingSideCubes />
 
       {/* Fullscreen 3D Ambient Cube Particles Stage */}
       <div className="absolute inset-0 pointer-events-none z-0 opacity-80">
