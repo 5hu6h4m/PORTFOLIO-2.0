@@ -7,12 +7,13 @@ import { CustomCursor } from '@/components/ui/CustomCursor';
 import { Preloader } from '@/components/sections/Preloader';
 import { Header } from '@/components/sections/Header';
 import { HeroSection } from '@/components/sections/HeroSection';
-import { AboutSection, JourneySection, DiagonalLanesSection, HobbiesSection } from '@/components/sections/AboutSection';
+import { AboutSection, JourneySection, DiagonalLanesSection } from '@/components/sections/AboutSection';
 import { SkillsSection } from '@/components/sections/SkillsSection';
 import { ProjectsSection } from '@/components/sections/ProjectsSection';
 import { ExperienceSection } from '@/components/sections/ExperienceSection';
 import { LeadershipSection } from '@/components/sections/LeadershipSection';
 import { AwardsSection } from '@/components/sections/AwardsSection';
+import { BeyondTheCodeSection } from '@/components/sections/BeyondTheCodeSection';
 import { ContactSection } from '@/components/sections/ContactSection';
 import { Footer } from '@/components/sections/Footer';
 import { SceneCanvas } from '@/components/3d/SceneCanvas';
@@ -42,22 +43,10 @@ export default function Home() {
       {/* Header Navigation */}
       <Header playClick={playClick} playHover={playHover} />
 
-      {/*
-        STICKY HERO ARCHITECTURE:
-        - Outer wrapper: 200vh tall so scroll has space to travel
-        - Inner div: sticky top-0, h-screen — stays pinned while user scrolls
-        - 3D canvas (fixed) shows through the transparent hero
-        - After 100vh scroll, sections below start sliding up OVER the hero
-      */}
-      {/* pointer-events-none so the 200vh spacer div never blocks canvas clicks */}
+      {/* STICKY HERO ARCHITECTURE */}
       <div className="relative z-10 pointer-events-none" style={{ height: '200vh' }}>
         <div className="sticky top-0 h-screen relative">
           <HeroSection playClick={playClick} playHover={playHover} />
-          {/*
-            Cream fade mask — sits inside z-10, covers hero text as About slides over.
-            The fixed 3D canvas (z-0) is behind this whole layer so it still shows
-            through the semi-transparent About section top.
-          */}
           <div
             className="absolute inset-x-0 bottom-0 pointer-events-none h-[20%] md:h-[55%]"
             style={{
@@ -68,61 +57,43 @@ export default function Home() {
         </div>
       </div>
 
-      {/*
-        COVER / SHEET EFFECT:
-        marginTop: -100vh pulls sections up so they start sliding OVER the
-        pinned hero at the 100vh scroll mark — cube stays fixed behind them.
-        About's rounded-t-3xl + deep shadow gives the "new sheet" depth feel.
-      */}
+      {/* MAIN SECTIONS SHEET OVERLAY */}
       <div className="relative z-20 pointer-events-auto" style={{ marginTop: '-100vh' }}>
+        {/* ABOUT & JOURNEY */}
         <AboutSection playHover={playHover} />
 
-        {/*
-          DIAGONAL LANES SECTION (What Drives Me & Current Focus):
-          Positioned below the main About description.
-        */}
         <section className="py-16 px-6 md:px-12 relative overflow-hidden bg-[#F4F0E8]">
           <div className="max-w-6xl mx-auto">
             <DiagonalLanesSection playHover={playHover} />
           </div>
         </section>
 
-        {/*
-          FULLSCREEN HORIZONTAL TIMELINE SECTION:
-          Positioned right below Current Focus!
-        */}
         <div className="relative w-full">
           <JourneySection />
         </div>
 
-        {/*
-          INTERACTIVE 3D KNOWLEDGE SPHERE & TECH STACK:
-        */}
+        {/* 02 / TECH STACK & ECOSYSTEM (5-Card Rainbow Arc Pinning) */}
         <SkillsSection playClick={playClick} playHover={playHover} />
 
-        {/*
-          PROJECTS SECTION (Case Files + View More GitHub Chapter):
-        */}
+        {/* 03 / FEATURED PROJECTS */}
         <ProjectsSection playClick={playClick} playHover={playHover} />
 
-        {/*
-          EXPERIENCE & LEADERSHIP & AWARDS:
-        */}
-        <ExperienceSection playHover={playHover} />
+        {/* 04 / LEADERSHIP & CONTRIBUTIONS */}
         <LeadershipSection playHover={playHover} />
+
+        {/* 05 / EXPERIENCE & ACADEMIC ROADMAP */}
+        <ExperienceSection playHover={playHover} />
+
+        {/* 06 / CERTIFICATIONS & CREDENTIALS */}
         <AwardsSection playHover={playHover} />
 
-        {/*
-          HOBBIES SECTION (Beyond Code):
-          Moved to the end right before Contact!
-        */}
-        <section className="py-24 px-6 md:px-12 relative overflow-hidden bg-[#F4F0E8]">
-          <div className="max-w-6xl mx-auto">
-            <HobbiesSection playHover={playHover} />
-          </div>
-        </section>
+        {/* 07 / BEYOND THE CODE */}
+        <BeyondTheCodeSection playHover={playHover} />
 
+        {/* 08 / CONTACT FORM */}
         <ContactSection playClick={playClick} playHover={playHover} playSuccess={playSuccess} />
+
+        {/* 09 / FOOTER */}
         <Footer playClick={playClick} playHover={playHover} />
       </div>
     </main>
