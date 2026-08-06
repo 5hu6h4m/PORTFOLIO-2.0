@@ -97,10 +97,10 @@ export function HeroSection({ playClick, playHover }: HeroSectionProps) {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.15 }}
-            className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FAF8F3]/90 backdrop-blur-md border border-[#E2DCD2] text-[11px] font-mono text-[#787268] mb-6"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FAF8F3] border-2 border-[#25231F] text-[11px] font-mono text-[#25231F] mb-6 shadow-xs font-bold"
           >
-            <span className="w-2 h-2 rounded-full bg-[#B85C3B] animate-pulse" />
-            <span className="font-semibold text-[#25231F]">{personal.statusPill}</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-[#B85C3B] animate-pulse" />
+            <span className="font-bold text-[#25231F] tracking-wider uppercase">{personal.statusPill}</span>
           </motion.div>
 
           {/* Headline */}
@@ -111,7 +111,7 @@ export function HeroSection({ playClick, playHover }: HeroSectionProps) {
                 initial="hidden"
                 animate="visible"
                 variants={lineVariant}
-                className="text-3xl sm:text-5xl lg:text-6xl font-serif tracking-tight text-[#25231F] leading-[1.1]"
+                className="text-3xl sm:text-5xl lg:text-6xl font-serif tracking-tight text-[#25231F] leading-[1.1] font-bold"
               >
                 Crafting High-Performance
               </motion.h1>
@@ -123,7 +123,7 @@ export function HeroSection({ playClick, playHover }: HeroSectionProps) {
                 initial="hidden"
                 animate="visible"
                 variants={lineVariant}
-                className="text-3xl sm:text-5xl lg:text-6xl font-sans italic font-light text-[#B85C3B] leading-[1.1]"
+                className="text-3xl sm:text-5xl lg:text-6xl font-sans italic font-normal text-[#B85C3B] leading-[1.1]"
               >
                 Web Applications.
               </motion.h1>
@@ -140,19 +140,19 @@ export function HeroSection({ playClick, playHover }: HeroSectionProps) {
             "Every pixel has a purpose. Every interaction tells a story."
           </motion.p>
 
-          {/* Action CTAs & Social Links */}
+          {/* Action CTAs & Social Links (Ultra-High Contrast Buttons) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
             className="flex flex-wrap items-center gap-4"
           >
-            <MagneticButton href="#projects" variant="primary" onClick={playClick}>
-              <span>Explore Projects</span>
+            <MagneticButton href="#skills" variant="primary" onClick={playClick}>
+              <span>Explore Tech Stack</span>
               <ArrowDownRight className="w-4 h-4 text-[#FAF8F3]" />
             </MagneticButton>
 
-            <MagneticButton href={personal.resumeUrl} download variant="glass" className="border-2 border-[#25231F]/60 text-[#25231F] font-bold shadow-sm" onClick={playClick}>
+            <MagneticButton href={personal.resumeUrl} download variant="glass" onClick={playClick}>
               <FileText className="w-4 h-4 text-[#B85C3B]" />
               <span>Download Resume</span>
             </MagneticButton>
@@ -164,7 +164,7 @@ export function HeroSection({ playClick, playHover }: HeroSectionProps) {
                 rel="noopener noreferrer"
                 onMouseEnter={playHover}
                 onClick={playClick}
-                className="p-3 rounded-full bg-[#FAF8F3] border-2 border-[#25231F]/60 text-[#25231F] hover:text-[#B85C3B] hover:border-[#B85C3B] transition-colors shadow-xs"
+                className="p-3.5 rounded-full bg-[#FAF8F3] border-2 border-[#25231F] text-[#25231F] hover:bg-[#B85C3B] hover:text-[#FAF8F3] hover:border-[#B85C3B] transition-all shadow-sm"
                 title="GitHub Profile"
               >
                 <GithubIcon className="w-4.5 h-4.5" />
@@ -176,7 +176,7 @@ export function HeroSection({ playClick, playHover }: HeroSectionProps) {
                 rel="noopener noreferrer"
                 onMouseEnter={playHover}
                 onClick={playClick}
-                className="p-3 rounded-full bg-[#FAF8F3] border-2 border-[#25231F]/60 text-[#25231F] hover:text-[#B85C3B] hover:border-[#B85C3B] transition-colors shadow-xs"
+                className="p-3.5 rounded-full bg-[#FAF8F3] border-2 border-[#25231F] text-[#25231F] hover:bg-[#B85C3B] hover:text-[#FAF8F3] hover:border-[#B85C3B] transition-all shadow-sm"
                 title="LinkedIn Profile"
               >
                 <LinkedinIcon className="w-4.5 h-4.5" />
@@ -186,7 +186,7 @@ export function HeroSection({ playClick, playHover }: HeroSectionProps) {
                 href={`mailto:${personal.email}`}
                 onMouseEnter={playHover}
                 onClick={playClick}
-                className="p-3 rounded-full bg-[#FAF8F3] border-2 border-[#25231F]/60 text-[#25231F] hover:text-[#B85C3B] hover:border-[#B85C3B] transition-colors shadow-xs"
+                className="p-3.5 rounded-full bg-[#FAF8F3] border-2 border-[#25231F] text-[#25231F] hover:bg-[#B85C3B] hover:text-[#FAF8F3] hover:border-[#B85C3B] transition-all shadow-sm"
                 title="Send Email"
               >
                 <Mail className="w-4.5 h-4.5" />
@@ -201,7 +201,7 @@ export function HeroSection({ playClick, playHover }: HeroSectionProps) {
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.75 }}
-        className="relative z-10 max-w-7xl mx-auto w-full pt-6 flex items-center justify-between text-xs font-mono text-[#787268] border-t border-[#E2DCD2]/80 pointer-events-auto"
+        className="relative z-10 max-w-7xl mx-auto w-full pt-6 flex items-center justify-between text-xs font-mono text-[#25231F] border-t border-[#E2DCD2]/80 pointer-events-auto font-bold"
       >
         <a
           href="#about"
@@ -215,11 +215,11 @@ export function HeroSection({ playClick, playHover }: HeroSectionProps) {
 
         {/* Sleek Minimal Interactive Micro-Tag */}
         <div className="flex items-center gap-3">
-          <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF8F3]/90 border border-[#E2DCD2] text-[11px] font-mono text-[#787268]">
+          <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF8F3] border-2 border-[#25231F] text-[11px] font-mono text-[#25231F] font-bold">
             <Sparkles className="w-3 h-3 text-[#B85C3B]" />
             <span>Interactive 3D Stage</span>
           </span>
-          <span className="text-[11px] font-mono text-[#787268]">
+          <span className="text-[11px] font-mono text-[#25231F] font-bold">
             Shubham Jadhav · Portfolio 2026
           </span>
         </div>

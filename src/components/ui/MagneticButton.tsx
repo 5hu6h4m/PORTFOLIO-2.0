@@ -40,10 +40,10 @@ export function MagneticButton({
   };
 
   const variantStyles = {
-    primary: 'bg-[#25231F] text-[#FAF8F3] hover:bg-[#B85C3B] hover:text-white shadow-md border border-transparent',
-    secondary: 'bg-[#B85C3B] text-white hover:bg-[#A04D2E] shadow-md border border-transparent',
-    outline: 'bg-transparent text-[#25231F] border border-[#25231F]/30 hover:border-[#B85C3B] hover:text-[#B85C3B]',
-    glass: 'bg-[#FAF8F3] text-[#25231F] border border-[#25231F]/35 hover:border-[#B85C3B] hover:text-[#B85C3B] shadow-xs'
+    primary: 'bg-[#25231F] text-[#FAF8F3] hover:bg-[#B85C3B] hover:text-white shadow-lg border-2 border-[#25231F] hover:border-[#B85C3B]',
+    secondary: 'bg-[#B85C3B] text-white hover:bg-[#A04D2E] shadow-lg border-2 border-[#B85C3B]',
+    outline: 'bg-transparent text-[#25231F] border-2 border-[#25231F] hover:border-[#B85C3B] hover:text-[#B85C3B]',
+    glass: 'bg-[#FAF8F3] text-[#25231F] border-2 border-[#25231F] hover:border-[#B85C3B] hover:text-[#B85C3B] shadow-md font-bold'
   };
 
   const Content = (
@@ -57,7 +57,7 @@ export function MagneticButton({
       className={`inline-block`}
     >
       <div
-        className={`relative inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full text-xs font-mono font-semibold uppercase tracking-wider transition-colors duration-300 cursor-pointer ${variantStyles[variant]} ${className}`}
+        className={`relative inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full text-xs font-mono font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${variantStyles[variant]} ${className}`}
       >
         {children}
       </div>
