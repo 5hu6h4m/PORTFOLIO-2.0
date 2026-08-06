@@ -32,6 +32,7 @@ export function Header({ playClick, playHover }: HeaderProps) {
     { label: 'Projects', href: '#projects', id: 'projects' },
     { label: 'Tech Stack', href: '#skills', id: 'skills' },
     { label: 'Journey', href: '#journey-roadmap', id: 'journey-roadmap' },
+    { label: 'Certificates', href: '#certifications', id: 'certifications' },
     { label: 'Contact', href: '#contact', id: 'contact' },
   ];
 
