@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { ArrowUpRight, Code2, Sparkles, CheckCircle2, Layers, X, ExternalLink } from 'lucide-react';
+import { ArrowUpRight, Code2, Sparkles, CheckCircle2, Layers, X } from 'lucide-react';
 import { FIVE_TECH_CATEGORIES, FiveCardCategory } from '@/data/fiveCardsTechData';
 import { PORTFOLIO_DATA } from '@/data/portfolioData';
 
@@ -20,33 +20,38 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
     offset: ['start start', 'end end'],
   });
 
-  // Rainbow Fan Arc transformations based on scroll progress (0 to 1)
-  const card1X = useTransform(scrollYProgress, [0, 0.75], [-450, -380]);
-  const card1Y = useTransform(scrollYProgress, [0, 0.75], [120, 35]);
-  const card1Rot = useTransform(scrollYProgress, [0, 0.75], [-40, -28]);
+  // Staggered Fly-In from Offscreen LEFT (-850px) to Rainbow Arc Positions
+  const card1X = useTransform(scrollYProgress, [0, 0.65], [-850, -380]);
+  const card1Y = useTransform(scrollYProgress, [0, 0.65], [160, 35]);
+  const card1Rot = useTransform(scrollYProgress, [0, 0.65], [-55, -28]);
+  const card1Op = useTransform(scrollYProgress, [0, 0.15], [0, 1]);
 
-  const card2X = useTransform(scrollYProgress, [0, 0.75], [-250, -190]);
-  const card2Y = useTransform(scrollYProgress, [0, 0.75], [60, 10]);
-  const card2Rot = useTransform(scrollYProgress, [0, 0.75], [-20, -14]);
+  const card2X = useTransform(scrollYProgress, [0.08, 0.70], [-850, -190]);
+  const card2Y = useTransform(scrollYProgress, [0.08, 0.70], [130, 10]);
+  const card2Rot = useTransform(scrollYProgress, [0.08, 0.70], [-42, -14]);
+  const card2Op = useTransform(scrollYProgress, [0.08, 0.22], [0, 1]);
 
-  const card3X = useTransform(scrollYProgress, [0, 0.75], [0, 0]);
-  const card3Y = useTransform(scrollYProgress, [0, 0.75], [0, 0]);
-  const card3Rot = useTransform(scrollYProgress, [0, 0.75], [0, 0]);
+  const card3X = useTransform(scrollYProgress, [0.15, 0.75], [-850, 0]);
+  const card3Y = useTransform(scrollYProgress, [0.15, 0.75], [100, 0]);
+  const card3Rot = useTransform(scrollYProgress, [0.15, 0.75], [-30, 0]);
+  const card3Op = useTransform(scrollYProgress, [0.15, 0.30], [0, 1]);
 
-  const card4X = useTransform(scrollYProgress, [0, 0.75], [250, 190]);
-  const card4Y = useTransform(scrollYProgress, [0, 0.75], [60, 10]);
-  const card4Rot = useTransform(scrollYProgress, [0, 0.75], [20, 14]);
+  const card4X = useTransform(scrollYProgress, [0.22, 0.80], [-850, 190]);
+  const card4Y = useTransform(scrollYProgress, [0.22, 0.80], [70, 10]);
+  const card4Rot = useTransform(scrollYProgress, [0.22, 0.80], [-18, 14]);
+  const card4Op = useTransform(scrollYProgress, [0.22, 0.38], [0, 1]);
 
-  const card5X = useTransform(scrollYProgress, [0, 0.75], [450, 380]);
-  const card5Y = useTransform(scrollYProgress, [0, 0.75], [120, 35]);
-  const card5Rot = useTransform(scrollYProgress, [0, 0.75], [40, 28]);
+  const card5X = useTransform(scrollYProgress, [0.30, 0.85], [-850, 380]);
+  const card5Y = useTransform(scrollYProgress, [0.30, 0.85], [40, 35]);
+  const card5Rot = useTransform(scrollYProgress, [0.30, 0.85], [-5, 28]);
+  const card5Op = useTransform(scrollYProgress, [0.30, 0.45], [0, 1]);
 
   const cardTransformations = [
-    { x: card1X, y: card1Y, rot: card1Rot },
-    { x: card2X, y: card2Y, rot: card2Rot },
-    { x: card3X, y: card3Y, rot: card3Rot },
-    { x: card4X, y: card4Y, rot: card4Rot },
-    { x: card5X, y: card5Y, rot: card5Rot },
+    { x: card1X, y: card1Y, rot: card1Rot, opacity: card1Op },
+    { x: card2X, y: card2Y, rot: card2Rot, opacity: card2Op },
+    { x: card3X, y: card3Y, rot: card3Rot, opacity: card3Op },
+    { x: card4X, y: card4Y, rot: card4Rot, opacity: card4Op },
+    { x: card5X, y: card5Y, rot: card5Rot, opacity: card5Op },
   ];
 
   const scrollToProjects = () => {
@@ -59,17 +64,17 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
   };
 
   return (
-    <div ref={targetRef} className="relative h-[240vh] bg-[#F4F0E8]" id="skills">
+    <div ref={targetRef} className="relative h-[250vh] bg-[#F4F0E8]" id="skills">
       {/* STICKY SCREEN PINNING CONTAINER */}
-      <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-between py-12 px-6 md:px-12 select-none border-t border-[#E2DCD2]">
+      <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-between pt-16 pb-10 px-6 md:px-12 select-none border-t border-[#E2DCD2]">
         
         {/* Volumetric background ambient glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[850px] bg-radial from-[#B85C3B]/10 via-[#8E9A78]/5 to-transparent blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-radial from-[#B85C3B]/10 via-[#8E9A78]/5 to-transparent blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto relative z-10 w-full">
 
-          {/* ── SECTION HEADER ───────────────────────────────────────────────── */}
-          <div className="text-center flex flex-col items-center justify-center max-w-2xl mx-auto">
+          {/* ── SECTION HEADER (CLEAN BREATHING ROOM WITH ZERO TOP CLIPPING) ──── */}
+          <div className="text-center flex flex-col items-center justify-center max-w-2xl mx-auto mt-2 mb-4">
             <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.3em] uppercase text-[#B85C3B] mb-2">
               <Sparkles className="w-3.5 h-3.5" />
               <span>02 / TECHNICAL ARSENAL — 5 ARCHITECTURAL CATEGORIES</span>
@@ -80,15 +85,15 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
             >
               TECH STACK
             </h2>
-            <p className="text-xs md:text-sm text-[#787268] font-light max-w-lg mt-2 leading-relaxed">
-              Scroll down to unfold the 5 technical categories into a rainbow arc. Click any card for a deep dive into specific technologies & libraries.
+            <p className="text-xs md:text-sm text-[#787268] font-light max-w-md mt-2 leading-relaxed">
+              Scroll down to watch 5 technical cards fly in from the left and fan into a rainbow arc. Click any card to inspect technologies.
             </p>
           </div>
 
         </div>
 
         {/* ── 5-CARD RAINBOW ARC FAN CONTAINER ─────────────────────────────── */}
-        <div className="relative w-full max-w-6xl mx-auto h-[420px] md:h-[460px] flex items-center justify-center relative z-20 my-auto">
+        <div className="relative w-full max-w-6xl mx-auto h-[380px] md:h-[420px] flex items-center justify-center relative z-20 my-auto">
           {FIVE_TECH_CATEGORIES.map((cat, i) => {
             const transform = cardTransformations[i];
 
@@ -99,18 +104,19 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
                   x: transform.x,
                   y: transform.y,
                   rotate: transform.rot,
+                  opacity: transform.opacity,
                 }}
-                whileHover={{ scale: 1.06, zIndex: 40 }}
+                whileHover={{ scale: 1.08, zIndex: 40 }}
                 onMouseEnter={playHover}
                 onClick={() => {
                   playClick();
                   setSelectedCategory(cat);
                 }}
-                className="absolute w-[240px] sm:w-[260px] md:w-[280px] h-[360px] md:h-[390px] rounded-3xl bg-[#FAF8F3]/95 backdrop-blur-xl border border-[#E2DCD2] hover:border-[#B85C3B]/60 shadow-xl cursor-pointer p-6 flex flex-col justify-between transition-shadow duration-300 hover:shadow-2xl overflow-hidden group"
+                className="absolute w-[220px] sm:w-[240px] md:w-[260px] h-[330px] md:h-[360px] rounded-3xl bg-[#FAF8F3]/95 backdrop-blur-xl border border-[#E2DCD2] hover:border-[#B85C3B]/70 shadow-xl cursor-pointer p-5 flex flex-col justify-between transition-shadow duration-300 hover:shadow-2xl overflow-hidden group"
               >
                 {/* Top Badge & Number */}
                 <div>
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-3">
                     <span className="text-2xl font-serif font-bold text-[#B85C3B]">
                       {cat.number}
                     </span>
@@ -123,38 +129,32 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
                     {cat.title}
                   </h3>
 
-                  <div className="text-[10px] font-mono text-[#9A948C] uppercase tracking-widest mb-3">
+                  <div className="text-[9px] font-mono text-[#9A948C] uppercase tracking-widest mb-4">
                     {cat.subtitle}
                   </div>
-
-                  <p className="text-xs text-[#787268] font-light leading-relaxed line-clamp-3 mb-4">
-                    {cat.description}
-                  </p>
                 </div>
 
-                {/* Tech Logos Preview Pills */}
+                {/* Minimal Emblem Pills */}
                 <div>
                   <div className="flex flex-wrap gap-1.5 mb-4">
-                    {cat.technologies.slice(0, 3).map((t, idx) => (
+                    {cat.technologies.map((t, idx) => (
                       <span
                         key={idx}
-                        className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-[#25231F]/5 text-[#25231F] border border-[#E2DCD2] flex items-center gap-1"
+                        className="px-2 py-1 rounded-full text-[10px] font-mono bg-[#25231F]/5 text-[#25231F] border border-[#E2DCD2] flex items-center gap-1"
                       >
-                        <span>{t.symbol}</span>
-                        <span>{t.name}</span>
+                        <span className="text-xs">{t.symbol}</span>
+                        <span className="font-bold">{t.name}</span>
                       </span>
                     ))}
                   </div>
 
-                  {/* Bottom Footer Info */}
+                  {/* Bottom Footer Line */}
                   <div className="pt-3 border-t border-[#E2DCD2] flex items-center justify-between">
-                    <div>
-                      <div className="text-[9px] font-mono text-[#9A948C] uppercase tracking-widest">Builds</div>
-                      <div className="text-xs font-mono font-bold text-[#25231F]">{cat.shippedBuildsCount}+ Shipped</div>
+                    <div className="text-[10px] font-mono text-[#9A948C] uppercase tracking-widest">
+                      {cat.shippedBuildsCount}+ Shipped Builds
                     </div>
 
-                    <div className="flex items-center gap-1 text-[10px] font-mono text-[#B85C3B] font-bold group-hover:translate-x-1 transition-transform">
-                      <span>Explore</span>
+                    <div className="p-1.5 rounded-full border border-[#E2DCD2] text-[#9A948C] group-hover:text-[#B85C3B] group-hover:border-[#B85C3B] transition-colors">
                       <ArrowUpRight className="w-3.5 h-3.5" />
                     </div>
                   </div>
@@ -166,9 +166,9 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
 
         {/* ── FOOTER INSTRUCTION & MASTERY HINT ────────────────────────────── */}
         <div className="max-w-7xl mx-auto relative z-10 w-full flex items-center justify-between text-[10px] font-mono text-[#9A948C] uppercase tracking-widest pt-2 border-t border-[#E2DCD2]">
-          <span>Scroll to fan rainbow cards</span>
-          <span className="text-[#B85C3B]">Click any card to open deep dive modal</span>
-          <span>5 Technical Categories</span>
+          <span>Scroll down to fan rainbow cards</span>
+          <span className="text-[#B85C3B]">Click any card for deep dive modal</span>
+          <span>5 Architectural Categories</span>
         </div>
 
       </div>
