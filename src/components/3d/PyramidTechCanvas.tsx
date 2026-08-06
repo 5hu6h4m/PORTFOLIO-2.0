@@ -1,13 +1,13 @@
 'use client';
 
-import { useRef, useMemo, useState, useEffect } from 'react';
+import { useRef, useMemo, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, ContactShadows } from '@react-three/drei';
+import { ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
-import { DOMAIN_FACES, DomainFace, PYRAMID_CUBE_ITEMS, PyramidCubeItem } from '@/data/pyramidTechData';
+import { PYRAMID_CUBE_ITEMS, PyramidCubeItem } from '@/data/pyramidTechData';
 
 interface PyramidCanvasProps {
-  activeDomain: DomainFace;
+  rotationRad: number; // Strictly controlled rotation angle in radians (0 to 2*Math.PI)
   activeCube: PyramidCubeItem | null;
   onSelectCube: (cube: PyramidCubeItem) => void;
   inView: boolean;
@@ -69,7 +69,6 @@ function CleanPyramidCube({
     meshRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), delta * 9);
   });
 
-  // Warm luxury color palette logic
   const isApex = item.layer === 4;
   const is3D = item.layer === 3;
   const baseColor = isApex
@@ -117,11 +116,9 @@ function CleanPyramidCube({
   );
 }
 
-// ── 4-DOMAIN PYRAMID SCENE ──────────────────────────────────────────────────
-function PyramidScene({ activeDomain, activeCube, onSelectCube, inView, playHover, playClick }: PyramidCanvasProps) {
+// ── STRICT CONTROLLED PYRAMID SCENE ──────────────────────────────────────────
+function StrictPyramidScene({ rotationRad, activeCube, onSelectCube, inView, playHover, playClick }: PyramidCanvasProps) {
   const pyramidGroupRef = useRef<THREE.Group>(null);
-  const targetRotationY = useRef(0);
-  const mouseLerp = useRef({ x: 0, y: 0 });
 
   // 3D grid target coordinates for all 30 cubes across 4 stacked layers
   const cubeTargets = useMemo(() => {
@@ -160,38 +157,16 @@ function PyramidScene({ activeDomain, activeCube, onSelectCube, inView, playHove
     return map;
   }, []);
 
-  useEffect(() => {
-    targetRotationY.current = activeDomain.angle;
-  }, [activeDomain]);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseLerp.current.x = (e.clientX / window.innerWidth - 0.5) * 0.5;
-      mouseLerp.current.y = (e.clientY / window.innerHeight - 0.5) * 0.5;
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
   useFrame((_, delta) => {
     if (!pyramidGroupRef.current) return;
 
-    // Smoothly lerp to target domain face rotation angle
+    // Strictly lerp rotation Y to rotationRad (controlled by rotation slider)
     const curY = pyramidGroupRef.current.rotation.y;
-    const destY = targetRotationY.current;
-    pyramidGroupRef.current.rotation.y = THREE.MathUtils.lerp(curY, destY, delta * 2.8);
+    pyramidGroupRef.current.rotation.y = THREE.MathUtils.lerp(curY, rotationRad, delta * 5);
 
-    // Subtle mouse tilt for depth
-    pyramidGroupRef.current.rotation.x = THREE.MathUtils.lerp(
-      pyramidGroupRef.current.rotation.x,
-      mouseLerp.current.y * 0.2,
-      0.05
-    );
-    pyramidGroupRef.current.rotation.z = THREE.MathUtils.lerp(
-      pyramidGroupRef.current.rotation.z,
-      -mouseLerp.current.x * 0.2,
-      0.05
-    );
+    // Keep X/Z tilt locked to a pristine clean isometric angle
+    pyramidGroupRef.current.rotation.x = 0.22;
+    pyramidGroupRef.current.rotation.z = 0;
   });
 
   return (
@@ -217,9 +192,9 @@ function PyramidScene({ activeDomain, activeCube, onSelectCube, inView, playHove
   );
 }
 
-// ── MAIN UNCONSTRAINED CANVAS EXPORT ────────────────────────────────────────
+// ── MAIN CANVAS EXPORT ──────────────────────────────────────────────────────
 export function PyramidTechCanvas({
-  activeDomain,
+  rotationRad,
   activeCube,
   onSelectCube,
   inView,
@@ -227,20 +202,20 @@ export function PyramidTechCanvas({
   playClick,
 }: PyramidCanvasProps) {
   return (
-    <div className="w-full h-full min-h-[520px] md:min-h-[620px] relative pointer-events-auto">
+    <div className="w-full h-full min-h-[440px] md:min-h-[520px] relative pointer-events-auto">
       <Canvas
         camera={{ position: [0, 2.5, 9.8], fov: 42 }}
         gl={{ antialias: true, alpha: true }}
       >
-        {/* Soft Volumetric Lighting */}
+        {/* Volumetric Warm Lighting */}
         <ambientLight intensity={1.1} color="#FAF8F3" />
         <directionalLight position={[7, 12, 7]} intensity={1.6} color="#FAF5ED" castShadow />
         <pointLight position={[-7, -5, -7]} intensity={0.9} color="#B85C3B" />
         <spotLight position={[0, 14, 0]} intensity={1.4} color="#8E9A78" angle={0.7} penumbra={1} />
 
-        {/* 3D 4-Domain Pyramid Scene */}
-        <PyramidScene
-          activeDomain={activeDomain}
+        {/* 3D Pyramid Locked Scene */}
+        <StrictPyramidScene
+          rotationRad={rotationRad}
           activeCube={activeCube}
           onSelectCube={onSelectCube}
           inView={inView}
@@ -248,10 +223,8 @@ export function PyramidTechCanvas({
           playClick={playClick}
         />
 
-        {/* Soft Contact Shadow Plane Ground */}
+        {/* Contact Shadow Plane */}
         <ContactShadows position={[0, -3.2, 0]} opacity={0.4} scale={14} blur={2.5} far={6} color="#25231F" />
-
-        <OrbitControls enableZoom={false} enablePan={false} autoRotate={false} maxPolarAngle={Math.PI / 1.7} minPolarAngle={Math.PI / 4} />
       </Canvas>
     </div>
   );
