@@ -73,10 +73,10 @@ export function CustomCursor() {
   // Mode 2: Hide custom cursor over HTML UI buttons/links
   if (cursorMode === 'interactive') return null;
 
-  // Mode 3: Restored Circle Follower Ring + 3 Trailing Micro-Cubes behind mouse!
+  // Mode 3: Clean Follower Ring
   return (
     <>
-      {/* Standard Outer Spring Follower Ring (Restored) */}
+      {/* Standard Outer Spring Follower Ring */}
       <motion.div
         className="fixed top-0 left-0 pointer-events-none z-50 rounded-full border border-[#B85C3B]/50 backdrop-blur-[2px] shadow-lg hidden md:block"
         animate={{
@@ -111,52 +111,6 @@ export function CustomCursor() {
           damping: 35,
           stiffness: 500,
           mass: 0.1,
-        }}
-      />
-
-      {/* ── 3 TRAILING FLOATING MICRO-CUBES BEHIND MOUSE ── */}
-      {/* Trailing Micro-Cube 1 (Nearest Terracotta Red Cube) */}
-      <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-40 w-3 h-3 rounded-xs bg-[#B85C3B] border border-[#B85C3B]/80 shadow-md hidden md:block"
-        animate={{
-          x: x + 12,
-          y: y + 14,
-          rotate: [0, 90, 180, 270, 360],
-        }}
-        transition={{
-          x: { type: 'spring', damping: 22, stiffness: 300, mass: 0.3 },
-          y: { type: 'spring', damping: 22, stiffness: 300, mass: 0.3 },
-          rotate: { duration: 4, repeat: Infinity, ease: 'linear' },
-        }}
-      />
-
-      {/* Trailing Micro-Cube 2 (Middle Dark Charcoal Cube) */}
-      <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-40 w-2.5 h-2.5 rounded-xs bg-[#25231F] border border-[#FAF8F3]/60 shadow-sm hidden md:block opacity-90"
-        animate={{
-          x: x - 14,
-          y: y + 18,
-          rotate: [360, 270, 180, 90, 0],
-        }}
-        transition={{
-          x: { type: 'spring', damping: 20, stiffness: 240, mass: 0.5 },
-          y: { type: 'spring', damping: 20, stiffness: 240, mass: 0.5 },
-          rotate: { duration: 5, repeat: Infinity, ease: 'linear' },
-        }}
-      />
-
-      {/* Trailing Micro-Cube 3 (Farthest Micro Cube) */}
-      <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-40 w-2 h-2 rounded-xs bg-[#B85C3B]/80 border border-[#B85C3B]/40 shadow-xs hidden md:block opacity-75"
-        animate={{
-          x: x + 18,
-          y: y - 10,
-          rotate: [0, 180, 360],
-        }}
-        transition={{
-          x: { type: 'spring', damping: 18, stiffness: 180, mass: 0.7 },
-          y: { type: 'spring', damping: 18, stiffness: 180, mass: 0.7 },
-          rotate: { duration: 6, repeat: Infinity, ease: 'linear' },
         }}
       />
     </>

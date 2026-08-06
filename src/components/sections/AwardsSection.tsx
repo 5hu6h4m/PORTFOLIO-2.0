@@ -5,7 +5,7 @@ import { motion, AnimatePresence, useInView, useMotionValue, useSpring, useTrans
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Float } from '@react-three/drei';
 import * as THREE from 'three';
-import { ShieldCheck, Award, Sparkles, X, ExternalLink, FileCheck, Lock, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, Award, Sparkles, X, ExternalLink, FileCheck, Lock, CheckCircle2, Box } from 'lucide-react';
 import { PORTFOLIO_DATA } from '@/data/portfolioData';
 
 interface AwardsSectionProps {
@@ -20,11 +20,10 @@ function VaultCubeParticles() {
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const particles = useMemo(() => {
     return Array.from({ length: count }, (_, i) => {
-      // Distribute pieces across sides (left/right) and center spaces
       let x = 0;
-      if (i % 3 === 0) x = -5.5 - Math.random() * 4.5; // Left margin
-      else if (i % 3 === 1) x = 5.5 + Math.random() * 4.5; // Right margin
-      else x = (Math.random() - 0.5) * 6; // Center spaces
+      if (i % 3 === 0) x = -5.5 - Math.random() * 4.5;
+      else if (i % 3 === 1) x = 5.5 + Math.random() * 4.5;
+      else x = (Math.random() - 0.5) * 6;
 
       return {
         x,
@@ -105,7 +104,6 @@ function FloatingSideCubes() {
             delay: c.delay,
           }}
         >
-          {/* Internal bevel cube face lines */}
           <div className="w-full h-full p-1 flex items-center justify-center opacity-60">
             <div className="w-full h-full border border-dashed border-[#B55D3D]/40 rounded-lg" />
           </div>
@@ -115,7 +113,7 @@ function FloatingSideCubes() {
   );
 }
 
-// ── LUXURIOUS FLOATING GLASS DOCUMENT CARD ────────────────────────────────────
+// ── COMPACT FLOATING GLASS DOCUMENT CARD WITH 3D RUBIK CUBE BADGE ───────────
 interface GlassDocumentProps {
   cert: typeof PORTFOLIO_DATA.certifications[0];
   index: number;
@@ -130,10 +128,9 @@ function FloatingGlassDocument({ cert, index, onSelect, playHover }: GlassDocume
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [12, -12]), { stiffness: 220, damping: 20 });
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-12, 12]), { stiffness: 220, damping: 20 });
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [8, -8]), { stiffness: 220, damping: 20 });
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-8, 8]), { stiffness: 220, damping: 20 });
   
-  // Reflection Light Overlay Translation
   const reflectX = useTransform(mouseX, [-0.5, 0.5], ['0%', '100%']);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -163,11 +160,11 @@ function FloatingGlassDocument({ cert, index, onSelect, playHover }: GlassDocume
         rotateY,
         transformStyle: 'preserve-3d',
       }}
-      initial={{ opacity: 0, y: 40 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.9 }}
-      transition={{ duration: 0.7, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-      className="group relative rounded-3xl bg-[#FCFAF6]/90 backdrop-blur-xl border border-[#B55D3D]/30 shadow-[0_20px_50px_rgba(35,32,28,0.08)] p-7 md:p-8 cursor-pointer overflow-hidden transition-all duration-500 hover:border-[#B55D3D] hover:shadow-[0_30px_70px_rgba(181,93,61,0.18)] select-none flex flex-col justify-between min-h-[360px]"
+      transition={{ duration: 0.6, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+      className="group relative rounded-2xl bg-[#FCFAF6]/90 backdrop-blur-xl border border-[#B55D3D]/30 shadow-[0_15px_35px_rgba(35,32,28,0.06)] p-5 md:p-6 cursor-pointer overflow-hidden transition-all duration-400 hover:border-[#B55D3D] hover:shadow-[0_25px_50px_rgba(181,93,61,0.16)] select-none flex flex-col justify-between min-h-[240px]"
     >
       {/* Dynamic Champagne Light Reflection Overlay */}
       <motion.div
@@ -175,53 +172,63 @@ function FloatingGlassDocument({ cert, index, onSelect, playHover }: GlassDocume
         style={{ x: reflectX, transform: 'skewX(-20deg)' }}
       />
 
-      {/* Top Metallic Champagne Border Accent */}
-      <div className="absolute top-0 left-8 right-8 h-1 bg-gradient-to-r from-transparent via-[#B55D3D] to-transparent rounded-b-full opacity-60 group-hover:opacity-100 transition-opacity" />
+      {/* Top Metallic Accent Bar */}
+      <div className="absolute top-0 left-6 right-6 h-0.5 bg-gradient-to-r from-transparent via-[#B55D3D] to-transparent rounded-b-full opacity-60 group-hover:opacity-100 transition-opacity" />
 
       <div>
-        {/* Certificate Issuer Strip */}
-        <div className="flex items-center justify-between pb-4 border-b border-[#E2DCD2]/80 mb-6">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-[#23201C] text-[#FCFAF6] flex items-center justify-center font-serif font-bold text-xs shadow-md group-hover:bg-[#B55D3D] transition-colors">
-              <Award className="w-4 h-4 text-[#FCFAF6]" />
+        {/* Compact Header Strip with 3D Rubik's Cube Emblem Badge */}
+        <div className="flex items-center justify-between pb-3 border-b border-[#E2DCD2]/70 mb-4">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-[#23201C] text-[#FCFAF6] flex items-center justify-center font-bold text-xs shadow-sm group-hover:bg-[#B55D3D] transition-colors">
+              <Box className="w-4 h-4 text-[#FCFAF6] animate-pulse" />
             </div>
             <span className="text-xs font-mono font-bold text-[#23201C] uppercase tracking-wider">
               {cert.organization}
             </span>
           </div>
           
-          <span className="px-3.5 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest bg-[#B55D3D]/12 text-[#B55D3D] border border-[#B55D3D]/25 font-bold shadow-2xs">
-            {cert.year}
-          </span>
+          <div className="flex items-center gap-2">
+            {/* 3D Mini Rubik Cube Facelet Accent Badge */}
+            <div className="w-4 h-4 grid grid-cols-2 gap-0.5 opacity-80 group-hover:rotate-45 transition-transform duration-500">
+              <div className="bg-[#B55D3D] rounded-[1px]" />
+              <div className="bg-[#23201C] rounded-[1px]" />
+              <div className="bg-[#23201C] rounded-[1px]" />
+              <div className="bg-[#B55D3D] rounded-[1px]" />
+            </div>
+
+            <span className="px-2.5 py-0.5 rounded-full text-[9px] font-mono uppercase tracking-widest bg-[#B55D3D]/12 text-[#B55D3D] border border-[#B55D3D]/25 font-bold">
+              {cert.year}
+            </span>
+          </div>
         </div>
 
         {/* Certificate Title & Subject */}
-        <div className="space-y-2 mb-4">
-          <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#B55D3D] uppercase tracking-widest font-bold">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>VAULT DOCUMENT // {cert.category}</span>
+        <div className="space-y-1.5 mb-3">
+          <div className="flex items-center gap-1.5 text-[9px] font-mono text-[#B55D3D] uppercase tracking-widest font-bold">
+            <Sparkles className="w-3 h-3" />
+            <span>VAULT CREDENTIAL // {cert.category}</span>
           </div>
           
-          <h3 className="text-2xl md:text-3xl font-serif font-bold text-[#23201C] group-hover:text-[#B55D3D] transition-colors leading-snug">
+          <h3 className="text-xl md:text-2xl font-serif font-bold text-[#23201C] group-hover:text-[#B55D3D] transition-colors leading-snug">
             {cert.title}
           </h3>
           
-          <p className="text-xs md:text-sm text-[#787268] font-light leading-relaxed pt-1">
+          <p className="text-xs text-[#787268] font-light leading-relaxed line-clamp-2">
             {cert.description}
           </p>
         </div>
       </div>
 
-      {/* Bottom Verification Seal Footer */}
-      <div className="pt-6 border-t border-[#E2DCD2]/80 flex items-center justify-between mt-4">
-        <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#787268] font-bold">
-          <ShieldCheck className="w-4 h-4 text-[#8A2E2B]" />
+      {/* Bottom Verification Footer */}
+      <div className="pt-4 border-t border-[#E2DCD2]/70 flex items-center justify-between mt-3">
+        <div className="flex items-center gap-1 text-[9px] font-mono text-[#787268] font-bold">
+          <ShieldCheck className="w-3.5 h-3.5 text-[#8A2E2B]" />
           <span>ID: {cert.credentialId}</span>
         </div>
 
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#23201C] text-[#FCFAF6] group-hover:bg-[#B55D3D] transition-colors text-[11px] font-mono font-bold uppercase tracking-wider shadow-sm">
-          <span>INSPECT VAULT SIGNAL</span>
-          <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#23201C] text-[#FCFAF6] group-hover:bg-[#B55D3D] transition-colors text-[10px] font-mono font-bold uppercase tracking-wider shadow-xs">
+          <span>INSPECT SIGNAL</span>
+          <ExternalLink className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
         </div>
       </div>
     </motion.div>
@@ -245,7 +252,7 @@ export function AwardsSection({ playHover }: AwardsSectionProps) {
   }, [certifications, selectedCategory]);
 
   return (
-    <section id="certifications" ref={sectionRef} className="py-28 px-6 md:px-12 bg-[#F7F3EC] text-[#23201C] relative overflow-hidden select-none">
+    <section id="certifications" ref={sectionRef} className="py-24 px-6 md:px-12 bg-[#F7F3EC] text-[#23201C] relative overflow-hidden select-none">
       {/* Anchor targets for #certificates & #achievements nav links */}
       <div id="certificates" className="absolute top-0 left-0 w-full h-1 pointer-events-none" />
       <div id="achievements" className="absolute top-0 left-0 w-full h-1 pointer-events-none" />
@@ -268,22 +275,22 @@ export function AwardsSection({ playHover }: AwardsSectionProps) {
       <div className="absolute top-1/4 left-10 w-[650px] h-[650px] bg-[#B55D3D]/8 rounded-full blur-[160px] pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-[550px] h-[550px] bg-[#8A2E2B]/6 rounded-full blur-[140px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div className="max-w-6xl mx-auto relative z-10">
         
-        {/* ── SECTION HEADER ───────────────────────────────────────────────── */}
+        {/* ── SECTION HEADER WITH 3D CUBE EMBLEM ───────────────────────────── */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 25 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
-          className="mb-16 border-b border-[#E2DCD2] pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6"
+          className="mb-12 border-b border-[#E2DCD2] pb-6 flex flex-col md:flex-row md:items-end justify-between gap-6"
         >
           <div>
             <div className="flex items-center gap-2 text-xs font-mono tracking-[0.3em] text-[#B55D3D] uppercase mb-2 font-bold">
-              <Lock className="w-4 h-4 text-[#B55D3D]" />
+              <Box className="w-4 h-4 text-[#B55D3D] animate-spin" style={{ animationDuration: '8s' }} />
               <span>06 / THE CREDENTIAL VAULT — ARCHIVAL SIGNALS</span>
             </div>
             <h2
-              className="text-4xl sm:text-6xl md:text-7xl font-serif font-bold text-[#23201C] leading-none tracking-tight"
+              className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-[#23201C] leading-none tracking-tight"
               style={{ letterSpacing: '-0.03em' }}
             >
               CREDENTIAL <span className="italic font-normal text-[#B55D3D]">VAULT</span>
@@ -300,10 +307,10 @@ export function AwardsSection({ playHover }: AwardsSectionProps) {
 
         {/* ── CATEGORY FILTER TABS ─────────────────────────────────────────── */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="flex flex-wrap items-center gap-2 md:gap-3 mb-12"
+          transition={{ duration: 0.8, delay: 0.15 }}
+          className="flex flex-wrap items-center gap-2 mb-10"
         >
           {categories.map((cat) => {
             const isActive = selectedCategory === cat;
@@ -312,7 +319,7 @@ export function AwardsSection({ playHover }: AwardsSectionProps) {
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
                 onMouseEnter={playHover}
-                className={`relative px-5 py-2.5 rounded-full text-xs font-mono font-bold uppercase tracking-wider transition-colors duration-300 cursor-pointer ${
+                className={`relative px-4 py-2 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider transition-colors duration-300 cursor-pointer ${
                   isActive ? 'text-[#FCFAF6]' : 'text-[#787268] hover:text-[#23201C] bg-[#FCFAF6] border border-[#E2DCD2]'
                 }`}
               >
@@ -329,8 +336,8 @@ export function AwardsSection({ playHover }: AwardsSectionProps) {
           })}
         </motion.div>
 
-        {/* ── STAGGERED FLOATING GLASS DOCUMENTS ARCHIVE ───────────────────── */}
-        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+        {/* ── COMPACT STAGGERED FLOATING GLASS DOCUMENTS ARCHIVE ──────────── */}
+        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           <AnimatePresence mode="popLayout">
             {filteredCerts.map((cert, index) => (
               <FloatingGlassDocument
@@ -362,73 +369,73 @@ export function AwardsSection({ playHover }: AwardsSectionProps) {
               exit={{ opacity: 0, scale: 0.92, y: 20 }}
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
               onClick={(e) => e.stopPropagation()}
-              className="max-w-4xl w-full p-8 md:p-12 rounded-3xl bg-[#FCFAF6] text-[#23201C] border-2 border-[#B55D3D]/40 shadow-2xl relative overflow-hidden my-auto border-double"
+              className="max-w-3xl w-full p-6 md:p-10 rounded-3xl bg-[#FCFAF6] text-[#23201C] border-2 border-[#B55D3D]/40 shadow-2xl relative overflow-hidden my-auto border-double"
             >
               {/* Close Button */}
               <button
                 onClick={() => setSelectedCert(null)}
-                className="absolute top-6 right-6 w-10 h-10 rounded-full bg-[#23201C] text-[#FCFAF6] hover:bg-[#B55D3D] transition-colors flex items-center justify-center cursor-pointer shadow-md"
+                className="absolute top-5 right-5 w-9 h-9 rounded-full bg-[#23201C] text-[#FCFAF6] hover:bg-[#B55D3D] transition-colors flex items-center justify-center cursor-pointer shadow-md"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
 
               {/* Certificate Border Frame */}
-              <div className="border-2 border-[#E2DCD2] p-6 sm:p-10 rounded-2xl relative bg-[#FAF8F3] shadow-inner">
+              <div className="border-2 border-[#E2DCD2] p-6 sm:p-8 rounded-2xl relative bg-[#FAF8F3] shadow-inner">
                 {/* Top Certificate Header */}
-                <div className="text-center space-y-3 pb-6 border-b border-[#E2DCD2]">
-                  <div className="w-12 h-12 rounded-full bg-[#B55D3D]/12 text-[#B55D3D] flex items-center justify-center mx-auto mb-2 border border-[#B55D3D]/30 shadow-xs">
-                    <ShieldCheck className="w-6 h-6" />
+                <div className="text-center space-y-2 pb-5 border-b border-[#E2DCD2]">
+                  <div className="w-10 h-10 rounded-full bg-[#B55D3D]/12 text-[#B55D3D] flex items-center justify-center mx-auto mb-1 border border-[#B55D3D]/30 shadow-xs">
+                    <ShieldCheck className="w-5 h-5" />
                   </div>
-                  <div className="text-xs font-mono tracking-[0.3em] uppercase text-[#B55D3D] font-bold">
+                  <div className="text-[10px] font-mono tracking-[0.3em] uppercase text-[#B55D3D] font-bold">
                     OFFICIAL VAULT VERIFIED CREDENTIAL
                   </div>
-                  <h3 className="text-3xl sm:text-5xl font-serif font-bold text-[#23201C]">
+                  <h3 className="text-2xl sm:text-4xl font-serif font-bold text-[#23201C]">
                     {selectedCert.title}
                   </h3>
-                  <div className="text-xs sm:text-sm font-mono text-[#787268] uppercase tracking-wider font-semibold">
+                  <div className="text-xs font-mono text-[#787268] uppercase tracking-wider font-semibold">
                     ISSUED BY: <span className="text-[#23201C] font-bold">{selectedCert.organization}</span>
                   </div>
                 </div>
 
                 {/* Recipient Line */}
-                <div className="text-center py-8 space-y-2">
-                  <div className="text-xs font-mono text-[#787268] uppercase tracking-widest font-semibold">
+                <div className="text-center py-6 space-y-1.5">
+                  <div className="text-[10px] font-mono text-[#787268] uppercase tracking-widest font-semibold">
                     THIS CREDENTIAL CERTIFIES THAT
                   </div>
-                  <div className="text-3xl sm:text-5xl font-serif font-bold italic text-[#B55D3D]">
+                  <div className="text-2xl sm:text-4xl font-serif font-bold italic text-[#B55D3D]">
                     Shubham Jadhav
                   </div>
-                  <p className="text-xs sm:text-sm text-[#787268] font-light max-w-lg mx-auto pt-2 leading-relaxed">
-                    Has successfully passed all architectural evaluations and practical requirements in {selectedCert.category} for the year {selectedCert.year}.
+                  <p className="text-xs text-[#787268] font-light max-w-lg mx-auto pt-1 leading-relaxed">
+                    Has successfully passed all technical evaluations and practical requirements in {selectedCert.category} for the year {selectedCert.year}.
                   </p>
                 </div>
 
                 {/* Bottom Signature & Credential ID Strip */}
-                <div className="pt-6 border-t border-[#E2DCD2] grid grid-cols-1 sm:grid-cols-3 gap-6 items-center text-center sm:text-left">
+                <div className="pt-5 border-t border-[#E2DCD2] grid grid-cols-1 sm:grid-cols-3 gap-4 items-center text-center sm:text-left">
                   <div>
-                    <div className="text-[10px] font-mono text-[#787268] uppercase font-bold">CREDENTIAL VERIFICATION HASH</div>
+                    <div className="text-[9px] font-mono text-[#787268] uppercase font-bold">CREDENTIAL VERIFICATION HASH</div>
                     <div className="text-xs font-mono font-bold text-[#23201C]">{selectedCert.credentialId}</div>
                   </div>
 
                   <div className="text-center">
-                    <div className="w-10 h-10 rounded-full bg-[#B55D3D] text-white flex items-center justify-center mx-auto mb-1 font-bold text-xs shadow-md">
+                    <div className="w-8 h-8 rounded-full bg-[#B55D3D] text-white flex items-center justify-center mx-auto mb-1 font-bold text-xs shadow-md">
                       ✓
                     </div>
-                    <div className="text-[9px] font-mono text-[#B55D3D] uppercase font-bold">OFFICIAL CHAMPAGNE SEAL</div>
+                    <div className="text-[8px] font-mono text-[#B55D3D] uppercase font-bold">OFFICIAL CHAMPAGNE SEAL</div>
                   </div>
 
                   <div className="sm:text-right">
-                    <div className="text-[10px] font-mono text-[#787268] uppercase font-bold">ISSUE STATUS</div>
+                    <div className="text-[9px] font-mono text-[#787268] uppercase font-bold">ISSUE STATUS</div>
                     <div className="text-xs font-mono font-bold text-[#23201C]">{selectedCert.year} · ACTIVE SIGNAL</div>
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center justify-end gap-3 pt-6">
+              <div className="flex items-center justify-end gap-3 pt-5">
                 <button
                   onClick={() => setSelectedCert(null)}
-                  className="px-6 py-2.5 rounded-full bg-[#23201C] text-[#FCFAF6] hover:bg-[#B55D3D] transition-colors text-xs font-mono font-bold uppercase tracking-wider cursor-pointer shadow-md"
+                  className="px-5 py-2 rounded-full bg-[#23201C] text-[#FCFAF6] hover:bg-[#B55D3D] transition-colors text-xs font-mono font-bold uppercase tracking-wider cursor-pointer shadow-md"
                 >
                   RETURN TO VAULT
                 </button>
