@@ -1,444 +1,123 @@
-export interface PyramidTechItem {
-  id: string;
-  name: string;
-  shortLabel: string;
-  layer: 1 | 2 | 3 | 4; // 1 = Base (16), 2 = Frontend (9), 3 = 3D (4), 4 = Apex (1)
-  layerName: string;
-  category: string;
-  experienceYears: number;
-  projectsCount: number;
-  confidence: number;
+export interface DomainFace {
+  id: 'frontend' | 'backend' | 'three' | 'devops';
+  title: string;
+  subtitle: string;
+  angle: number; // Y-rotation angle in radians: 0, Math.PI/2, Math.PI, 3*Math.PI/2
   accentColor: string;
   description: string;
-  keyFeatures: string[];
+  technologies: string[];
+  metrics: { label: string; value: string }[];
 }
 
-export const PYRAMID_TECH_DATA: PyramidTechItem[] = [
-  // ── LAYER 4: APEX (1 CUBE) ──────────────────────────────────────────────────
+export const DOMAIN_FACES: DomainFace[] = [
   {
-    id: "fullstack-arch",
-    name: "Full-Stack Web Architecture",
-    shortLabel: "ARCH",
-    layer: 4,
-    layerName: "Layer 4 — Apex Philosophy",
-    category: "System Engineering",
-    experienceYears: 4.0,
-    projectsCount: 25,
-    confidence: 98,
-    accentColor: "#B85C3B",
-    description: "Designing end-to-end web architectures with sub-second page loads, modular React components, and resilient APIs.",
-    keyFeatures: ["Sub-Second Core Web Vitals", "Clean Modular Codebase", "Scalable Serverless & Edge API Routes", "Production Security & Reliability"]
+    id: 'frontend',
+    title: 'Frontend Architecture',
+    subtitle: 'Face 1 — Front (0°)',
+    angle: 0,
+    accentColor: '#B85C3B',
+    description: 'Building reactive, component-driven interfaces with React 19, Next.js 15, strict TypeScript, and utility-first Tailwind CSS.',
+    technologies: ['React 19', 'Next.js 15', 'TypeScript', 'JavaScript ES6+', 'Tailwind CSS v4', 'Redux Toolkit', 'Zustand'],
+    metrics: [
+      { label: 'Core Vitals Score', value: '98+' },
+      { label: 'Experience', value: '4.0+ Yrs' },
+      { label: 'Production MVPs', value: '18+' },
+      { label: 'Type Safety', value: 'Strict 100%' },
+    ],
   },
+  {
+    id: 'backend',
+    title: 'Full-Stack & Systems',
+    subtitle: 'Face 2 — Right (90°)',
+    angle: Math.PI / 2,
+    accentColor: '#8E9A78',
+    description: 'High-throughput asynchronous Node.js REST services, Express middleware pipelines, WebSocket streams, and PostgreSQL relational schemas.',
+    technologies: ['Node.js', 'Express.js', 'MongoDB', 'PostgreSQL', 'Prisma ORM', 'WebSockets', 'Redis Caching'],
+    metrics: [
+      { label: 'API Latency', value: '< 25ms' },
+      { label: 'Experience', value: '3.5+ Yrs' },
+      { label: 'Real-Time Sync', value: 'Socket.io' },
+      { label: 'Database Schemas', value: 'ACID Robust' },
+    ],
+  },
+  {
+    id: 'three',
+    title: '3D WebGL & Motion',
+    subtitle: 'Face 3 — Back (180°)',
+    angle: Math.PI,
+    accentColor: '#4A6FA5',
+    description: 'Immersive WebGL 3D canvases, custom GLSL shaders, 60 FPS instanced mesh physics, GSAP timelines, and Framer Motion layout physics.',
+    technologies: ['Three.js', 'React Three Fiber', 'GSAP ScrollTrigger', 'Framer Motion', 'GLSL Custom Shaders'],
+    metrics: [
+      { label: 'Target Frame Rate', value: '60 FPS' },
+      { label: 'Instanced Cubes', value: '1,000+' },
+      { label: 'Experience', value: '2.5+ Yrs' },
+      { label: 'Interactive Canvases', value: 'Sub-Pixel' },
+    ],
+  },
+  {
+    id: 'devops',
+    title: 'DevOps & Infrastructure',
+    subtitle: 'Face 4 — Left (270°)',
+    angle: (3 * Math.PI) / 2,
+    accentColor: '#25231F',
+    description: 'Isolated Docker containers, GitHub Actions CI/CD workflows, AWS S3/CloudFront infrastructure, Vercel edge networks, and Linux shell administration.',
+    technologies: ['Docker', 'AWS Infrastructure', 'Git & GitHub', 'GitHub Actions CI/CD', 'Vercel Edge', 'Linux Shell'],
+    metrics: [
+      { label: 'CI/CD Pipelines', value: 'Automated' },
+      { label: 'Containers', value: 'Multi-Stage' },
+      { label: 'Version Control', value: '4.0+ Yrs' },
+      { label: 'Deployment', value: 'Edge CDN' },
+    ],
+  },
+];
 
-  // ── LAYER 3: 3D WEBGL & MOTION (4 CUBES: 2x2) ──────────────────────────────
-  {
-    id: "threejs",
-    name: "Three.js",
-    category: "3D Web Graphics",
-    shortLabel: "3JS",
-    layer: 3,
-    layerName: "Layer 3 — 3D & Graphics",
-    experienceYears: 2.5,
-    projectsCount: 8,
-    confidence: 92,
-    accentColor: "#B85C3B",
-    description: "WebGL 3D graphics engine for interactive canvases, organic shaders, and 60 FPS instanced geometry.",
-    keyFeatures: ["Custom GLSL Shaders", "InstancedMesh Performance", "3D Camera Parallax Control", "WebGL Frame Loop Optimization"]
-  },
-  {
-    id: "r3f",
-    name: "React Three Fiber",
-    shortLabel: "R3F",
-    layer: 3,
-    layerName: "Layer 3 — 3D & Graphics",
-    category: "Declarative 3D Canvas",
-    experienceYears: 2.5,
-    projectsCount: 8,
-    confidence: 94,
-    accentColor: "#4A6FA5",
-    description: "React renderer for Three.js enabling declarative 3D scene graphs and component-driven WebGL states.",
-    keyFeatures: ["Declarative 3D Canvas", "Drei Helper Suite Integration", "Spring Physics Hook Interop", "Dynamic Lighting Systems"]
-  },
-  {
-    id: "gsap",
-    name: "GSAP",
-    shortLabel: "GSAP",
-    layer: 3,
-    layerName: "Layer 3 — 3D & Graphics",
-    category: "High-Speed Animation",
-    experienceYears: 3.0,
-    projectsCount: 12,
-    confidence: 95,
-    accentColor: "#8E9A78",
-    description: "Professional JavaScript animation engine powering complex timeline sequences and scroll-driven parallax.",
-    keyFeatures: ["ScrollTrigger Synchronization", "Complex Timeline Chaining", "Sub-Pixel Smooth Rendering", "SVG Path & Morphing"]
-  },
-  {
-    id: "framer-motion",
-    name: "Framer Motion",
-    shortLabel: "MOTION",
-    layer: 3,
-    layerName: "Layer 3 — 3D & Graphics",
-    category: "React Motion Library",
-    experienceYears: 3.5,
-    projectsCount: 18,
-    confidence: 96,
-    accentColor: "#B85C3B",
-    description: "Production-ready motion library for React powering layout transitions, spring physics, and gesture controls.",
-    keyFeatures: ["AnimatePresence Page Transitions", "Spring Dampening Physics", "Layout Animation Engine", "Drag & Scroll Gestures"]
-  },
+export interface PyramidCubeItem {
+  id: string;
+  name: string;
+  domainId: 'frontend' | 'backend' | 'three' | 'devops';
+  layer: 1 | 2 | 3 | 4;
+  layerName: string;
+  accentColor: string;
+  description: string;
+}
 
-  // ── LAYER 2: FRONTEND ARCHITECTURE (9 CUBES: 3x3) ──────────────────────────
-  {
-    id: "react",
-    name: "React 19",
-    shortLabel: "REACT",
-    layer: 2,
-    layerName: "Layer 2 — Frontend Architecture",
-    category: "UI Library",
-    experienceYears: 4.0,
-    projectsCount: 22,
-    confidence: 97,
-    accentColor: "#61DAFB",
-    description: "Building fast, reactive user interface components with strict state management and component modularity.",
-    keyFeatures: ["Concurrent Fiber Engine", "Custom Hooks Architecture", "Suspense & Streaming", "Virtual DOM Optimization"]
-  },
-  {
-    id: "nextjs",
-    name: "Next.js 15",
-    shortLabel: "NEXT",
-    layer: 2,
-    layerName: "Layer 2 — Frontend Architecture",
-    category: "Full-Stack Framework",
-    experienceYears: 3.5,
-    projectsCount: 16,
-    confidence: 95,
-    accentColor: "#25231F",
-    description: "The React framework for production with App Router, SSR, Server Actions, and automatic image optimization.",
-    keyFeatures: ["App Router & Server Actions", "Incremental Static Regeneration", "Route Handlers & Edge Runtime", "Font & Image Optimization"]
-  },
-  {
-    id: "typescript",
-    name: "TypeScript",
-    shortLabel: "TS",
-    layer: 2,
-    layerName: "Layer 2 — Frontend Architecture",
-    category: "Typed Language",
-    experienceYears: 3.5,
-    projectsCount: 18,
-    confidence: 96,
-    accentColor: "#3178C6",
-    description: "Typed JavaScript at scale, ensuring robust API contracts, compile-time safety, and clean code refactoring.",
-    keyFeatures: ["Strict Type System", "Generics & Utility Types", "Automated Type Checks", "IDE Refactoring & Intellisense"]
-  },
-  {
-    id: "javascript",
-    name: "JavaScript ES6+",
-    shortLabel: "JS",
-    layer: 2,
-    layerName: "Layer 2 — Frontend Architecture",
-    category: "Core Web Language",
-    experienceYears: 4.5,
-    projectsCount: 25,
-    confidence: 98,
-    accentColor: "#F7DF1E",
-    description: "Mastering modern ES6+ features, asynchronous pipelines, event loop mechanics, and DOM performance.",
-    keyFeatures: ["Async/Await & Promises", "Closures & Prototype Chain", "Web Workers & Microtasks", "ES Modules Architecture"]
-  },
-  {
-    id: "tailwind",
-    name: "Tailwind CSS v4",
-    shortLabel: "TW",
-    layer: 2,
-    layerName: "Layer 2 — Frontend Architecture",
-    category: "Utility CSS Engine",
-    experienceYears: 3.5,
-    projectsCount: 20,
-    confidence: 97,
-    accentColor: "#06B6D4",
-    description: "Utility-first CSS framework for crafting responsive design systems, glassmorphism, and custom tokens.",
-    keyFeatures: ["Tailwind v4 JIT Engine", "Design System Tokens", "Glassmorphism & Gradients", "Dark & Light Mode Themes"]
-  },
-  {
-    id: "redux",
-    name: "Redux Toolkit",
-    shortLabel: "REDUX",
-    layer: 2,
-    layerName: "Layer 2 — Frontend Architecture",
-    category: "State Management",
-    experienceYears: 2.5,
-    projectsCount: 10,
-    confidence: 88,
-    accentColor: "#764ABC",
-    description: "Predictable centralized state container for complex multi-screen enterprise web applications.",
-    keyFeatures: ["Slice Architecture", "RTK Query API Caching", "Immer Immutable State", "DevTools Time-Travel Debugging"]
-  },
-  {
-    id: "zustand",
-    name: "Zustand",
-    shortLabel: "ZUST",
-    layer: 2,
-    layerName: "Layer 2 — Frontend Architecture",
-    category: "State Management",
-    experienceYears: 2.5,
-    projectsCount: 12,
-    confidence: 92,
-    accentColor: "#443E38",
-    description: "Small, fast, unopinionated state management solution with zero boilerplate and intuitive hook syntax.",
-    keyFeatures: ["Transient State Updates", "Zero Boilerplate Hooks", "Middleware Persistence", "Selector Subscriptions"]
-  },
-  {
-    id: "html5",
-    name: "HTML5 Semantic",
-    shortLabel: "HTML",
-    layer: 2,
-    layerName: "Layer 2 — Frontend Architecture",
-    category: "Web Markup",
-    experienceYears: 4.5,
-    projectsCount: 25,
-    confidence: 98,
-    accentColor: "#E34F26",
-    description: "Semantic HTML5 markup structured for maximum accessibility (ARIA standards) and search engine optimization.",
-    keyFeatures: ["Semantic Landmarks", "ARIA Accessibility Roles", "SEO Meta Schemas", "DOM Node Optimization"]
-  },
-  {
-    id: "css3",
-    name: "CSS3 & Modern Layouts",
-    shortLabel: "CSS",
-    layer: 2,
-    layerName: "Layer 2 — Frontend Architecture",
-    category: "Styling & Animations",
-    experienceYears: 4.5,
-    projectsCount: 25,
-    confidence: 97,
-    accentColor: "#1572B6",
-    description: "Modern CSS layout engines including CSS Grid, Flexbox, Container Queries, and GPU-accelerated keyframes.",
-    keyFeatures: ["CSS Grid & Flexbox", "CSS Custom Variables", "Keyframe Animations", "Responsive Container Queries"]
-  },
+export const PYRAMID_CUBE_ITEMS: PyramidCubeItem[] = [
+  // Apex
+  { id: 'apex-1', name: 'Full-Stack Web Architecture', domainId: 'frontend', layer: 4, layerName: 'Layer 4 — Apex', accentColor: '#B85C3B', description: 'End-to-end architecture unifying design systems, 3D WebGL, and cloud endpoints.' },
 
-  // ── LAYER 1: BASE INFRASTRUCTURE & BACKEND (16 CUBES: 4x4) ────────────────
-  {
-    id: "nodejs",
-    name: "Node.js",
-    shortLabel: "NODE",
-    layer: 1,
-    layerName: "Layer 1 — Core Infrastructure",
-    category: "Backend Runtime",
-    experienceYears: 3.5,
-    projectsCount: 15,
-    confidence: 90,
-    accentColor: "#5FA04E",
-    description: "Asynchronous event-driven JavaScript runtime for non-blocking REST APIs and real-time streaming services.",
-    keyFeatures: ["Event Loop IO Engine", "Stream & Buffer APIs", "Cluster Module Scaling", "High-Throughput Services"]
-  },
-  {
-    id: "express",
-    name: "Express.js",
-    shortLabel: "EXPR",
-    layer: 1,
-    layerName: "Layer 1 — Core Infrastructure",
-    category: "Backend Framework",
-    experienceYears: 3.0,
-    projectsCount: 12,
-    confidence: 90,
-    accentColor: "#8E9A78",
-    description: "Fast, unopinionated minimalist web framework for building resilient HTTP services and API middleware.",
-    keyFeatures: ["Middleware Pipelines", "RESTful Route Architecture", "Error Handling Chains", "CORS & Rate Limiting"]
-  },
-  {
-    id: "mongodb",
-    name: "MongoDB",
-    shortLabel: "MONGO",
-    layer: 1,
-    layerName: "Layer 1 — Core Infrastructure",
-    category: "NoSQL Database",
-    experienceYears: 2.5,
-    projectsCount: 9,
-    confidence: 86,
-    accentColor: "#47A248",
-    description: "Document-oriented NoSQL database for rapid schema iteration and flexible JSON data storage.",
-    keyFeatures: ["Aggregation Pipelines", "BSON Document Store", "Indexing Strategies", "Mongoose ORM Schemas"]
-  },
-  {
-    id: "postgresql",
-    name: "PostgreSQL & Prisma",
-    shortLabel: "PG",
-    layer: 1,
-    layerName: "Layer 1 — Core Infrastructure",
-    category: "Relational Database",
-    experienceYears: 2.5,
-    projectsCount: 8,
-    confidence: 88,
-    accentColor: "#4169E1",
-    description: "Relational SQL database paired with Prisma ORM for type-safe queries and automated schema migrations.",
-    keyFeatures: ["Type-Safe Prisma Client", "Relational Schema Models", "Automated SQL Migrations", "ACID Compliant Transactions"]
-  },
-  {
-    id: "websockets",
-    name: "WebSockets / Socket.io",
-    shortLabel: "WS",
-    layer: 1,
-    layerName: "Layer 1 — Core Infrastructure",
-    category: "Real-Time Sync",
-    experienceYears: 2.5,
-    projectsCount: 7,
-    confidence: 88,
-    accentColor: "#B85C3B",
-    description: "Full-duplex real-time messaging protocols powering collaborative document editing and live telemetry.",
-    keyFeatures: ["Bi-directional Event Streaming", "Automatic Reconnection Handling", "Channel Broadcast Rooms", "Low Latency Packets"]
-  },
-  {
-    id: "rest-api",
-    name: "RESTful API Design",
-    shortLabel: "REST",
-    layer: 1,
-    layerName: "Layer 1 — Core Infrastructure",
-    category: "API Architecture",
-    experienceYears: 3.5,
-    projectsCount: 20,
-    confidence: 95,
-    accentColor: "#4A6FA5",
-    description: "Designing clean, versioned HTTP endpoint contracts with strict status codes and JSON payload validation.",
-    keyFeatures: ["HTTP Status Standards", "JWT & OAuth Authentication", "Zod Payload Validation", "OpenAPI / Swagger Specs"]
-  },
-  {
-    id: "git",
-    name: "Git",
-    shortLabel: "GIT",
-    layer: 1,
-    layerName: "Layer 1 — Core Infrastructure",
-    category: "Version Control",
-    experienceYears: 4.0,
-    projectsCount: 25,
-    confidence: 96,
-    accentColor: "#F05032",
-    description: "Distributed version control system for tracking codebase changes, branching strategies, and team commits.",
-    keyFeatures: ["Feature Branching & Rebase", "Merge Conflict Resolution", "Git Hooks & Automations", "Sanitized Commit Logs"]
-  },
-  {
-    id: "github",
-    name: "GitHub & Actions",
-    shortLabel: "GH",
-    layer: 1,
-    layerName: "Layer 1 — Core Infrastructure",
-    category: "DevOps & CI/CD",
-    experienceYears: 4.0,
-    projectsCount: 25,
-    confidence: 96,
-    accentColor: "#25231F",
-    description: "Code hosting platform for open-source collaboration, pull request code reviews, and automated CI/CD pipelines.",
-    keyFeatures: ["GitHub Actions Workflows", "Automated Lint & Test Pipelines", "Pull Request Reviews", "Release Version Tagging"]
-  },
-  {
-    id: "docker",
-    name: "Docker",
-    shortLabel: "DOCK",
-    layer: 1,
-    layerName: "Layer 1 — Core Infrastructure",
-    category: "Containerization",
-    experienceYears: 2.0,
-    projectsCount: 6,
-    confidence: 82,
-    accentColor: "#2496ED",
-    description: "Container platform packaging web applications and dependencies into isolated, reproducible runtime environments.",
-    keyFeatures: ["Multi-Stage Dockerfiles", "Docker Compose Networks", "Environment Parity", "Container Volume Storage"]
-  },
-  {
-    id: "aws",
-    name: "AWS Infrastructure",
-    shortLabel: "AWS",
-    layer: 1,
-    layerName: "Layer 1 — Core Infrastructure",
-    category: "Cloud Hosting",
-    experienceYears: 1.5,
-    projectsCount: 5,
-    confidence: 80,
-    accentColor: "#FF9900",
-    description: "Amazon Web Services for static asset hosting (S3), global CDN distribution (CloudFront), and serverless APIs.",
-    keyFeatures: ["S3 Bucket Asset Storage", "CloudFront Edge CDN", "EC2 & Lambda Instances", "IAM Security Policy"]
-  },
-  {
-    id: "postman",
-    name: "Postman",
-    shortLabel: "POST",
-    layer: 1,
-    layerName: "Layer 1 — Core Infrastructure",
-    category: "API Testing",
-    experienceYears: 3.5,
-    projectsCount: 15,
-    confidence: 94,
-    accentColor: "#FF6C37",
-    description: "API testing platform for endpoint verification, collection automation, and environment configuration.",
-    keyFeatures: ["Automated Endpoint Test Suites", "Environment Mocking", "Collection Runners", "API Documentation"]
-  },
-  {
-    id: "figma",
-    name: "Figma",
-    shortLabel: "FIG",
-    layer: 1,
-    layerName: "Layer 1 — Core Infrastructure",
-    category: "UI/UX Design",
-    experienceYears: 3.5,
-    projectsCount: 20,
-    confidence: 92,
-    accentColor: "#F24E1E",
-    description: "Collaborative design tool for building wireframes, design tokens, responsive layouts, and interactive prototypes.",
-    keyFeatures: ["Auto-Layout & Components", "Design System Libraries", "Interactive Prototyping", "Design-to-Code Handoff"]
-  },
-  {
-    id: "linux",
-    name: "Linux Shell / Bash",
-    shortLabel: "SH",
-    layer: 1,
-    layerName: "Layer 1 — Core Infrastructure",
-    category: "CLI Operations",
-    experienceYears: 3.0,
-    projectsCount: 18,
-    confidence: 88,
-    accentColor: "#FCC624",
-    description: "Command-line scripting, environment configuration, process management, and SSH server administration.",
-    keyFeatures: ["Bash Shell Automations", "File & Permission Management", "SSH & Server Admin", "NPM & Package Tooling"]
-  },
-  {
-    id: "redis",
-    name: "Redis Caching",
-    shortLabel: "REDIS",
-    layer: 1,
-    layerName: "Layer 1 — Core Infrastructure",
-    category: "In-Memory Store",
-    experienceYears: 1.5,
-    projectsCount: 4,
-    confidence: 80,
-    accentColor: "#DC382D",
-    description: "High-speed in-memory key-value data store used for API rate limiting, session storage, and event queueing.",
-    keyFeatures: ["In-Memory Sub-Millisecond Speed", "Session Token Storage", "Pub/Sub Messaging", "API Rate Limit Caching"]
-  },
-  {
-    id: "cicd",
-    name: "CI/CD Automations",
-    shortLabel: "CI/CD",
-    layer: 1,
-    layerName: "Layer 1 — Core Infrastructure",
-    category: "DevOps",
-    experienceYears: 2.5,
-    projectsCount: 10,
-    confidence: 88,
-    accentColor: "#8E9A78",
-    description: "Continuous integration and deployment pipelines automating code compilation, unit tests, and production release.",
-    keyFeatures: ["Automated Build Verification", "Lint & Test Suites", "Production Zero-Downtime Deploy", "Branch Release Triggers"]
-  },
-  {
-    id: "vercel",
-    name: "Vercel Deployment",
-    shortLabel: "VCL",
-    layer: 1,
-    layerName: "Layer 1 — Core Infrastructure",
-    category: "Cloud Platform",
-    experienceYears: 3.0,
-    projectsCount: 16,
-    confidence: 96,
-    accentColor: "#25231F",
-    description: "Frontend cloud platform for instant Next.js deployments, edge middleware distribution, and preview environments.",
-    keyFeatures: ["Edge Network CDNs", "Serverless Function Routes", "Instant Git Preview Deploys", "Analytics & Core Web Vitals"]
-  }
+  // Layer 3 (4 Cubes)
+  { id: 'l3-1', name: 'React 19 & Next.js 15', domainId: 'frontend', layer: 3, layerName: 'Layer 3 — Core Frameworks', accentColor: '#B85C3B', description: 'Concurrent React rendering, SSR, and App Router server components.' },
+  { id: 'l3-2', name: 'Node.js & Async IO', domainId: 'backend', layer: 3, layerName: 'Layer 3 — Core Frameworks', accentColor: '#8E9A78', description: 'High-speed event loop REST APIs and streaming web services.' },
+  { id: 'l3-3', name: 'Three.js & WebGL', domainId: 'three', layer: 3, layerName: 'Layer 3 — Core Frameworks', accentColor: '#4A6FA5', description: '3D WebGL scenes, custom shaders, and instanced geometry physics.' },
+  { id: 'l3-4', name: 'Docker & CI/CD Pipelines', domainId: 'devops', layer: 3, layerName: 'Layer 3 — Core Frameworks', accentColor: '#25231F', description: 'Containerization and automated build verification workflows.' },
+
+  // Layer 2 (9 Cubes)
+  { id: 'l2-1', name: 'TypeScript Strict', domainId: 'frontend', layer: 2, layerName: 'Layer 2 — Frontend & APIs', accentColor: '#B85C3B', description: 'Compile-time type safety and generics.' },
+  { id: 'l2-2', name: 'Tailwind CSS v4', domainId: 'frontend', layer: 2, layerName: 'Layer 2 — Frontend & APIs', accentColor: '#B85C3B', description: 'Utility design tokens & glassmorphism.' },
+  { id: 'l2-3', name: 'Express Middleware', domainId: 'backend', layer: 2, layerName: 'Layer 2 — Frontend & APIs', accentColor: '#8E9A78', description: 'RESTful routes and auth pipelines.' },
+  { id: 'l2-4', name: 'PostgreSQL & Prisma', domainId: 'backend', layer: 2, layerName: 'Layer 2 — Frontend & APIs', accentColor: '#8E9A78', description: 'Type-safe relational database queries.' },
+  { id: 'l2-5', name: 'React Three Fiber', domainId: 'three', layer: 2, layerName: 'Layer 2 — Frontend & APIs', accentColor: '#4A6FA5', description: 'Declarative R3F component canvases.' },
+  { id: 'l2-6', name: 'GSAP ScrollTrigger', domainId: 'three', layer: 2, layerName: 'Layer 2 — Frontend & APIs', accentColor: '#4A6FA5', description: 'Timeline animations and scroll parallax.' },
+  { id: 'l2-7', name: 'Git & GitHub Actions', domainId: 'devops', layer: 2, layerName: 'Layer 2 — Frontend & APIs', accentColor: '#25231F', description: 'Branch management and automated testing.' },
+  { id: 'l2-8', name: 'AWS S3 & CloudFront', domainId: 'devops', layer: 2, layerName: 'Layer 2 — Frontend & APIs', accentColor: '#25231F', description: 'Static asset storage and global edge CDN.' },
+  { id: 'l2-9', name: 'Zustand & Redux', domainId: 'frontend', layer: 2, layerName: 'Layer 2 — Frontend & APIs', accentColor: '#B85C3B', description: 'Centralized state management.' },
+
+  // Layer 1 (16 Cubes Base)
+  { id: 'l1-1', name: 'JavaScript ES6+', domainId: 'frontend', layer: 1, layerName: 'Layer 1 — Core Base', accentColor: '#B85C3B', description: 'Event loop and async promise pipelines.' },
+  { id: 'l1-2', name: 'HTML5 & ARIA', domainId: 'frontend', layer: 1, layerName: 'Layer 1 — Core Base', accentColor: '#B85C3B', description: 'Accessible semantic markup.' },
+  { id: 'l1-3', name: 'CSS3 Grid & Flex', domainId: 'frontend', layer: 1, layerName: 'Layer 1 — Core Base', accentColor: '#B85C3B', description: 'Responsive container queries.' },
+  { id: 'l1-4', name: 'MongoDB NoSQL', domainId: 'backend', layer: 1, layerName: 'Layer 1 — Core Base', accentColor: '#8E9A78', description: 'Document schemas and aggregation.' },
+  { id: 'l1-5', name: 'WebSockets & Socket.io', domainId: 'backend', layer: 1, layerName: 'Layer 1 — Core Base', accentColor: '#8E9A78', description: 'Bi-directional real-time streaming.' },
+  { id: 'l1-6', name: 'REST API Contracts', domainId: 'backend', layer: 1, layerName: 'Layer 1 — Core Base', accentColor: '#8E9A78', description: 'Versioned HTTP status standards.' },
+  { id: 'l1-7', name: 'Redis In-Memory', domainId: 'backend', layer: 1, layerName: 'Layer 1 — Core Base', accentColor: '#8E9A78', description: 'Rate limiting and session caching.' },
+  { id: 'l1-8', name: 'Framer Motion Spring', domainId: 'three', layer: 1, layerName: 'Layer 1 — Core Base', accentColor: '#4A6FA5', description: 'Layout animations and spring dampening.' },
+  { id: 'l1-9', name: 'GLSL Custom Shaders', domainId: 'three', layer: 1, layerName: 'Layer 1 — Core Base', accentColor: '#4A6FA5', description: 'Vertex and fragment shader code.' },
+  { id: 'l1-10', name: 'Vercel Edge Network', domainId: 'devops', layer: 1, layerName: 'Layer 1 — Core Base', accentColor: '#25231F', description: 'Serverless deployment and previews.' },
+  { id: 'l1-11', name: 'Linux Bash CLI', domainId: 'devops', layer: 1, layerName: 'Layer 1 — Core Base', accentColor: '#25231F', description: 'Shell automation & server admin.' },
+  { id: 'l1-12', name: 'Postman API Testing', domainId: 'devops', layer: 1, layerName: 'Layer 1 — Core Base', accentColor: '#25231F', description: 'Automated test suite collections.' },
+  { id: 'l1-13', name: 'Figma UI Handoff', domainId: 'devops', layer: 1, layerName: 'Layer 1 — Core Base', accentColor: '#25231F', description: 'Component auto-layout design systems.' },
+  { id: 'l1-14', name: 'Webpack & Vite', domainId: 'frontend', layer: 1, layerName: 'Layer 1 — Core Base', accentColor: '#B85C3B', description: 'Sub-second module bundling.' },
+  { id: 'l1-15', name: 'Sub-Second Web Vitals', domainId: 'frontend', layer: 1, layerName: 'Layer 1 — Core Base', accentColor: '#B85C3B', description: 'Lighthouse 98+ performance tuning.' },
+  { id: 'l1-16', name: 'JWT & OAuth Auth', domainId: 'backend', layer: 1, layerName: 'Layer 1 — Core Base', accentColor: '#8E9A78', description: 'Secure token authentication.' },
 ];
