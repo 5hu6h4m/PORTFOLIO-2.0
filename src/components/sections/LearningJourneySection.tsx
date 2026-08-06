@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { Sparkles, Code2, Compass, Layers, Terminal, Trophy, Rocket, ArrowUpRight, CheckCircle2, ChevronRight } from 'lucide-react';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { Compass, Code2, Trophy, CheckCircle2, ArrowUpRight, Sparkles, Layers } from 'lucide-react';
 import { PORTFOLIO_DATA } from '@/data/portfolioData';
 
 interface LearningJourneySectionProps {
@@ -120,36 +120,39 @@ const CHAPTERS = [
 ];
 
 export function LearningJourneySection({ playClick, playHover }: LearningJourneySectionProps) {
-  const [activeChapterIndex, setActiveChapterIndex] = useState(0);
-
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end end'],
   });
 
-  const activeChapter = CHAPTERS[activeChapterIndex];
+  // Soft spring physics for butter-smooth horizontal scroll translation
+  const smoothProgress = useSpring(scrollYProgress, {
+    damping: 32,
+    stiffness: 70,
+    mass: 0.9,
+  });
+
+  // Translate 6 chapter slides horizontally across 600vw (0vw to -500vw)
+  const trackX = useTransform(smoothProgress, [0.05, 0.92], ['0vw', '-500vw']);
 
   return (
-    <section id="journey-roadmap" ref={containerRef} className="relative bg-[#F4F0E8] border-t border-[#E2DCD2]" style={{ minHeight: '380vh' }}>
+    <section id="journey-roadmap" ref={containerRef} className="relative bg-[#F4F0E8] border-t border-[#E2DCD2]" style={{ height: '450vh' }}>
       
       {/* ── STICKY VIEWPORT CONTAINER ──────────────────────────────────────── */}
-      <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-between pt-16 pb-10 px-6 md:px-12 select-none">
+      <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-between pt-14 pb-8 select-none">
         
         {/* Volumetric background ambient glow */}
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[850px] bg-radial from-[#B85C3B]/10 via-[#8E9A78]/5 to-transparent blur-3xl pointer-events-none transition-all duration-700"
-          style={{ opacity: 0.8 }}
-        />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] bg-radial from-[#B85C3B]/10 via-[#8E9A78]/5 to-transparent blur-3xl pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto relative z-10 w-full">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10 w-full">
 
           {/* ── SECTION HEADER ───────────────────────────────────────────────── */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-[#E2DCD2] pb-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-[#E2DCD2] pb-4">
             <div>
-              <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.3em] uppercase text-[#B85C3B] mb-2 font-bold">
+              <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.3em] uppercase text-[#B85C3B] mb-1.5 font-bold">
                 <Compass className="w-3.5 h-3.5" />
-                <span>05 / EVOLUTION ARCHIVE — THE LEARNING JOURNEY</span>
+                <span>05 / EVOLUTION ARCHIVE — HORIZONTAL SCROLL JOURNEY</span>
               </div>
               <h2
                 className="text-4xl md:text-6xl font-serif font-bold tracking-tight text-[#25231F]"
@@ -159,228 +162,197 @@ export function LearningJourneySection({ playClick, playHover }: LearningJourney
               </h2>
             </div>
 
-            <p className="text-xs text-[#787268] font-light max-w-sm mt-3 md:mt-0 leading-relaxed">
-              Every project, every challenge, and every line of code shaped the engineer I am becoming.
-            </p>
-          </div>
-
-          {/* ── CHAPTER NAVIGATOR PILLS ─────────────────────────────────────── */}
-          <div className="flex items-center gap-2 overflow-x-auto py-4 scrollbar-none border-b border-[#E2DCD2]/60">
-            {CHAPTERS.map((ch, idx) => (
-              <button
-                key={ch.id}
-                onClick={() => {
-                  playClick();
-                  setActiveChapterIndex(idx);
-                }}
-                onMouseEnter={playHover}
-                className={`px-3.5 py-1.5 rounded-full text-[10px] font-mono uppercase tracking-widest transition-all duration-300 flex items-center gap-2 shrink-0 cursor-pointer ${
-                  activeChapterIndex === idx
-                    ? 'bg-[#25231F] text-[#FAF8F3] shadow-md'
-                    : 'bg-[#FCFAF6] text-[#787268] border border-[#E2DCD2] hover:border-[#B85C3B]'
-                }`}
-              >
-                <span className="font-bold text-[#B85C3B]">{ch.year}</span>
-                <span>{ch.subtitle}</span>
-              </button>
-            ))}
+            <div className="flex items-center gap-3 text-xs font-mono text-[#787268] mt-2 md:mt-0 font-semibold">
+              <span className="text-[#B85C3B] font-bold">SCROLL DOWN</span>
+              <span>TO SLIDE THROUGH CHAPTERS 1 → 6</span>
+            </div>
           </div>
 
         </div>
 
-        {/* ── MAIN CINEMATIC CHAPTER DISPLAY (DYNAMIC CHAPTER STAGE) ───────── */}
-        <div className="max-w-7xl mx-auto w-full my-auto py-4 relative z-20">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeChapter.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -30 }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 items-center"
-            >
-              
-              {/* Left Column — Editorial Story Text */}
-              <div className="lg:col-span-6 space-y-5">
-                <div className="flex items-center gap-3">
-                  <span className="text-3xl md:text-4xl font-serif font-bold text-[#B85C3B]">
-                    {activeChapter.year}
-                  </span>
-                  <div className="h-4 w-px bg-[#E2DCD2]" />
-                  <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest bg-[#B85C3B]/10 text-[#B85C3B] border border-[#B85C3B]/20 font-bold">
-                    {activeChapter.badge}
-                  </span>
+        {/* ── 6-CHAPTER HORIZONTAL SLIDING TRACK (600vw WIDE) ────────────────── */}
+        <div className="relative w-full flex-1 flex items-center overflow-hidden my-auto z-20">
+          <motion.div
+            style={{ x: trackX }}
+            className="flex h-full w-[600vw] items-center"
+          >
+            {CHAPTERS.map((ch, idx) => (
+              <div
+                key={ch.id}
+                className="w-screen h-full shrink-0 flex items-center px-6 md:px-12 lg:px-20 relative"
+              >
+                {/* Background Watermark Year */}
+                <div className="absolute top-0 right-12 text-[20vw] font-serif font-bold text-[#B85C3B]/5 select-none pointer-events-none leading-none -translate-y-6">
+                  {ch.year.slice(0, 4)}
                 </div>
 
-                <h3 className="text-3xl md:text-5xl font-serif font-bold text-[#25231F] leading-tight">
-                  {activeChapter.title}
-                </h3>
-
-                <p className="text-sm md:text-base text-[#787268] font-light leading-relaxed">
-                  {activeChapter.description}
-                </p>
-
-                {/* Chapter Tags */}
-                <div className="flex flex-wrap gap-2 pt-2">
-                  {activeChapter.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-3 py-1 rounded-lg text-[10px] font-mono bg-[#FCFAF6] text-[#25231F] border border-[#E2DCD2] font-semibold"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Right Column — Unique Cinematic Visual per Chapter */}
-              <div className="lg:col-span-6">
-                <div className="p-6 md:p-8 rounded-3xl bg-[#FCFAF6] border border-[#E2DCD2] shadow-2xl relative overflow-hidden min-h-[300px] flex flex-col justify-between">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 items-center w-full max-w-7xl mx-auto relative z-10">
                   
-                  {/* CHAPTER 1 VISUAL: Blueprint Glass Card */}
-                  {activeChapter.visualType === 'blueprint' && (
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between border-b border-[#E2DCD2] pb-3">
-                        <span className="text-[10px] font-mono text-[#B85C3B] uppercase tracking-widest font-bold">ACADEMIC BLUEPRINT</span>
-                        <span className="text-[10px] font-mono text-[#9A948C]">B.TECH CS · 2024 — 2028</span>
-                      </div>
-                      <div className="p-4 rounded-2xl bg-[#F4F0E8] border border-[#E2DCD2] space-y-2">
-                        <div className="text-xs font-mono font-bold text-[#25231F]">MET Institute of Technology</div>
-                        <div className="text-xs text-[#787268]">Bhujbal Knowledge City, Nashik</div>
-                        <div className="text-[10px] font-mono text-[#B85C3B] pt-1">Computer Engineering Specialization</div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2 text-[10px] font-mono text-[#25231F]">
-                        <div className="p-2.5 rounded-xl bg-[#F4F0E8] border border-[#E2DCD2]">✓ Data Structures</div>
-                        <div className="p-2.5 rounded-xl bg-[#F4F0E8] border border-[#E2DCD2]">✓ Algorithms</div>
-                        <div className="p-2.5 rounded-xl bg-[#F4F0E8] border border-[#E2DCD2]">✓ Web Architecture</div>
-                        <div className="p-2.5 rounded-xl bg-[#F4F0E8] border border-[#E2DCD2]">✓ Database Systems</div>
-                      </div>
+                  {/* Left Column — Editorial Story Text */}
+                  <div className="lg:col-span-6 space-y-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl md:text-5xl font-serif font-bold text-[#B85C3B]">
+                        {ch.year}
+                      </span>
+                      <div className="h-4 w-px bg-[#E2DCD2]" />
+                      <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest bg-[#B85C3B]/10 text-[#B85C3B] border border-[#B85C3B]/20 font-bold">
+                        {ch.badge}
+                      </span>
                     </div>
-                  )}
 
-                  {/* CHAPTER 2 VISUAL: Live Animated Code Terminal */}
-                  {activeChapter.visualType === 'code' && (
-                    <div className="rounded-2xl bg-[#161412] text-[#FAF8F3] p-5 font-mono text-xs shadow-inner space-y-3">
-                      <div className="flex items-center justify-between border-b border-[#FAF8F3]/10 pb-2 text-[10px] text-[#FAF8F3]/40">
-                        <div className="flex items-center gap-1.5">
-                          <div className="w-2.5 h-2.5 rounded-full bg-[#B85C3B]" />
-                          <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-                          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                        </div>
-                        <span>index.js — First Code</span>
-                      </div>
-                      <pre className="text-emerald-400 font-mono text-xs leading-relaxed overflow-x-auto">
-                        {activeChapter.codeSnippet}
-                      </pre>
-                      <div className="pt-2 border-t border-[#FAF8F3]/10 flex items-center justify-between text-[10px] text-amber-300">
-                        <span>✓ COMPILER: PASSING</span>
-                        <span>0 ERRORS</span>
-                      </div>
+                    <div className="text-[10px] font-mono tracking-widest text-[#9A948C] uppercase font-bold">
+                      {ch.chapterNum} // {ch.subtitle}
                     </div>
-                  )}
 
-                  {/* CHAPTER 3 VISUAL: Project Cards Preview */}
-                  {activeChapter.visualType === 'projects' && (
-                    <div className="space-y-3">
-                      <div className="text-[10px] font-mono text-[#B85C3B] uppercase tracking-widest font-bold mb-2">SHIPPED BUILDS & PRODUCTS</div>
-                      {activeChapter.projects?.map((p, idx) => (
-                        <div key={idx} className="p-3.5 rounded-2xl bg-[#F4F0E8] border border-[#E2DCD2] flex items-center justify-between hover:border-[#B85C3B] transition-colors">
-                          <div>
-                            <div className="text-xs font-serif font-bold text-[#25231F]">{p.name}</div>
-                            <div className="text-[10px] text-[#787268]">{p.desc}</div>
-                          </div>
-                          <span className="px-2 py-0.5 rounded-full text-[9px] font-mono bg-[#B85C3B]/10 text-[#B85C3B] border border-[#B85C3B]/20 font-bold shrink-0">
-                            {p.tag}
-                          </span>
-                        </div>
+                    <h3 className="text-3xl md:text-5xl font-serif font-bold text-[#25231F] leading-tight">
+                      {ch.title}
+                    </h3>
+
+                    <p className="text-sm md:text-base text-[#787268] font-light leading-relaxed max-w-xl">
+                      {ch.description}
+                    </p>
+
+                    {/* Chapter Tags */}
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      {ch.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="px-3 py-1 rounded-lg text-[10px] font-mono bg-[#FCFAF6] text-[#25231F] border border-[#E2DCD2] font-semibold shadow-2xs"
+                        >
+                          {tag}
+                        </span>
                       ))}
                     </div>
-                  )}
+                  </div>
 
-                  {/* CHAPTER 4 VISUAL: Leadership Badges */}
-                  {activeChapter.visualType === 'leadership' && (
-                    <div className="space-y-3">
-                      <div className="text-[10px] font-mono text-[#B85C3B] uppercase tracking-widest font-bold mb-2">LEADERSHIP & INITIATIVES</div>
-                      {activeChapter.roles?.map((r, idx) => (
-                        <div key={idx} className="p-3.5 rounded-2xl bg-[#F4F0E8] border border-[#E2DCD2] space-y-1">
-                          <div className="text-xs font-serif font-bold text-[#25231F] flex items-center gap-1.5">
-                            <Trophy className="w-3.5 h-3.5 text-[#B85C3B]" />
-                            <span>{r.title}</span>
+                  {/* Right Column — Unique Interactive Visual Card per Chapter */}
+                  <div className="lg:col-span-6">
+                    <div className="p-6 md:p-8 rounded-3xl bg-[#FCFAF6] border border-[#E2DCD2] shadow-2xl relative overflow-hidden min-h-[320px] flex flex-col justify-between group transition-shadow duration-300 hover:shadow-2xl">
+                      
+                      {/* CHAPTER 1 VISUAL: Blueprint Glass Card */}
+                      {ch.visualType === 'blueprint' && (
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between border-b border-[#E2DCD2] pb-3">
+                            <span className="text-[10px] font-mono text-[#B85C3B] uppercase tracking-widest font-bold">ACADEMIC BLUEPRINT</span>
+                            <span className="text-[10px] font-mono text-[#9A948C]">B.TECH CS · 2024 — 2028</span>
                           </div>
-                          <div className="text-[10px] text-[#787268]">{r.desc}</div>
+                          <div className="p-4 rounded-2xl bg-[#F4F0E8] border border-[#E2DCD2] space-y-2">
+                            <div className="text-xs font-mono font-bold text-[#25231F]">MET Institute of Technology</div>
+                            <div className="text-xs text-[#787268]">Bhujbal Knowledge City, Nashik</div>
+                            <div className="text-[10px] font-mono text-[#B85C3B] pt-1">Computer Engineering Specialization</div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 text-[10px] font-mono text-[#25231F]">
+                            <div className="p-2.5 rounded-xl bg-[#F4F0E8] border border-[#E2DCD2]">✓ Data Structures</div>
+                            <div className="p-2.5 rounded-xl bg-[#F4F0E8] border border-[#E2DCD2]">✓ Algorithms</div>
+                            <div className="p-2.5 rounded-xl bg-[#F4F0E8] border border-[#E2DCD2]">✓ Web Architecture</div>
+                            <div className="p-2.5 rounded-xl bg-[#F4F0E8] border border-[#E2DCD2]">✓ Database Systems</div>
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                  )}
+                      )}
 
-                  {/* CHAPTER 5 VISUAL: Tech Stack Matrix */}
-                  {activeChapter.visualType === 'stack' && (
-                    <div className="space-y-3">
-                      <div className="text-[10px] font-mono text-[#B85C3B] uppercase tracking-widest font-bold mb-2">CORE TECHNOLOGIES & TOOLING</div>
-                      <div className="grid grid-cols-3 gap-2">
-                        {activeChapter.technologies?.map((t, idx) => (
-                          <div key={idx} className="p-3 rounded-xl bg-[#F4F0E8] border border-[#E2DCD2] text-center space-y-1">
-                            <div className="text-lg">{t.symbol}</div>
-                            <div className="text-[10px] font-mono font-bold text-[#25231F]">{t.name}</div>
+                      {/* CHAPTER 2 VISUAL: Animated Code Terminal */}
+                      {ch.visualType === 'code' && (
+                        <div className="rounded-2xl bg-[#161412] text-[#FAF8F3] p-5 font-mono text-xs shadow-inner space-y-3">
+                          <div className="flex items-center justify-between border-b border-[#FAF8F3]/10 pb-2 text-[10px] text-[#FAF8F3]/40">
+                            <div className="flex items-center gap-1.5">
+                              <div className="w-2.5 h-2.5 rounded-full bg-[#B85C3B]" />
+                              <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                            </div>
+                            <span>index.js — First Code</span>
                           </div>
-                        ))}
+                          <pre className="text-emerald-400 font-mono text-xs leading-relaxed overflow-x-auto">
+                            {ch.codeSnippet}
+                          </pre>
+                          <div className="pt-2 border-t border-[#FAF8F3]/10 flex items-center justify-between text-[10px] text-amber-300">
+                            <span>✓ COMPILER: PASSING</span>
+                            <span>0 ERRORS</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* CHAPTER 3 VISUAL: Project Cards Preview */}
+                      {ch.visualType === 'projects' && (
+                        <div className="space-y-3">
+                          <div className="text-[10px] font-mono text-[#B85C3B] uppercase tracking-widest font-bold mb-2">SHIPPED BUILDS & PRODUCTS</div>
+                          {ch.projects?.map((p, pIdx) => (
+                            <div key={pIdx} className="p-3.5 rounded-2xl bg-[#F4F0E8] border border-[#E2DCD2] flex items-center justify-between hover:border-[#B85C3B] transition-colors">
+                              <div>
+                                <div className="text-xs font-serif font-bold text-[#25231F]">{p.name}</div>
+                                <div className="text-[10px] text-[#787268]">{p.desc}</div>
+                              </div>
+                              <span className="px-2 py-0.5 rounded-full text-[9px] font-mono bg-[#B85C3B]/10 text-[#B85C3B] border border-[#B85C3B]/20 font-bold shrink-0">
+                                {p.tag}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* CHAPTER 4 VISUAL: Leadership Badges */}
+                      {ch.visualType === 'leadership' && (
+                        <div className="space-y-3">
+                          <div className="text-[10px] font-mono text-[#B85C3B] uppercase tracking-widest font-bold mb-2">LEADERSHIP & INITIATIVES</div>
+                          {ch.roles?.map((r, rIdx) => (
+                            <div key={rIdx} className="p-3.5 rounded-2xl bg-[#F4F0E8] border border-[#E2DCD2] space-y-1">
+                              <div className="text-xs font-serif font-bold text-[#25231F] flex items-center gap-1.5">
+                                <Trophy className="w-3.5 h-3.5 text-[#B85C3B]" />
+                                <span>{r.title}</span>
+                              </div>
+                              <div className="text-[10px] text-[#787268]">{r.desc}</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* CHAPTER 5 VISUAL: Tech Stack Matrix */}
+                      {ch.visualType === 'stack' && (
+                        <div className="space-y-3">
+                          <div className="text-[10px] font-mono text-[#B85C3B] uppercase tracking-widest font-bold mb-2">CORE TECHNOLOGIES & TOOLING</div>
+                          <div className="grid grid-cols-3 gap-2">
+                            {ch.technologies?.map((t, tIdx) => (
+                              <div key={tIdx} className="p-3 rounded-xl bg-[#F4F0E8] border border-[#E2DCD2] text-center space-y-1">
+                                <div className="text-lg">{t.symbol}</div>
+                                <div className="text-[10px] font-mono font-bold text-[#25231F]">{t.name}</div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* CHAPTER 6 VISUAL: Future Roadmap Path */}
+                      {ch.visualType === 'future' && (
+                        <div className="space-y-3">
+                          <div className="text-[10px] font-mono text-[#B85C3B] uppercase tracking-widest font-bold mb-2">TARGET ROADMAP</div>
+                          {ch.roadmapSteps?.map((step, sIdx) => (
+                            <div key={sIdx} className="p-3 rounded-xl bg-[#F4F0E8] border border-[#E2DCD2] flex items-center gap-2 text-xs font-mono text-[#25231F]">
+                              <CheckCircle2 className="w-4 h-4 text-[#B85C3B] shrink-0" />
+                              <span>{step}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Bottom Footer Indicator */}
+                      <div className="pt-4 border-t border-[#E2DCD2] flex items-center justify-between text-[10px] font-mono text-[#9A948C]">
+                        <span>{ch.chapterNum} OF 06</span>
+                        <span className="text-[#B85C3B] font-bold">CONTINUE SCROLLING RIGHT →</span>
                       </div>
-                    </div>
-                  )}
 
-                  {/* CHAPTER 6 VISUAL: Future Roadmap Path */}
-                  {activeChapter.visualType === 'future' && (
-                    <div className="space-y-3">
-                      <div className="text-[10px] font-mono text-[#B85C3B] uppercase tracking-widest font-bold mb-2">TARGET ROADMAP</div>
-                      {activeChapter.roadmapSteps?.map((step, idx) => (
-                        <div key={idx} className="p-3 rounded-xl bg-[#F4F0E8] border border-[#E2DCD2] flex items-center gap-2 text-xs font-mono text-[#25231F]">
-                          <CheckCircle2 className="w-4 h-4 text-[#B85C3B] shrink-0" />
-                          <span>{step}</span>
-                        </div>
-                      ))}
                     </div>
-                  )}
-
-                  {/* Bottom Footer Indicator */}
-                  <div className="pt-4 border-t border-[#E2DCD2] flex items-center justify-between text-[10px] font-mono text-[#9A948C]">
-                    <span>{activeChapter.chapterNum} OF 06</span>
-                    <span className="text-[#B85C3B] font-bold">CLICK PREVIOUS / NEXT TO NAVIGATE</span>
                   </div>
 
                 </div>
               </div>
-
-            </motion.div>
-          </AnimatePresence>
+            ))}
+          </motion.div>
         </div>
 
-        {/* ── FOOTER CONTROLS (PREVIOUS / NEXT CHAPTER BUTTONS) ───────────── */}
-        <div className="max-w-7xl mx-auto relative z-10 w-full flex items-center justify-between text-[10px] font-mono text-[#787268] uppercase tracking-widest pt-2 border-t border-[#E2DCD2] font-semibold">
-          <button
-            disabled={activeChapterIndex === 0}
-            onClick={() => {
-              playClick();
-              setActiveChapterIndex((prev) => Math.max(0, prev - 1));
-            }}
-            className="px-4 py-2 rounded-full border border-[#E2DCD2] text-[#25231F] hover:bg-[#25231F] hover:text-[#FAF8F3] disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
-          >
-            ← PREVIOUS CHAPTER
-          </button>
-
-          <span className="text-[#B85C3B] font-bold">
-            {activeChapter.chapterNum}: {activeChapter.subtitle}
-          </span>
-
-          <button
-            disabled={activeChapterIndex === CHAPTERS.length - 1}
-            onClick={() => {
-              playClick();
-              setActiveChapterIndex((prev) => Math.min(CHAPTERS.length - 1, prev + 1));
-            }}
-            className="px-4 py-2 rounded-full border border-[#E2DCD2] text-[#25231F] hover:bg-[#25231F] hover:text-[#FAF8F3] disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
-          >
-            NEXT CHAPTER →
-          </button>
+        {/* ── FOOTER INDICATOR ────────────────────────────────────────────── */}
+        <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10 w-full flex items-center justify-between text-[10px] font-mono text-[#787268] uppercase tracking-widest pt-2 border-t border-[#E2DCD2] font-semibold">
+          <span>Horizontal Scroll Journey</span>
+          <span className="text-[#B85C3B] font-bold">CHAPTERS 01 TO 06</span>
+          <span>600vw Track</span>
         </div>
 
       </div>
