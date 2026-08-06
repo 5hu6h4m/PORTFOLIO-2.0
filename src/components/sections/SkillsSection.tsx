@@ -52,7 +52,7 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
   const card4Rot = useTransform(smoothProgress, [0.42, 0.55], [-15, 10]);
   const card4Op = useTransform(smoothProgress, [0.42, 0.48], [0, 1]);
 
-  // Card 5 arrives: 0.55 -> 0.68 (Finishes well before the end of the section!)
+  // Card 5 arrives: 0.55 -> 0.68
   const card5X = useTransform(smoothProgress, [0.55, 0.68], [-950, 420]);
   const card5Y = useTransform(smoothProgress, [0.55, 0.68], [30, 40]);
   const card5Rot = useTransform(smoothProgress, [0.55, 0.68], [0, 20]);
@@ -78,26 +78,34 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
   return (
     <div ref={targetRef} className="relative h-[340vh] bg-[#F4F0E8]" id="skills">
       {/* STICKY SCREEN PINNING CONTAINER */}
-      <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-between pt-16 pb-10 px-6 md:px-12 select-none border-t border-[#E2DCD2]">
+      <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-between pt-14 pb-8 px-6 md:px-12 select-none border-t border-[#E2DCD2]">
         
         {/* Volumetric background ambient glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[850px] bg-radial from-[#B85C3B]/10 via-[#8E9A78]/5 to-transparent blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto relative z-10 w-full">
 
-          {/* ── SECTION HEADER ───────────────────────────────────────────────── */}
-          <div className="text-center flex flex-col items-center justify-center max-w-2xl mx-auto mt-2 mb-4">
-            <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.3em] uppercase text-[#B85C3B] mb-2">
+          {/* ── UNIQUE EDITORIAL SECTION HEADER ───────────────────────────────── */}
+          <div className="text-center flex flex-col items-center justify-center max-w-3xl mx-auto mt-1 mb-2">
+            <div className="flex items-center gap-2 text-[10px] md:text-[11px] font-mono tracking-[0.35em] uppercase text-[#B85C3B] mb-2 font-bold bg-[#B85C3B]/10 px-3.5 py-1 rounded-full border border-[#B85C3B]/20 shadow-2xs">
               <Sparkles className="w-3.5 h-3.5" />
               <span>02 / TECHNICAL ARSENAL — 5 ARCHITECTURAL CATEGORIES</span>
             </div>
             <h2
-              className="text-4xl md:text-6xl font-serif font-bold tracking-tight text-[#25231F]"
-              style={{ letterSpacing: '-0.03em' }}
+              className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif font-bold tracking-tight text-[#25231F] leading-none"
+              style={{ letterSpacing: '-0.04em' }}
             >
-              TECH STACK
+              TECH STACK <span className="italic font-normal text-[#B85C3B] font-serif">&</span> ECOSYSTEM
             </h2>
-            <p className="text-xs md:text-sm text-[#787268] font-light max-w-md mt-2 leading-relaxed">
+
+            {/* Decorative Hairline Divider with Emblem */}
+            <div className="flex items-center justify-center gap-3 w-full max-w-md my-2.5">
+              <div className="h-px bg-gradient-to-r from-transparent via-[#E2DCD2] to-[#B85C3B]/40 flex-1" />
+              <span className="text-[#B85C3B] text-xs font-serif">✦</span>
+              <div className="h-px bg-gradient-to-l from-transparent via-[#E2DCD2] to-[#B85C3B]/40 flex-1" />
+            </div>
+
+            <p className="text-xs md:text-sm text-[#787268] font-light max-w-lg mt-0.5 leading-relaxed">
               Scroll down to watch 5 technical cards glide softly from the left into a rainbow arc. Click any card to inspect technologies.
             </p>
           </div>
