@@ -9,8 +9,8 @@ import { Header } from '@/components/sections/Header';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { AboutSection, JourneySection, DiagonalLanesSection } from '@/components/sections/AboutSection';
 import { SkillsSection } from '@/components/sections/SkillsSection';
-import { ExperienceSection } from '@/components/sections/ExperienceSection';
 import { LeadershipSection } from '@/components/sections/LeadershipSection';
+import { LearningJourneySection } from '@/components/sections/LearningJourneySection';
 import { AwardsSection } from '@/components/sections/AwardsSection';
 import { BeyondTheCodeSection } from '@/components/sections/BeyondTheCodeSection';
 import { ContactSection } from '@/components/sections/ContactSection';
@@ -74,11 +74,11 @@ export default function Home() {
         {/* 02 / TECH STACK & ECOSYSTEM (5-Card Rainbow Arc Pinning) */}
         <SkillsSection playClick={playClick} playHover={playHover} />
 
-        {/* 03 / LEADERSHIP & CONTRIBUTIONS */}
+        {/* 03 / LEADERSHIP (LED. BUILT. WON.) */}
         <LeadershipSection playHover={playHover} />
 
-        {/* 04 / EXPERIENCE & ACADEMIC ROADMAP */}
-        <ExperienceSection playHover={playHover} />
+        {/* 04 / THE LEARNING JOURNEY (6 Cinematic Evolution Chapters) */}
+        <LearningJourneySection playClick={playClick} playHover={playHover} />
 
         {/* 05 / CERTIFICATIONS & CREDENTIALS */}
         <AwardsSection playHover={playHover} />
