@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { Compass, Code2, Trophy, CheckCircle2, ArrowUpRight, Sparkles, Layers, Terminal, BookOpen } from 'lucide-react';
 import { PORTFOLIO_DATA } from '@/data/portfolioData';
@@ -8,6 +8,28 @@ import { PORTFOLIO_DATA } from '@/data/portfolioData';
 interface LearningJourneySectionProps {
   playClick: () => void;
   playHover: () => void;
+  isAwardsRevealed?: boolean;
+}
+
+function GoldenSeal() {
+  return (
+    <div className="relative w-48 h-48 md:w-64 md:h-64 flex items-center justify-center">
+      {/* Outer intricate rings */}
+      <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full animate-[spin_30s_linear_infinite]">
+        <circle cx="100" cy="100" r="95" fill="none" stroke="#B85C3B" strokeWidth="2" strokeDasharray="4 8" />
+        <circle cx="100" cy="100" r="85" fill="none" stroke="#D4AF37" strokeWidth="1" strokeDasharray="2 4" />
+      </svg>
+      {/* Inner glowing ring */}
+      <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full animate-[spin_20s_linear_infinite_reverse]">
+        <circle cx="100" cy="100" r="75" fill="none" stroke="#E2DCD2" strokeWidth="4" />
+        <circle cx="100" cy="100" r="65" fill="none" stroke="#B85C3B" strokeWidth="1" />
+      </svg>
+      {/* Center Aperture */}
+      <div className="w-16 h-16 md:w-24 md:h-24 rounded-full border border-[#D4AF37] flex items-center justify-center shadow-[0_0_30px_#B85C3B]">
+         <Sparkles className="w-6 h-6 text-[#D4AF37] animate-pulse" />
+      </div>
+    </div>
+  );
 }
 
 const CHAPTERS = [
@@ -119,7 +141,7 @@ const CHAPTERS = [
   },
 ];
 
-export function LearningJourneySection({ playClick, playHover }: LearningJourneySectionProps) {
+export function LearningJourneySection({ playClick, playHover, isAwardsRevealed }: LearningJourneySectionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({
@@ -134,15 +156,18 @@ export function LearningJourneySection({ playClick, playHover }: LearningJourney
     mass: 0.8,
   });
 
-  // Precise Chapter Snap Translation Bounds (0vw to -500vw with plateaus for exact chapter alignment)
+  // Precise Chapter Snap Translation Bounds across 600vh total scroll distance
   const trackX = useTransform(
     smoothProgress,
-    [0.00, 0.14, 0.28, 0.42, 0.56, 0.70, 0.85, 1.00],
-    ['0vw', '0vw', '-100vw', '-200vw', '-300vw', '-400vw', '-500vw', '-500vw']
+    [0.00, 0.16, 0.32, 0.48, 0.64, 0.80, 1.00],
+    ['0vw', '0vw', '-100vw', '-200vw', '-300vw', '-400vw', '-500vw']
   );
 
+  // Golden Seal pulse scale transition over final chapter
+  const sealScale = useTransform(smoothProgress, [0.85, 1.0], [1, 2.2]);
+
   return (
-    <div id="journey-roadmap" className="relative bg-[#F4F0E8] border-t border-[#E2DCD2]">
+    <div id="journey-roadmap" className="relative bg-transparent border-t border-[#E2DCD2]">
       {/* Anchor targets for both #projects and #journey nav links */}
       <div id="projects" className="absolute top-0 left-0 w-full h-1 pointer-events-none" />
       <div id="journey" className="absolute top-0 left-0 w-full h-1 pointer-events-none" />
@@ -175,8 +200,10 @@ export function LearningJourneySection({ playClick, playHover }: LearningJourney
       </motion.div>
       
       {/* STICKY 100VH HORIZONTAL SLIDER (100% VIEWPORT HEIGHT FOR CARDS ONLY) */}
-      <div ref={containerRef} className="relative w-full" style={{ height: '480vh' }}>
-        <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center bg-[#F4F0E8] select-none z-20">
+      <div ref={containerRef} className="relative w-full" style={{ height: '600vh' }}>
+        <motion.div 
+          className="sticky top-0 h-screen w-full overflow-hidden flex items-center bg-[#F4F0E8] select-none z-20 pointer-events-none"
+        >
           
           {/* Volumetric background ambient glow */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-radial from-[#B85C3B]/10 via-[#8E9A78]/6 to-transparent blur-3xl pointer-events-none" />
@@ -184,7 +211,7 @@ export function LearningJourneySection({ playClick, playHover }: LearningJourney
           {/* ── 6-CHAPTER FULL-HEIGHT HORIZONTAL TRACK (600vw WIDE) ── */}
           <motion.div
             style={{ x: trackX }}
-            className="flex h-full w-[600vw] items-center"
+            className="flex h-full w-[600vw] items-center pointer-events-auto"
           >
             {CHAPTERS.map((ch, idx) => (
               <div
@@ -237,6 +264,7 @@ export function LearningJourneySection({ playClick, playHover }: LearningJourney
 
                   {/* Right Column — Vibrant Luxury Interactive Visual Card */}
                   <div className="lg:col-span-6">
+                    {idx !== 5 && (
                     <div className="p-6 md:p-8 rounded-3xl bg-[#FAF8F3] border border-[#E2DCD2] shadow-2xl relative overflow-hidden min-h-[340px] flex flex-col justify-between group transition-all duration-300 hover:border-[#B85C3B]">
                       
                       {/* Terracotta Top Accent Bar */}
@@ -365,14 +393,23 @@ export function LearningJourneySection({ playClick, playHover }: LearningJourney
                       </div>
 
                     </div>
+                    )}
                   </div>
 
                 </div>
               </div>
             ))}
+            
+            {/* THE GOLDEN PORTAL */}
+            <div className="absolute top-1/2 left-[550vw] -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none flex flex-col items-center justify-center">
+              <motion.div style={{ scale: sealScale }} className="relative flex items-center justify-center">
+                <GoldenSeal />
+              </motion.div>
+            </div>
+            
           </motion.div>
 
-        </div>
+        </motion.div>
       </div>
     </div>
   );

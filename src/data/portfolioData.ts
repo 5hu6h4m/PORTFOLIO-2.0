@@ -64,7 +64,9 @@ export interface CertificationItem {
   category: string;
   credentialId: string;
   description: string;
-  badgeModel: 'trophy' | 'diamond' | 'shield' | 'star';
+  badgeModel: 'trophy' | 'diamond' | 'shield' | 'star' | 'medal' | 'crown';
+  skills?: string[];
+  verifyUrl?: string;
 }
 
 export const PORTFOLIO_DATA = {
@@ -490,7 +492,9 @@ export const PORTFOLIO_DATA = {
       category: "Full-Stack Engineering",
       credentialId: "META-FS-9842",
       description: "Advanced certification covering modern React 19 architecture, Node.js REST APIs, database management, and cloud deployment.",
-      badgeModel: "trophy"
+      badgeModel: "trophy",
+      skills: ["React 19", "Node.js", "Express", "PostgreSQL", "REST APIs"],
+      verifyUrl: "https://coursera.org/verify/META-FS-9842"
     },
     {
       id: "cert-2",
@@ -499,8 +503,10 @@ export const PORTFOLIO_DATA = {
       year: "2025",
       category: "Frontend Architecture",
       credentialId: "FEM-REACT-3310",
-      description: "Accreditation for Next.js App Router, Server Components, Web Vitals tuning, and custom hooks.",
-      badgeModel: "star"
+      description: "Accreditation for Next.js App Router, Server Components, Web Vitals tuning, and custom performance hooks.",
+      badgeModel: "star",
+      skills: ["Next.js 15", "Server Components", "Performance", "Web Vitals"],
+      verifyUrl: "https://frontendmasters.com/certificates/FEM-REACT-3310"
     },
     {
       id: "cert-3",
@@ -509,8 +515,10 @@ export const PORTFOLIO_DATA = {
       year: "2024",
       category: "Software Design",
       credentialId: "TS-ENG-7712",
-      description: "Specialized certification in strict TypeScript generic types, structural typing, and design patterns.",
-      badgeModel: "shield"
+      description: "Specialized certification in strict TypeScript generic types, structural typing, and enterprise architectural patterns.",
+      badgeModel: "shield",
+      skills: ["TypeScript", "Design Patterns", "Generics", "Strict Typing"],
+      verifyUrl: "https://educative.io/verify/TS-ENG-7712"
     },
     {
       id: "cert-4",
@@ -519,8 +527,58 @@ export const PORTFOLIO_DATA = {
       year: "2024",
       category: "3D Web Graphics",
       credentialId: "THREE-3D-9021",
-      description: "Training in 3D scene construction, glowing shaders, camera choreography, and performance optimization.",
-      badgeModel: "diamond"
+      description: "Training in 3D scene construction, GLSL shaders, camera choreography, and browser GPU optimization.",
+      badgeModel: "diamond",
+      skills: ["Three.js", "WebGL", "GLSL Shaders", "R3F", "3D Math"],
+      verifyUrl: "https://threejs-journey.com/certificate/THREE-3D-9021"
+    },
+    {
+      id: "cert-5",
+      title: "Cloud Native & AWS Architecture",
+      organization: "Amazon Web Services",
+      year: "2025",
+      category: "Cloud & Infrastructure",
+      credentialId: "AWS-SAA-8831",
+      description: "Certification in cloud architecture design, microservices orchestration, serverless lambdas, and CDN distribution.",
+      badgeModel: "crown",
+      skills: ["AWS", "Serverless", "Docker", "CDN", "Cloud Security"],
+      verifyUrl: "https://aws.amazon.com/verification/AWS-SAA-8831"
+    },
+    {
+      id: "cert-6",
+      title: "Algorithmic Systems & Data Structures",
+      organization: "Stanford Online",
+      year: "2024",
+      category: "Algorithmic Systems",
+      credentialId: "STAN-DS-4419",
+      description: "Rigorous certification covering graph algorithms, dynamic programming, graph traversal, and time complexity analysis.",
+      badgeModel: "medal",
+      skills: ["Algorithms", "Data Structures", "Dynamic Programming", "Optimization"],
+      verifyUrl: "https://online.stanford.edu/verify/STAN-DS-4419"
+    },
+    {
+      id: "cert-7",
+      title: "AI Engineering & Agentic Integration",
+      organization: "DeepLearning.AI",
+      year: "2025",
+      category: "AI & Machine Learning",
+      credentialId: "DLAI-AGENT-5520",
+      description: "Specialized accreditation in integrating LLMs, real-time streaming AI pipelines, and autonomous agentic workflows into web apps.",
+      badgeModel: "shield",
+      skills: ["LangChain", "LLM APIs", "Vector DBs", "Streaming AI", "Python"],
+      verifyUrl: "https://deeplearning.ai/verify/DLAI-AGENT-5520"
+    },
+    {
+      id: "cert-8",
+      title: "UI/UX & Motion Engineering",
+      organization: "DesignCode Guild",
+      year: "2024",
+      category: "Frontend Architecture",
+      credentialId: "DC-MOTION-1102",
+      description: "Mastery of fluid spring physics, scroll-triggered timelines, micro-interactions, and visual design systems.",
+      badgeModel: "star",
+      skills: ["Framer Motion", "GSAP", "UI Design", "Glassmorphism", "CSS Architecture"],
+      verifyUrl: "https://designcode.io/verify/DC-MOTION-1102"
     }
   ] as CertificationItem[]
 };

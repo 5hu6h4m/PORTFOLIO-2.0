@@ -46,14 +46,18 @@ export function Preloader({ onComplete }: PreloaderProps) {
           </div>
 
           {/* Center Statement */}
-          <div className="my-auto max-w-2xl">
+          <div className="my-auto max-w-3xl">
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-2xl md:text-4xl font-serif font-light text-[#E8E2D5]/90 leading-tight mb-4"
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              className="text-3xl md:text-5xl font-serif font-light text-[#E8E2D5]/95 leading-tight mb-3 italic"
             >
-              Architecting high-performance digital experiences.
+              &ldquo;Every legend begins with a single decision.&rdquo;
             </motion.p>
+            <div className="text-xs font-mono text-[#B85C3B] uppercase tracking-[0.3em] font-semibold">
+              ARCHITECTING HIGH-PERFORMANCE DIGITAL SYSTEMS
+            </div>
           </div>
 
           {/* Bottom Progress Counter */}

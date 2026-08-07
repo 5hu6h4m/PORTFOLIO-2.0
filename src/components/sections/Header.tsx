@@ -15,14 +15,33 @@ export function Header({ playClick, playHover }: HeaderProps) {
   const { personal } = PORTFOLIO_DATA;
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState<string>('about');
+  const [activeSection, setActiveSection] = useState<string>('home');
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 40);
+
+      if (window.scrollY < 300) {
+        setActiveSection('home');
+        return;
+      }
+
+      const sectionIds = ['contact', 'certificates', 'journey-roadmap', 'skills', 'projects', 'about'];
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= window.innerHeight * 0.35 && rect.bottom >= 80) {
+            setActiveSection(id);
+            break;
+          }
+        }
+      }
     };
-    window.addEventListener('scroll', handleScroll);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -32,7 +51,7 @@ export function Header({ playClick, playHover }: HeaderProps) {
     { label: 'Projects', href: '#projects', id: 'projects' },
     { label: 'Tech Stack', href: '#skills', id: 'skills' },
     { label: 'Journey', href: '#journey-roadmap', id: 'journey-roadmap' },
-    { label: 'Certificates', href: '#certifications', id: 'certifications' },
+    { label: 'Certificates', href: '#certificates', id: 'certificates' },
     { label: 'Contact', href: '#contact', id: 'contact' },
   ];
 
@@ -49,12 +68,12 @@ export function Header({ playClick, playHover }: HeaderProps) {
       setActiveSection(id);
 
       // Home = scroll to top; others = Lenis inertia scroll
-      if (href === '#') {
-        if (window.__lenis) {
-          window.__lenis.scrollTo(0, { duration: 1.6 });
-        } else {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (href === '#' || href === '#hero' || id === 'home') {
+        if (typeof window !== 'undefined' && window.__lenis) {
+          window.__lenis.start();
+          window.__lenis.scrollTo(0, { duration: 1.2 });
         }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } else if (window.__lenis) {
         window.__lenis.scrollTo(href, {
           duration: 1.6,
@@ -84,13 +103,21 @@ export function Header({ playClick, playHover }: HeaderProps) {
     if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
     setActiveSection(id);
 
-    if (href === '#') {
-      if (window.__lenis) {
-        window.__lenis.scrollTo(0, { duration: 1.6 });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (href === '#' || href === '#hero' || id === 'home') {
+      if (typeof window !== 'undefined' && window.__lenis) {
+        window.__lenis.start();
+        window.__lenis.scrollTo(0, { duration: 1.2 });
       }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
+    }
+
+    if (href !== '#') {
+      window.dispatchEvent(
+        new CustomEvent('shatter-travel-destination', {
+          detail: { href },
+        })
+      );
     }
 
     if (window.__lenis) {

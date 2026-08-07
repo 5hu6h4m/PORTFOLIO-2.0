@@ -13,6 +13,8 @@ if (typeof window !== 'undefined') {
 
 interface HeroSculptureProps {
   mouse: { normalizedX: number; normalizedY: number };
+  skipScatter?: boolean;
+  onSolveComplete?: () => void;
 }
 
 // Ease functions for weightless cinematic motion
@@ -25,8 +27,8 @@ function easeOutQuart(t: number): number {
 }
 
 const ASSEMBLY_DURATION = 3.0; // 3.0s smooth weightless red scatter assembly
-const MOVE_DURATION = 0.48; // Snappy speedcube layer turns
-const PAUSE_DURATION = 0.15; // Quick pause between turns
+const MOVE_DURATION = 0.38; // Smooth speedcube layer turns
+const PAUSE_DURATION = 0.09; // Quick pause between turns
 const SOLVED_HOLD_DURATION = 2.5; // Brief hold when solved
 const STEP = 0.42; // Grid spacing between cubies
 
@@ -39,9 +41,9 @@ const COLOR_FRONT  = new THREE.Color('#93E9BE'); // Light Soft Mint Pastel Green
 const COLOR_BACK   = new THREE.Color('#B3D8FF'); // Light Soft Ice Pastel Blue
 const COLOR_INNER  = new THREE.Color('#2A2B30'); // Light Charcoal Core Plastic
 
-// Red Scatter Burst Palette (Initial 3s screen spread)
-const COLOR_RED_SCATTER = new THREE.Color('#B85C3B'); // Warm Terracotta Red
-const EMISSIVE_RED_SCATTER = new THREE.Color('#8A2E2B'); // Rich Deep Crimson Glow
+// Maroon Red Scatter Palette (Cutscene solve glow & shatter)
+const COLOR_RED_SCATTER = new THREE.Color('#4A0404'); // Rich Deep Maroon Red
+const EMISSIVE_RED_SCATTER = new THREE.Color('#2A0000'); // Deep Maroon Blood Red Glow
 
 const COLOR_ABOUT_EVEN = new THREE.Color('#1A1816');
 const COLOR_ABOUT_ODD = new THREE.Color('#2A2521');
@@ -131,7 +133,7 @@ function applyMoveToState(
   });
 }
 
-export function HeroSculpture({ mouse }: HeroSculptureProps) {
+export function HeroSculpture({ mouse, skipScatter = false, onSolveComplete }: HeroSculptureProps) {
   const masterGroupRef = useRef<THREE.Group>(null);
   const subCubesGroupRef = useRef<THREE.Group>(null);
   const cubieMeshRefs = useRef<(THREE.Mesh | null)[]>([]);
@@ -145,6 +147,11 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
 
   // Page construction mode
   const [isAssemblingPage, setIsAssemblingPage] = useState(false);
+
+  // Red glow transition upon solve completion in cutscene mode
+  const redGlowTRef = useRef(0);
+  const isRedGlowingRef = useRef(false);
+  const hasShatteredCutsceneRef = useRef(false);
 
   // Return-home assembly animation (t: 0=scattered red across screen, 1=cube formed)
   const assemblyTRef = useRef(0);
@@ -210,7 +217,7 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
   const initScrambleAndSolver = () => {
     randomizeRedScatterPositions();
     const homeStates = getHomeCubieStates();
-    const scrambleMoves = generateScrambleMoves(10);
+    const scrambleMoves = generateScrambleMoves(skipScatter ? 7 : 10);
 
     const scrambled = homeStates.map((s) => ({
       pos: s.pos.clone(),
@@ -243,13 +250,26 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
   // Trigger initial scatter burst on mount & listen for preloader finish
   useEffect(() => {
     initScrambleAndSolver();
-    assemblyTRef.current = 0;
-    isAssemblingRef.current = true;
+    redGlowTRef.current = 0;
+    isRedGlowingRef.current = false;
+    hasShatteredCutsceneRef.current = false;
+    if (skipScatter) {
+      assemblyTRef.current = 1.0;
+      isAssemblingRef.current = false;
+    } else {
+      assemblyTRef.current = 0;
+      isAssemblingRef.current = true;
+    }
 
     const handlePreloaderComplete = () => {
       initScrambleAndSolver();
-      assemblyTRef.current = 0;
-      isAssemblingRef.current = true;
+      if (skipScatter) {
+        assemblyTRef.current = 1.0;
+        isAssemblingRef.current = false;
+      } else {
+        assemblyTRef.current = 0;
+        isAssemblingRef.current = true;
+      }
     };
 
     window.addEventListener('portfolio-preloader-complete', handlePreloaderComplete);
@@ -473,7 +493,7 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
     const time = state.clock.elapsedTime;
     const mouseX = mouse.normalizedX;
     const mouseY = mouse.normalizedY;
-    const scrollP = scrollProgressRef.current;
+    const scrollP = skipScatter ? 0 : scrollProgressRef.current;
 
     // 1. Advance return-home / initial mount 3s weightless red scatter assembly
     if (isAssemblingRef.current && assemblyTRef.current < 1) {
@@ -504,6 +524,11 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
             if (solveMoveIdxRef.current >= moves.length) {
               isSolvedHoldRef.current = true;
               holdSolvedTimerRef.current = 0;
+              if (skipScatter) {
+                isRedGlowingRef.current = true;
+              } else {
+                if (onSolveComplete) onSolveComplete();
+              }
             }
           }
         } else {
@@ -521,8 +546,8 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
       }
     }
 
-    // Smooth About section activation
-    const aboutTarget = isAboutVisibleRef.current ? 1 : 0;
+    // Smooth About section activation (disabled during cutscene mode)
+    const aboutTarget = (skipScatter ? false : isAboutVisibleRef.current) ? 1 : 0;
     const aboutSpeed = isAboutVisibleRef.current ? delta * 0.9 : delta * 0.45;
     aboutActivationRef.current = THREE.MathUtils.clamp(
       aboutActivationRef.current + (aboutTarget - aboutActivationRef.current) * aboutSpeed * 10,
@@ -548,11 +573,15 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
       const aboutGroupX = 0;
       const aboutGroupY = Math.sin(time * 0.4) * 0.06;
 
-      const targetPosX = isAssemblingPage ? 0 : THREE.MathUtils.lerp(scrollX, aboutGroupX, aboutT);
-      const targetPosY = isAssemblingPage ? 0 : THREE.MathUtils.lerp(scrollY, aboutGroupY, aboutT);
-
-      masterGroupRef.current.position.x = THREE.MathUtils.lerp(masterGroupRef.current.position.x, targetPosX, 0.06);
-      masterGroupRef.current.position.y = THREE.MathUtils.lerp(masterGroupRef.current.position.y, targetPosY, 0.06);
+      if (skipScatter) {
+        masterGroupRef.current.position.x = 0;
+        masterGroupRef.current.position.y = -0.35;
+      } else {
+        const targetPosX = isAssemblingPage ? 0 : THREE.MathUtils.lerp(scrollX, aboutGroupX, aboutT);
+        const targetPosY = isAssemblingPage ? 0 : THREE.MathUtils.lerp(scrollY, aboutGroupY, aboutT);
+        masterGroupRef.current.position.x = THREE.MathUtils.lerp(masterGroupRef.current.position.x, targetPosX, 0.06);
+        masterGroupRef.current.position.y = THREE.MathUtils.lerp(masterGroupRef.current.position.y, targetPosY, 0.06);
+      }
 
       const targetScale = isMobile ? 0.72 : 1.25;
       masterGroupRef.current.scale.setScalar(
@@ -571,6 +600,30 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
       const smoothT = easeInOutCubic(assemblyTRef.current);
       const redFactor = 1 - easeOutQuart(assemblyTRef.current); // 1 at t=0 (full red), 0 at t=1 (normal colors)
 
+      // Advance cutscene red glow transition once solved
+      if (skipScatter && isRedGlowingRef.current) {
+        redGlowTRef.current = Math.min(redGlowTRef.current + delta * 3.5, 1.0);
+        if (redGlowTRef.current >= 1.0 && !hasShatteredCutsceneRef.current) {
+          hasShatteredCutsceneRef.current = true;
+          playShatterSound();
+          const newMap: { [key: number]: { vel: [number, number, number]; scale: number } } = {};
+          for (let i = 0; i < 27; i++) {
+            newMap[i] = {
+              vel: [
+                (Math.random() - 0.5) * 6.5,
+                (Math.random() - 0.5) * 6.5,
+                (Math.random() - 0.5) * 6.5,
+              ],
+              scale: 0.8,
+            };
+          }
+          setShatteredMap(newMap);
+          setTimeout(() => {
+            if (onSolveComplete) onSolveComplete();
+          }, 650);
+        }
+      }
+
       cubeData.forEach((item, idx) => {
         const meshObj = cubieMeshRefs.current[idx];
         if (!meshObj) return;
@@ -580,12 +633,14 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
           const baseCol = baseFaceColors[idx][fIdx];
           const targetAboutColor = idx % 2 === 0 ? COLOR_ABOUT_EVEN : COLOR_ABOUT_ODD;
 
-          if (redFactor > 0.01) {
-            // First 3 seconds: particles scattered in red across screen, blending smoothly to normal face colors!
-            mat.color.lerpColors(baseCol, COLOR_RED_SCATTER, redFactor);
-            mat.emissive.lerpColors(baseCol, EMISSIVE_RED_SCATTER, redFactor);
-            mat.emissiveIntensity = THREE.MathUtils.lerp(0.10, 0.50, redFactor);
-            mat.roughness = THREE.MathUtils.lerp(0.12, 0.05, redFactor);
+          const glowFactor = skipScatter && isRedGlowingRef.current ? redGlowTRef.current : redFactor;
+
+          if (glowFactor > 0.01) {
+            // Smoothly blend solved face colors into glowing Terracotta Red!
+            mat.color.lerpColors(baseCol, COLOR_RED_SCATTER, glowFactor);
+            mat.emissive.lerpColors(baseCol, EMISSIVE_RED_SCATTER, glowFactor);
+            mat.emissiveIntensity = THREE.MathUtils.lerp(0.10, 0.65, glowFactor);
+            mat.roughness = THREE.MathUtils.lerp(0.12, 0.05, glowFactor);
           } else if (isAssemblingPage) {
             mat.color.copy(COLOR_ASSEMBLE);
             mat.emissive.copy(EMISSIVE_ASSEMBLE);
@@ -606,13 +661,18 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
         const shatterData = shatteredMap[idx];
 
         if (shatterData) {
-          // Click shatter physics
-          meshObj.position.x += shatterData.vel[0] * delta * 5.0;
-          meshObj.position.y += shatterData.vel[1] * delta * 5.0;
-          meshObj.position.z += shatterData.vel[2] * delta * 5.0;
+          // Click & Cutscene shatter physics: explode outwards then float gently in 3D background space
+          meshObj.position.x += shatterData.vel[0] * delta * 2.5;
+          meshObj.position.y += shatterData.vel[1] * delta * 2.5;
+          meshObj.position.z += shatterData.vel[2] * delta * 2.5;
 
-          meshObj.rotation.x += delta * 4;
-          meshObj.rotation.y += delta * 4;
+          meshObj.rotation.x += delta * (0.6 + (idx % 5) * 0.1);
+          meshObj.rotation.y += delta * (0.6 + (idx % 5) * 0.1);
+
+          // Damp velocity so pieces spread out across background and float gently
+          shatterData.vel[0] *= 0.96;
+          shatterData.vel[1] *= 0.96;
+          shatterData.vel[2] *= 0.96;
         } else if (isAssemblingPage) {
           // Travel assembly
           const t = Math.sin(time * 3 + idx) * 0.5 + 0.5;
@@ -678,15 +738,15 @@ export function HeroSculpture({ mouse }: HeroSculptureProps) {
             }
           }
 
-          meshObj.position.lerp(currentTargetPos, 0.2);
-          meshObj.quaternion.slerp(currentTargetRot, 0.2);
+          meshObj.position.lerp(currentTargetPos, 0.35);
+          meshObj.quaternion.slerp(currentTargetRot, 0.35);
         }
       });
     }
   });
 
   return (
-    <group ref={masterGroupRef} position={[2.2, 0, 0]} scale={1.25}>
+    <group ref={masterGroupRef} position={skipScatter ? [0, -0.35, 0] : [2.2, 0, 0]} scale={1.25}>
       <group ref={subCubesGroupRef}>
         {cubeData.map((item, i) => (
           <mesh
