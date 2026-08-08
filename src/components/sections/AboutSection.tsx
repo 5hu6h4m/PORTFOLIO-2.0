@@ -1,24 +1,96 @@
 'use client';
 
-import { useRef } from 'react';
-import { motion, useInView, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { useRef, useState, useEffect, useMemo, Suspense } from 'react';
+import { motion, useInView, useMotionValue, useSpring, useTransform, useScroll } from 'framer-motion';
+import { Canvas, useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
 import { KinematicTextMorph } from '@/components/ui/KinematicTextMorph';
 import { PORTFOLIO_DATA } from '@/data/portfolioData';
-import { Terminal, Cpu, Trophy, Rocket, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 interface AboutSectionProps {
   playHover: () => void;
 }
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
-const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
-  visible: (i = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, delay: i * 0.1, ease: EASE },
-  }),
-};
+
+// ── 3D CUBE PARTICLE INSTANCED ATMOSPHERE (POINT 1, 3, 11, 14) ────────────────
+function AboutCubeParticles({ mouse }: { mouse: { x: number; y: number } }) {
+  const meshRef = useRef<THREE.InstancedMesh>(null);
+  const count = 45;
+
+  const dummy = useMemo(() => new THREE.Object3D(), []);
+  const particlesData = useMemo(() => {
+    return Array.from({ length: count }, () => ({
+      position: new THREE.Vector3(
+        (Math.random() - 0.5) * 14,
+        (Math.random() - 0.5) * 10,
+        (Math.random() - 0.5) * 8
+      ),
+      rotation: new THREE.Vector3(
+        Math.random() * Math.PI,
+        Math.random() * Math.PI,
+        Math.random() * Math.PI
+      ),
+      speed: 0.2 + Math.random() * 0.4,
+      scale: 0.08 + Math.random() * 0.14,
+    }));
+  }, [count]);
+
+  useFrame((state) => {
+    if (!meshRef.current) return;
+    const time = state.clock.getElapsedTime();
+
+    particlesData.forEach((p, i) => {
+      // Gentle atmospheric drift around portrait area
+      const floatY = Math.sin(time * p.speed + i) * 0.35;
+      const floatX = Math.cos(time * p.speed * 0.8 + i) * 0.25;
+
+      // Mouse repulsion response (Point 9)
+      const mouseDistX = p.position.x - mouse.x * 4;
+      const mouseDistY = p.position.y - mouse.y * 3;
+      const dist = Math.sqrt(mouseDistX * mouseDistX + mouseDistY * mouseDistY);
+
+      let repulseX = 0;
+      let repulseY = 0;
+      if (dist < 2.5) {
+        const force = (2.5 - dist) * 0.12;
+        repulseX = (mouseDistX / dist) * force;
+        repulseY = (mouseDistY / dist) * force;
+      }
+
+      dummy.position.set(
+        p.position.x + floatX + repulseX,
+        p.position.y + floatY + repulseY,
+        p.position.z
+      );
+      dummy.rotation.set(
+        p.rotation.x + time * 0.1,
+        p.rotation.y + time * 0.15,
+        p.rotation.z
+      );
+      dummy.scale.setScalar(p.scale);
+      dummy.updateMatrix();
+
+      meshRef.current!.setMatrixAt(i, dummy.matrix);
+    });
+
+    meshRef.current.instanceMatrix.needsUpdate = true;
+  });
+
+  return (
+    <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
+      <boxGeometry args={[1, 1, 1]} />
+      <meshStandardMaterial
+        color="#B85C3B"
+        roughness={0.3}
+        metalness={0.2}
+        transparent
+        opacity={0.3}
+      />
+    </instancedMesh>
+  );
+}
 
 function SubLabel({ index, title }: { index: string; title: string }) {
   return (
@@ -30,15 +102,18 @@ function SubLabel({ index, title }: { index: string; title: string }) {
   );
 }
 
-// ── REPEATABLE MASKED EDITORIAL BIO WITH TERRACOTTA HIGHLIGHTED WORDS ─────────
-function PersonalBioSection() {
+// ── REPEATABLE MASKED EDITORIAL BIO WITH PARALLAX & STAGGERED METADATA ────────
+function PersonalBioSection({ scrollProgress }: { scrollProgress: any }) {
   const ref = useRef(null);
-  // once: false allows the reveal animation to repeat every time user scrolls into view
   const inView = useInView(ref, { once: false, margin: '-60px' });
 
+  // Parallax layer depth translation (Point 8)
+  const textY = useTransform(scrollProgress, [0, 1], ['0px', '-25px']);
+  const factsY = useTransform(scrollProgress, [0, 1], ['0px', '-40px']);
+
   return (
-    <div ref={ref} className="w-full max-w-5xl mx-auto my-14 sm:my-20 px-4 select-none">
-      {/* 1. Tagline Pill */}
+    <div ref={ref} className="w-full max-w-5xl mx-auto my-14 sm:my-20 px-4 select-none relative z-10">
+      {/* 1. Tagline Pill (Point 6) */}
       <div className="overflow-hidden mb-8">
         <motion.div
           initial={{ opacity: 0, y: 25 }}
@@ -53,12 +128,12 @@ function PersonalBioSection() {
         </motion.div>
       </div>
 
-      {/* 2. Apple-Grade Masked Paragraph Lines with Terracotta Highlighted Words */}
-      <div className="space-y-6 mb-16">
+      {/* 2. Masked Paragraph Reveals (Point 5) */}
+      <motion.div style={{ y: textY }} className="space-y-6 mb-16">
         <div className="overflow-hidden">
           <motion.p
-            initial={{ opacity: 0, y: 45 }}
-            animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 45 }}
+            initial={{ opacity: 0, y: 35 }}
+            animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 35 }}
             transition={{ duration: 0.9, delay: 0.15, ease: EASE }}
             className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif text-[#25231F] leading-[1.45] font-normal tracking-tight"
           >
@@ -68,49 +143,65 @@ function PersonalBioSection() {
 
         <div className="overflow-hidden">
           <motion.p
-            initial={{ opacity: 0, y: 45 }}
-            animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 45 }}
+            initial={{ opacity: 0, y: 35 }}
+            animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 35 }}
             transition={{ duration: 0.9, delay: 0.35, ease: EASE }}
             className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif text-[#25231F] leading-[1.45] font-normal tracking-tight"
           >
             I’m currently exploring <span className="text-[#B85C3B] font-semibold">modern frontend technologies</span>, <span className="text-[#B85C3B] italic font-light">3D experiences</span> and <span className="text-[#B85C3B] font-semibold">full-stack development</span> while building projects that turn ideas into something people can actually use.
           </motion.p>
         </div>
-      </div>
+      </motion.div>
 
-      {/* 3. Ultra-Clean 3 Small Facts Editorial Row */}
+      {/* 3. 3 Small Facts Metadata Grid (Point 6 - Tiny Horizontal & Depth Reveal) */}
       <motion.div
+        style={{ y: factsY }}
         initial={{ opacity: 0, y: 25 }}
         animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 25 }}
         transition={{ duration: 0.85, delay: 0.55, ease: EASE }}
         className="grid grid-cols-1 sm:grid-cols-3 gap-8 pt-8 border-t border-[#E2DCD2]/80"
       >
-        <div className="space-y-1.5">
+        <motion.div
+          initial={{ opacity: 0, x: -12 }}
+          animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -12 }}
+          transition={{ duration: 0.7, delay: 0.6 }}
+          className="space-y-1.5"
+        >
           <div className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.22em] text-[#B85C3B] font-bold">
             BASED IN
           </div>
           <div className="text-sm sm:text-base font-mono font-bold text-[#25231F] tracking-wide">
             NASHIK, INDIA
           </div>
-        </div>
+        </motion.div>
 
-        <div className="space-y-1.5">
+        <motion.div
+          initial={{ opacity: 0, x: 0 }}
+          animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: 0 }}
+          transition={{ duration: 0.7, delay: 0.7 }}
+          className="space-y-1.5"
+        >
           <div className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.22em] text-[#B85C3B] font-bold">
             EDUCATION
           </div>
           <div className="text-sm sm:text-base font-mono font-bold text-[#25231F] tracking-wide">
             B.TECH • COMPUTER SCIENCE
           </div>
-        </div>
+        </motion.div>
 
-        <div className="space-y-1.5">
+        <motion.div
+          initial={{ opacity: 0, x: 12 }}
+          animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: 12 }}
+          transition={{ duration: 0.7, delay: 0.8 }}
+          className="space-y-1.5"
+        >
           <div className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.22em] text-[#B85C3B] font-bold">
             CURRENTLY
           </div>
           <div className="text-sm sm:text-base font-mono font-bold text-[#25231F] tracking-wide">
             BUILDING + LEARNING
           </div>
-        </div>
+        </motion.div>
       </motion.div>
     </div>
   );
@@ -127,13 +218,15 @@ function WhoIAmSection() {
       ref={ref}
       initial="hidden"
       animate={inView ? 'visible' : 'hidden'}
+      className="relative z-10"
     >
       <SubLabel index="01" title="Who I Am" />
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
         <div className="lg:col-span-7 space-y-5">
           <motion.h2
-            variants={fadeUp}
-            custom={0}
+            initial={{ opacity: 0, y: 30 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7, ease: EASE }}
             className="text-3xl md:text-4xl font-serif text-[#25231F] leading-snug"
           >
             {whoIAm.headline}
@@ -142,8 +235,9 @@ function WhoIAmSection() {
           {whoIAm.paragraphs.map((p, i) => (
             <motion.p
               key={i}
-              variants={fadeUp}
-              custom={i + 1}
+              initial={{ opacity: 0, y: 25 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.7, delay: (i + 1) * 0.1, ease: EASE }}
               className="text-base md:text-lg text-[#787268] font-light leading-relaxed"
             >
               {p}
@@ -155,8 +249,9 @@ function WhoIAmSection() {
           {whoIAm.highlights.map((h, i) => (
             <motion.div
               key={h.label}
-              variants={fadeUp}
-              custom={i + 2}
+              initial={{ opacity: 0, y: 25 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.7, delay: (i + 2) * 0.1, ease: EASE }}
               className="flex items-end gap-4 p-5 rounded-2xl border border-[#E2DCD2]/70 bg-[#FAF8F3]/60 hover:border-[#B85C3B]/30 hover:bg-[#FAF8F3] transition-all duration-300"
             >
               <span className="text-4xl font-serif font-bold text-[#B85C3B] leading-none">
@@ -171,79 +266,116 @@ function WhoIAmSection() {
   );
 }
 
-function InteractivePCHero() {
-  const containerRef = useRef<HTMLDivElement>(null);
+// ── CINEMATIC PORTRAIT & HEADING STAGE (POINT 2, 4, 9, 11, 12) ───────────────
+function InteractivePCHero({
+  mouseState,
+  scrollProgress,
+}: {
+  mouseState: { x: number; y: number };
+  scrollProgress: any;
+}) {
+  const heroRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(heroRef, { once: false, margin: '-50px' });
 
-  const rawX = useMotionValue(0);
-  const rawY = useMotionValue(0);
+  // Spring physics for mouse interaction (Point 9: rotateX ±2deg, rotateY ±3deg)
+  const springX = useSpring(mouseState.x, { stiffness: 90, damping: 20 });
+  const springY = useSpring(mouseState.y, { stiffness: 90, damping: 20 });
 
-  const springX = useSpring(rawX, { stiffness: 100, damping: 18 });
-  const springY = useSpring(rawY, { stiffness: 100, damping: 18 });
+  const portraitRotateY = useTransform(springX, [-0.5, 0.5], [-3, 3]);
+  const portraitRotateX = useTransform(springY, [-0.5, 0.5], [2, -2]);
 
-  const imgTranslateX = useTransform(springX, [-0.5, 0.5], [-45, 45]);
-  const imgTranslateY = useTransform(springY, [-0.5, 0.5], [-30, 30]);
-
-  const textX = useTransform(springX, [-0.5, 0.5], [20, -20]);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const xPos = (e.clientX - rect.left) / rect.width - 0.5;
-    const yPos = (e.clientY - rect.top) / rect.height - 0.5;
-    rawX.set(xPos);
-    rawY.set(yPos);
-  };
-
-  const handleMouseLeave = () => {
-    rawX.set(0);
-    rawY.set(0);
-  };
+  // Camera Z-axis & Parallax scroll scrubbing (Point 2, 7, 8, 13)
+  const portraitY = useTransform(scrollProgress, [0, 1], ['0px', '-30px']);
+  const portraitScale = useTransform(scrollProgress, [0, 0.5, 1], [0.98, 1.0, 0.97]);
 
   return (
     <div
-      ref={containerRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className="relative w-full pt-2 pb-2 flex flex-col items-center justify-center cursor-pointer group select-none gap-0"
+      ref={heroRef}
+      className="relative w-full pt-2 pb-2 flex flex-col items-center justify-center select-none gap-0 z-10"
     >
-      <motion.div
-        style={{ x: textX }}
-        className="relative z-10 text-center w-full max-w-7xl mx-auto px-4"
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.0, ease: EASE }}
-          className="relative inline-block pb-2"
-        >
-          <h2
+      {/* 1. Masked Vertical Reveal Heading (Point 4: Line 1 & Line 2) */}
+      <div className="relative z-10 text-center w-full max-w-7xl mx-auto px-4 overflow-hidden pb-2">
+        <div className="overflow-hidden">
+          <motion.h2
+            initial={{ translateY: '100%', opacity: 0 }}
+            animate={inView ? { translateY: '0%', opacity: 1 } : { translateY: '100%', opacity: 0 }}
+            transition={{ duration: 1.0, ease: EASE }}
             className="text-[12vw] sm:text-[9vw] md:text-[7.5vw] lg:text-[6.5vw] font-serif font-bold leading-none tracking-tight flex flex-col sm:flex-row items-center justify-center gap-y-2 sm:gap-y-0 sm:gap-x-4"
             style={{ letterSpacing: '-0.03em' }}
           >
             <span className="text-[#25231F]">SHUBHAM</span>
             <span className="text-[#B85C3B]">JADHAV</span>
-          </h2>
-        </motion.div>
+          </motion.h2>
+        </div>
 
-        <div className="w-full max-w-md mx-auto h-px bg-gradient-to-r from-transparent via-[#B85C3B]/60 to-transparent border-b border-dashed border-[#B85C3B]/40 mt-1 opacity-80" />
-      </motion.div>
+        <motion.div
+          initial={{ scaleX: 0, opacity: 0 }}
+          animate={inView ? { scaleX: 1, opacity: 0.8 } : { scaleX: 0, opacity: 0 }}
+          transition={{ duration: 0.9, delay: 0.3, ease: EASE }}
+          className="w-full max-w-md mx-auto h-px bg-gradient-to-r from-transparent via-[#B85C3B]/60 to-transparent border-b border-dashed border-[#B85C3B]/40 mt-1"
+        />
+      </div>
 
+      {/* 2. Portrait Reveal with 3D Z-axis Entrance & Masked Clip Path (Point 2) */}
       <motion.div
         style={{
-          x: imgTranslateX,
-          y: imgTranslateY,
+          y: portraitY,
+          scale: portraitScale,
+          rotateX: portraitRotateX,
+          rotateY: portraitRotateY,
+          transformStyle: 'preserve-3d',
         }}
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
+        initial={{
+          opacity: 0,
+          scale: 0.94,
+          rotateY: -6,
+          rotateX: 2,
+          clipPath: 'inset(8% 8% 8% 8% round 2rem)',
+        }}
+        animate={
+          inView
+            ? {
+                opacity: 1,
+                scale: 1,
+                rotateY: 0,
+                rotateX: 0,
+                clipPath: 'inset(0% 0% 0% 0% round 0rem)',
+              }
+            : {
+                opacity: 0,
+                scale: 0.94,
+                rotateY: -6,
+                rotateX: 2,
+                clipPath: 'inset(8% 8% 8% 8% round 2rem)',
+              }
+        }
         transition={{ duration: 1.1, ease: EASE }}
-        className="relative z-0 w-full max-w-3xl flex items-center justify-center px-4 mt-6 sm:mt-8 md:mt-10"
+        className="relative z-0 w-full max-w-3xl flex items-center justify-center px-4 mt-6 sm:mt-8 md:mt-10 group"
       >
+        {/* Soft Ambient Volumetric Backlight */}
         <div className="absolute w-[480px] h-[300px] bg-gradient-to-tr from-[#B85C3B]/20 via-[#B85C3B]/10 to-transparent blur-3xl opacity-70 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
+        {/* Cinematic Moving Light Beam Sheen Across Portrait Glass (Point 12) */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl z-20">
+          <motion.div
+            animate={{
+              x: ['-100%', '200%'],
+            }}
+            transition={{
+              duration: 4.5,
+              repeat: Infinity,
+              repeatDelay: 3,
+              ease: 'easeInOut',
+            }}
+            className="w-1/2 h-full bg-gradient-to-r from-transparent via-[#FAF8F3]/30 to-transparent transform -skew-x-12"
+          />
+        </div>
+
+        {/* Portrait Workstation Image (/pc1.png) */}
         <img
           src="/pc1.png"
           alt="Shubham Workstation Setup"
-          className="w-full h-auto max-h-[420px] object-contain opacity-100 group-hover:scale-[1.02] transition-transform duration-500"
+          className="w-full h-auto max-h-[420px] object-contain opacity-100 group-hover:scale-[1.02] transition-transform duration-500 relative z-10"
           style={{
             filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.16)) drop-shadow(0 8px 16px rgba(184, 92, 59, 0.18))',
           }}
@@ -253,18 +385,63 @@ function InteractivePCHero() {
   );
 }
 
+// ── MAIN ABOUT SECTION COMPONENT (POINTS 1 TO 15 COMPLIANT) ──────────────────
 export function AboutSection({ playHover }: AboutSectionProps) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [mouseState, setMouseState] = useState({ x: 0, y: 0 });
+
+  // Scroll Progress tracking for Camera Motion & Parallax scrub (Points 7, 8, 10, 13)
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+
+  // Camera Zoom & Depth Parallax Scrub
+  const cameraScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.97, 1.0, 1.02]);
+  const cameraZ = useTransform(scrollYProgress, [0, 0.5, 1], ['20px', '0px', '-20px']);
+
+  // Mouse movement tracking (Point 9)
+  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    if (!sectionRef.current) return;
+    const rect = sectionRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    setMouseState({ x, y });
+  };
+
+  const handleMouseLeave = () => {
+    setMouseState({ x: 0, y: 0 });
+  };
+
   return (
-    <section
+    <motion.section
       id="about"
-      className="pt-16 md:pt-24 pb-16 px-6 md:px-12 relative overflow-hidden rounded-t-3xl shadow-[0_-20px_80px_rgba(0,0,0,0.18)]"
+      ref={sectionRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       style={{
+        scale: cameraScale,
         background: 'linear-gradient(to bottom, transparent 0%, rgba(244,240,232,0.6) 18%, rgba(244,240,232,0.92) 38%, #F4F0E8 56%)',
       }}
+      className="pt-16 md:pt-24 pb-16 px-6 md:px-12 relative overflow-hidden rounded-t-3xl shadow-[0_-20px_80px_rgba(0,0,0,0.18)]"
     >
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#B85C3B]/5 rounded-full blur-3xl pointer-events-none" />
+      {/* 3D Cube Particle Canvas Stage Overlay (Points 1, 3, 11, 14) */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <Canvas
+          camera={{ position: [0, 0, 5], fov: 50 }}
+          gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
+          dpr={[1, 1.5]}
+        >
+          <ambientLight intensity={1.2} />
+          <pointLight position={[5, 5, 5]} intensity={1.5} color="#FAF8F3" />
+          <pointLight position={[-5, -5, -5]} intensity={1.0} color="#B85C3B" />
+          <Suspense fallback={null}>
+            <AboutCubeParticles mouse={mouseState} />
+          </Suspense>
+        </Canvas>
+      </div>
 
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto relative z-10">
         <div className="mb-8 md:mb-12">
           <KinematicTextMorph
             category="00 / ABOUT ME"
@@ -272,12 +449,15 @@ export function AboutSection({ playHover }: AboutSectionProps) {
           />
         </div>
 
-        <InteractivePCHero />
+        {/* Interactive 3D Portrait Stage */}
+        <InteractivePCHero mouseState={mouseState} scrollProgress={scrollYProgress} />
 
-        <PersonalBioSection />
+        {/* Bio Content & Facts */}
+        <PersonalBioSection scrollProgress={scrollYProgress} />
 
+        {/* Detailed Who I Am Grid */}
         <WhoIAmSection />
       </div>
-    </section>
+    </motion.section>
   );
 }
