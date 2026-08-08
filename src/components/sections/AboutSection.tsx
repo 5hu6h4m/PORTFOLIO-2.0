@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import { motion, useInView, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { KinematicTextMorph } from '@/components/ui/KinematicTextMorph';
 import { PORTFOLIO_DATA } from '@/data/portfolioData';
-import { Terminal, Cpu, Trophy, Rocket } from 'lucide-react';
+import { Terminal, Cpu, Trophy, Rocket, Sparkles } from 'lucide-react';
 
 interface AboutSectionProps {
   playHover: () => void;
@@ -23,10 +23,95 @@ const fadeUp = {
 function SubLabel({ index, title }: { index: string; title: string }) {
   return (
     <div className="flex items-center gap-3 mb-10">
-      <span className="text-xs font-mono tracking-[0.22em] text-[#B85C3B]">{index}</span>
+      <span className="text-xs font-mono tracking-[0.22em] text-[#B85C3B] font-bold">{index}</span>
       <div className="w-8 h-px bg-[#B85C3B]" />
-      <span className="text-xs font-mono tracking-[0.22em] uppercase text-[#787268]">{title}</span>
+      <span className="text-xs font-mono tracking-[0.22em] uppercase text-[#787268] font-bold">{title}</span>
     </div>
+  );
+}
+
+// ── PERSONAL BIO CARD UNDER PC PNG IMAGE ──────────────────────────────────────
+function PersonalBioCard() {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-60px' });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 35 }}
+      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 35 }}
+      transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+      className="w-full max-w-5xl mx-auto mt-10 mb-16 p-8 sm:p-12 rounded-3xl bg-[#FCFAF6] border border-[#E2DCD2] shadow-xl relative overflow-hidden text-center sm:text-left select-none"
+    >
+      {/* Soft Ambient Corner Sheen */}
+      <div className="absolute top-0 right-0 w-80 h-80 bg-[#B85C3B]/10 rounded-full blur-3xl pointer-events-none" />
+
+      {/* Subtitle / Tagline */}
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={inView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.7, delay: 0.15 }}
+        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-mono font-bold uppercase tracking-[0.25em] bg-[#B85C3B]/12 text-[#B85C3B] border border-[#B85C3B]/25 mb-6"
+      >
+        <Sparkles className="w-3.5 h-3.5 text-[#B85C3B]" />
+        <span>Building for the web, learning every day.</span>
+      </motion.div>
+
+      {/* Main Bio Paragraph */}
+      <motion.p
+        initial={{ opacity: 0, y: 20 }}
+        animate={inView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.8, delay: 0.25 }}
+        className="text-lg sm:text-xl md:text-2xl font-serif text-[#25231F] leading-relaxed font-normal mb-10 max-w-4xl"
+      >
+        I’m a Computer Science student and frontend developer who enjoys turning ideas into clean, interactive web experiences. I’m currently exploring modern frontend technologies, 3D experiences and full-stack development while building projects that turn ideas into something people can actually use.
+      </motion.p>
+
+      {/* 3 Small Facts Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-8 border-t border-[#E2DCD2]">
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.35 }}
+          className="p-5 rounded-2xl bg-[#FAF8F3] border border-[#E2DCD2]/70 space-y-1.5"
+        >
+          <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#B85C3B] font-bold">
+            BASED IN
+          </div>
+          <div className="text-xs sm:text-sm font-mono font-bold text-[#25231F] tracking-wide">
+            NASHIK, INDIA
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.45 }}
+          className="p-5 rounded-2xl bg-[#FAF8F3] border border-[#E2DCD2]/70 space-y-1.5"
+        >
+          <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#B85C3B] font-bold">
+            EDUCATION
+          </div>
+          <div className="text-xs sm:text-sm font-mono font-bold text-[#25231F] tracking-wide">
+            B.TECH • COMPUTER SCIENCE
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.55 }}
+          className="p-5 rounded-2xl bg-[#FAF8F3] border border-[#E2DCD2]/70 space-y-1.5"
+        >
+          <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#B85C3B] font-bold">
+            CURRENTLY
+          </div>
+          <div className="text-xs sm:text-sm font-mono font-bold text-[#25231F] tracking-wide">
+            BUILDING + LEARNING
+          </div>
+        </motion.div>
+      </div>
+    </motion.div>
   );
 }
 
@@ -167,8 +252,6 @@ function InteractivePCHero() {
   );
 }
 
-
-
 export function AboutSection({ playHover }: AboutSectionProps) {
   return (
     <section
@@ -189,6 +272,8 @@ export function AboutSection({ playHover }: AboutSectionProps) {
         </div>
 
         <InteractivePCHero />
+
+        <PersonalBioCard />
 
         <WhoIAmSection />
       </div>
