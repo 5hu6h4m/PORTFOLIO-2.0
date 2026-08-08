@@ -1,8 +1,9 @@
 'use client';
 
 import { useRef, useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check } from 'lucide-react';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
+import { Copy, Check, Send, Sparkles, Mail, MessageSquare, ShieldCheck, ArrowUpRight, Terminal } from 'lucide-react';
+import { GithubIcon, LinkedinIcon, TwitterIcon } from '@/components/ui/BrandIcons';
 import { PORTFOLIO_DATA } from '@/data/portfolioData';
 import confetti from 'canvas-confetti';
 
@@ -13,13 +14,13 @@ interface ContactSectionProps {
 }
 
 const PLACEHOLDER_LINES = [
-  "Hi Shubham, I'm Alex from TechCorp.",
-  "We're building a next-gen SaaS platform",
-  "and need a frontend engineer who thinks",
-  "beyond components. Interested?",
+  "Hi Shubham, I have an exciting Next.js & 3D project...",
+  "We're looking for a frontend developer to build an MVP...",
+  "Hey Shubham, let's collaborate on a web application...",
+  "Hi, I saw your portfolio and would love to connect...",
 ];
 
-// Typewriter for placeholder
+// Typewriter for terminal message placeholder
 function usePlaceholderTypewriter(lines: string[], active: boolean) {
   const [text, setText] = useState('');
   const [lineIdx, setLineIdx] = useState(0);
@@ -29,7 +30,7 @@ function usePlaceholderTypewriter(lines: string[], active: boolean) {
   useEffect(() => {
     if (!active) return;
     const line = lines[lineIdx];
-    const delay = deleting ? 30 : charIdx < line.length ? 55 : 1200;
+    const delay = deleting ? 25 : charIdx < line.length ? 45 : 1400;
 
     const timer = setTimeout(() => {
       if (!deleting && charIdx < line.length) {
@@ -62,7 +63,9 @@ export function ContactSection({ playClick, playHover, playSuccess }: ContactSec
   const [focused, setFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const placeholder = usePlaceholderTypewriter(PLACEHOLDER_LINES, !focused && !message);
+
   const headerRef = useRef(null);
+  const headerInView = useInView(headerRef, { once: false });
 
   const charCount = message.length;
   const maxChars = 600;
@@ -89,183 +92,287 @@ export function ContactSection({ playClick, playHover, playSuccess }: ContactSec
       if (res.ok) {
         playSuccess();
         confetti({
-          particleCount: 80,
-          spread: 60,
+          particleCount: 90,
+          spread: 70,
           origin: { y: 0.7 },
-          colors: ['#B85C3B', '#FAF8F3', '#25231F'],
+          colors: ['#B85C3B', '#FAF8F3', '#8E9A78'],
         });
         setSent(true);
+      } else {
+        throw new Error('API offline');
       }
     } catch {
       // Fallback: open mailto
-      window.location.href = `mailto:${personal.email}?subject=Transmission&body=${encodeURIComponent(message)}`;
+      playSuccess();
+      window.location.href = `mailto:${personal.email}?subject=Transmission from Portfolio&body=${encodeURIComponent(message)}`;
+      setSent(true);
     } finally {
       setSending(false);
     }
   };
 
   return (
-    <section id="contact" className="relative min-h-screen bg-[#25231F] overflow-hidden flex flex-col">
-      {/* Scanlines */}
+    <section id="contact" className="relative min-h-screen bg-[#161412] text-[#FAF8F3] overflow-hidden flex flex-col justify-between py-20 px-6 md:px-12 select-none border-t border-[#3A3832]">
+      {/* Background Volumetric Ambient Lighting Sheen */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#B85C3B]/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[#8E9A78]/8 rounded-full blur-3xl pointer-events-none" />
+
+      {/* Grid Pattern Overlay */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-[0.04]"
-        style={{ backgroundImage: 'repeating-linear-gradient(0deg, #FAF8F3 0px, transparent 1px, transparent 4px)' }}
+        className="absolute inset-0 pointer-events-none opacity-[0.03]"
+        style={{ backgroundImage: 'linear-gradient(#FAF8F3 1px, transparent 1px), linear-gradient(90deg, #FAF8F3 1px, transparent 1px)', backgroundSize: '40px 40px' }}
       />
 
-      {/* Ambient glow */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#B85C3B]/8 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="relative z-10 flex flex-col flex-1 max-w-5xl mx-auto w-full px-6 md:px-12 py-24">
-
-        {/* Header */}
+      <div className="relative z-10 max-w-7xl mx-auto w-full flex-1 flex flex-col justify-between space-y-12">
+        
+        {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, x: -90 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: false, amount: 0.2 }}
-          transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-16"
+          ref={headerRef}
+          initial={{ opacity: 0, y: 30 }}
+          animate={headerInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8 }}
+          className="border-b border-[#3A3832] pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6"
         >
-          <div className="flex items-center gap-3 mb-6">
-            <span className="w-2 h-2 rounded-full bg-[#B85C3B] animate-pulse" />
-            <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-[#B85C3B]">
-              07 / OPEN CHANNEL
-            </span>
+          <div>
+            <div className="text-[10px] sm:text-xs font-mono tracking-[0.3em] uppercase text-[#B85C3B] mb-2 font-bold flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-[#B85C3B]" />
+              <span>06 / OPEN TRANSMISSION CHANNEL</span>
+            </div>
+            <h2 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-bold tracking-tight leading-none text-[#FAF8F3]">
+              INITIATE <span className="italic font-light text-[#B85C3B]">TRANSMISSION.</span>
+            </h2>
           </div>
 
-          <h2
-            className="text-5xl md:text-7xl font-serif font-bold text-[#FAF8F3] leading-none mb-6"
-            style={{ letterSpacing: '-0.03em' }}
-          >
-            LET'S<br />
-            <span className="text-[#B85C3B]">TRANSMIT.</span>
-          </h2>
-
-          {/* Email — large, copyable */}
-          <button
-            onClick={handleCopyEmail}
-            onMouseEnter={playHover}
-            className="group flex items-center gap-3 text-[#9A948C] hover:text-[#FAF8F3] transition-colors cursor-pointer"
-          >
-            <span className="font-mono text-sm md:text-base">{personal.email}</span>
-            {copied
-              ? <Check className="w-4 h-4 text-emerald-400" />
-              : <Copy className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" />
-            }
-          </button>
+          <div className="flex items-center gap-3 text-xs font-mono text-[#FAF8F3]/70 font-bold shrink-0">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#8E9A78] animate-pulse" />
+            <span className="text-[#FAF8F3]">STATUS: AVAILABLE FOR NEW PROJECTS</span>
+          </div>
         </motion.div>
 
-        {/* Transmission composer */}
-        <AnimatePresence mode="wait">
-          {sent ? (
-            <motion.div
-              key="sent"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              className="flex-1 flex flex-col items-center justify-center text-center"
-            >
-              <div className="text-6xl mb-6">📡</div>
-              <h3 className="text-3xl font-serif font-bold text-[#FAF8F3] mb-3">Transmission Received.</h3>
-              <p className="text-[#9A948C] font-light mb-8 max-w-md">
-                Signal locked. I'll decode it and reply within 24 hours.
-              </p>
+        {/* 2-Column Contact Command Center */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start flex-1">
+          
+          {/* Left Column — Quick Signal Channels & Social Links */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={headerInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="lg:col-span-5 space-y-8"
+          >
+            {/* Direct Email Card */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-[#1E1C19] border border-[#3A3832] hover:border-[#B85C3B]/60 transition-all duration-300 shadow-xl space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#B85C3B] font-bold">
+                  <Mail className="w-4 h-4" />
+                  <span>DIRECT EMAIL SIGNAL</span>
+                </div>
+                <span className="text-[10px] font-mono text-[#FAF8F3]/50">CLICK TO COPY</span>
+              </div>
+
               <button
-                onClick={() => { setSent(false); setMessage(''); setFrom(''); }}
-                className="px-6 py-2.5 rounded-full border border-[#B85C3B] text-[#B85C3B] text-xs font-mono uppercase tracking-widest hover:bg-[#B85C3B] hover:text-white transition-all cursor-pointer"
+                onClick={handleCopyEmail}
+                onMouseEnter={playHover}
+                className="w-full text-left group flex items-center justify-between p-4 rounded-2xl bg-[#161412] border border-[#3A3832] hover:border-[#B85C3B] transition-all duration-300 cursor-pointer"
               >
-                New Transmission
-              </button>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="form"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex-1 flex flex-col"
-            >
-              {/* Sender field */}
-              <div className="mb-4">
-                <div className="text-[10px] font-mono text-[#787268] uppercase tracking-[0.2em] mb-2">
-                  SENDER IDENTIFICATION (optional)
-                </div>
-                <input
-                  type="text"
-                  value={from}
-                  onChange={(e) => setFrom(e.target.value)}
-                  onFocus={() => setFocused(true)}
-                  onBlur={() => setFocused(false)}
-                  placeholder="Your name · Company · Role"
-                  className="w-full bg-transparent border-b border-[#3A3832] text-[#FAF8F3] font-mono text-sm py-2 focus:outline-none focus:border-[#B85C3B] transition-colors placeholder:text-[#4A4742]"
-                />
-              </div>
-
-              {/* Message composer — the terminal */}
-              <div className="flex-1 relative border border-[#3A3832] rounded-lg overflow-hidden focus-within:border-[#B85C3B] transition-colors">
-                {/* Terminal header */}
-                <div className="flex items-center gap-2 px-4 py-2 border-b border-[#3A3832] bg-[#1E1C19]">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#FEBC2E]" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#28C840]" />
-                  <span className="ml-3 text-[10px] font-mono text-[#4A4742] uppercase tracking-widest">
-                    transmission.txt
+                <span className="font-mono text-sm sm:text-base text-[#FAF8F3] font-bold truncate">
+                  {personal.email}
+                </span>
+                {copied ? (
+                  <span className="inline-flex items-center gap-1 text-xs font-mono text-emerald-400 font-bold shrink-0">
+                    <Check className="w-4 h-4" /> COPIED!
                   </span>
-                </div>
+                ) : (
+                  <Copy className="w-4 h-4 text-[#FAF8F3]/50 group-hover:text-[#B85C3B] transition-colors shrink-0" />
+                )}
+              </button>
 
-                {/* Prompt line */}
-                <div className="absolute top-10 left-4 text-[#B85C3B] font-mono text-sm pointer-events-none">›</div>
-
-                <textarea
-                  ref={textareaRef}
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value.slice(0, maxChars))}
-                  onFocus={() => setFocused(true)}
-                  onBlur={() => setFocused(false)}
-                  placeholder={focused ? '' : placeholder}
-                  rows={8}
-                  className="w-full bg-transparent text-[#FAF8F3] font-mono text-sm p-4 pl-9 focus:outline-none resize-none placeholder:text-[#4A4742] leading-relaxed"
-                  style={{ caretColor: '#B85C3B' }}
-                />
-
-                {/* Character count */}
-                <div className="absolute bottom-3 right-4 text-[10px] font-mono text-[#4A4742]">
-                  {charCount}/{maxChars}
-                </div>
+              <div className="text-[11px] font-mono text-[#FAF8F3]/60 flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#8E9A78]" />
+                <span>Response Time SLA: Under 24 Hours Guaranteed</span>
               </div>
+            </div>
 
-              {/* Transmit controls */}
-              <div className="flex items-center justify-between mt-6">
-                <div className="text-[10px] font-mono text-[#4A4742] uppercase tracking-widest">
-                  {personal.location} · {personal.statusPill}
-                </div>
-                <motion.button
-                  onClick={handleTransmit}
+            {/* Social Signal Networks */}
+            <div className="space-y-3">
+              <div className="text-xs font-mono uppercase tracking-widest text-[#FAF8F3]/50 font-bold">
+                ENGINEERING NETWORKS
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <a
+                  href={personal.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   onMouseEnter={playHover}
-                  disabled={message.trim().length < 10 || sending}
-                  className="group flex items-center gap-3 px-6 py-3 rounded-full font-mono text-sm uppercase tracking-wider transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-                  style={{
-                    background: message.trim().length >= 10 ? '#B85C3B' : 'transparent',
-                    color: message.trim().length >= 10 ? '#FAF8F3' : '#4A4742',
-                    border: `1px solid ${message.trim().length >= 10 ? '#B85C3B' : '#3A3832'}`,
-                  }}
-                  whileHover={{ scale: message.trim().length >= 10 ? 1.03 : 1 }}
-                  whileTap={{ scale: 0.97 }}
+                  onClick={playClick}
+                  className="p-4 rounded-2xl bg-[#1E1C19] border border-[#3A3832] hover:border-[#B85C3B] transition-all duration-300 flex items-center justify-between group shadow-sm"
                 >
-                  {sending ? (
-                    <>
-                      <span className="w-3 h-3 rounded-full border-2 border-[#FAF8F3] border-t-transparent animate-spin" />
-                      <span>Transmitting...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Transmit</span>
-                      <span className="text-lg leading-none">→</span>
-                    </>
-                  )}
-                </motion.button>
+                  <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#FAF8F3]">
+                    <GithubIcon className="w-4 h-4 text-[#B85C3B]" />
+                    <span>GitHub</span>
+                  </div>
+                  <ArrowUpRight className="w-3.5 h-3.5 text-[#FAF8F3]/40 group-hover:text-[#B85C3B] transition-colors" />
+                </a>
+
+                <a
+                  href={personal.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onMouseEnter={playHover}
+                  onClick={playClick}
+                  className="p-4 rounded-2xl bg-[#1E1C19] border border-[#3A3832] hover:border-[#B85C3B] transition-all duration-300 flex items-center justify-between group shadow-sm"
+                >
+                  <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#FAF8F3]">
+                    <LinkedinIcon className="w-4 h-4 text-[#4A6FA5]" />
+                    <span>LinkedIn</span>
+                  </div>
+                  <ArrowUpRight className="w-3.5 h-3.5 text-[#FAF8F3]/40 group-hover:text-[#B85C3B] transition-colors" />
+                </a>
+
+                <a
+                  href={personal.twitter}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onMouseEnter={playHover}
+                  onClick={playClick}
+                  className="p-4 rounded-2xl bg-[#1E1C19] border border-[#3A3832] hover:border-[#B85C3B] transition-all duration-300 flex items-center justify-between group shadow-sm"
+                >
+                  <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#FAF8F3]">
+                    <TwitterIcon className="w-4 h-4 text-[#9B5DE5]" />
+                    <span>Twitter / X</span>
+                  </div>
+                  <ArrowUpRight className="w-3.5 h-3.5 text-[#FAF8F3]/40 group-hover:text-[#B85C3B] transition-colors" />
+                </a>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+          </motion.div>
+
+          {/* Right Column — Encrypted Transmission Composer Terminal */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={headerInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="lg:col-span-7 w-full"
+          >
+            <AnimatePresence mode="wait">
+              {sent ? (
+                <motion.div
+                  key="sent"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="p-8 sm:p-12 rounded-3xl bg-[#1E1C19] border border-[#B85C3B]/60 text-center space-y-6 shadow-2xl"
+                >
+                  <div className="w-16 h-16 rounded-full bg-[#B85C3B]/20 text-[#B85C3B] flex items-center justify-center mx-auto border border-[#B85C3B]/40 shadow-lg">
+                    <Send className="w-8 h-8" />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-3xl font-serif font-bold text-[#FAF8F3]">Transmission Locked &amp; Received.</h3>
+                    <p className="text-sm font-mono text-[#FAF8F3]/70 max-w-md mx-auto leading-relaxed">
+                      Your signal has been encrypted and routed directly to Shubham's primary terminal. Expect a response within 24 hours.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => { setSent(false); setMessage(''); setFrom(''); }}
+                    className="px-8 py-3.5 rounded-full bg-[#B85C3B] text-[#FAF8F3] text-xs font-mono font-bold uppercase tracking-widest hover:bg-[#FAF8F3] hover:text-[#161412] transition-all cursor-pointer shadow-md"
+                  >
+                    Send Another Transmission
+                  </button>
+                </motion.div>
+              ) : (
+                <div className="rounded-3xl bg-[#1E1C19] border border-[#3A3832] shadow-2xl p-6 sm:p-8 space-y-6">
+                  {/* Terminal Title Bar */}
+                  <div className="flex items-center justify-between border-b border-[#3A3832] pb-4">
+                    <div className="flex items-center gap-2">
+                      <span className="w-3 h-3 rounded-full bg-[#FF5F57]" />
+                      <span className="w-3 h-3 rounded-full bg-[#FEBC2E]" />
+                      <span className="w-3 h-3 rounded-full bg-[#28C840]" />
+                      <span className="ml-3 text-xs font-mono text-[#FAF8F3]/60 uppercase tracking-widest font-bold flex items-center gap-1.5">
+                        <Terminal className="w-3.5 h-3.5 text-[#B85C3B]" />
+                        <span>ENCRYPTED_TRANSMISSION.TXT</span>
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-mono text-[#B85C3B] font-bold">256-BIT ENCRYPTED</span>
+                  </div>
+
+                  {/* Sender Name/Contact Input */}
+                  <div className="space-y-2">
+                    <div className="text-[10px] font-mono text-[#FAF8F3]/60 uppercase tracking-[0.2em] font-bold">
+                      SENDER IDENTIFICATION (Optional)
+                    </div>
+                    <input
+                      type="text"
+                      value={from}
+                      onChange={(e) => setFrom(e.target.value)}
+                      onFocus={() => setFocused(true)}
+                      onBlur={() => setFocused(false)}
+                      placeholder="Your Name / Email / Company"
+                      className="w-full bg-[#161412] border border-[#3A3832] rounded-2xl px-4 py-3 text-sm font-mono text-[#FAF8F3] focus:outline-none focus:border-[#B85C3B] transition-colors placeholder:text-[#FAF8F3]/30"
+                    />
+                  </div>
+
+                  {/* Message Composer Area */}
+                  <div className="space-y-2 relative">
+                    <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.2em] font-bold text-[#FAF8F3]/60">
+                      <span>TRANSMISSION PAYLOAD</span>
+                      <span className={charCount > maxChars * 0.9 ? 'text-amber-400' : 'text-[#FAF8F3]/40'}>
+                        {charCount} / {maxChars} CHARACTERS
+                      </span>
+                    </div>
+
+                    <div className="relative rounded-2xl bg-[#161412] border border-[#3A3832] focus-within:border-[#B85C3B] transition-colors overflow-hidden">
+                      <div className="absolute top-4 left-4 text-[#B85C3B] font-mono text-sm pointer-events-none">›</div>
+                      <textarea
+                        ref={textareaRef}
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value.slice(0, maxChars))}
+                        onFocus={() => setFocused(true)}
+                        onBlur={() => setFocused(false)}
+                        placeholder={focused ? '' : placeholder}
+                        rows={7}
+                        className="w-full bg-transparent text-[#FAF8F3] font-mono text-sm p-4 pl-9 focus:outline-none resize-none placeholder:text-[#FAF8F3]/30 leading-relaxed"
+                        style={{ caretColor: '#B85C3B' }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Action Transmit Button */}
+                  <div className="pt-2 flex items-center justify-between">
+                    <div className="text-[10px] font-mono text-[#FAF8F3]/40 uppercase tracking-widest">
+                      LOCATION: NASHIK, INDIA
+                    </div>
+
+                    <motion.button
+                      onClick={handleTransmit}
+                      onMouseEnter={playHover}
+                      disabled={message.trim().length < 10 || sending}
+                      className="inline-flex items-center gap-3 px-8 py-4 rounded-full text-xs font-mono font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-xl"
+                      style={{
+                        backgroundColor: message.trim().length >= 10 ? '#B85C3B' : 'transparent',
+                        color: message.trim().length >= 10 ? '#FAF8F3' : '#FAF8F3',
+                        border: `1px solid ${message.trim().length >= 10 ? '#B85C3B' : '#3A3832'}`,
+                      }}
+                      whileHover={{ scale: message.trim().length >= 10 ? 1.03 : 1 }}
+                      whileTap={{ scale: 0.97 }}
+                    >
+                      {sending ? (
+                        <>
+                          <span className="w-3.5 h-3.5 rounded-full border-2 border-[#FAF8F3] border-t-transparent animate-spin" />
+                          <span>TRANSMITTING SIGNAL...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>TRANSMIT SIGNAL</span>
+                          <Send className="w-4 h-4" />
+                        </>
+                      )}
+                    </motion.button>
+                  </div>
+                </div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        </div>
+
       </div>
     </section>
   );

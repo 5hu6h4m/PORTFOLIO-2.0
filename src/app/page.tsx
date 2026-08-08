@@ -13,7 +13,6 @@ import { SkillsSection } from '@/components/sections/SkillsSection';
 import { LeadershipSection } from '@/components/sections/LeadershipSection';
 import { LearningJourneySection } from '@/components/sections/LearningJourneySection';
 import { AwardsSection } from '@/components/sections/AwardsSection';
-import { BeyondTheCodeSection } from '@/components/sections/BeyondTheCodeSection';
 import { ContactSection } from '@/components/sections/ContactSection';
 import { Footer } from '@/components/sections/Footer';
 import { SceneCanvas } from '@/components/3d/SceneCanvas';
@@ -138,8 +137,7 @@ export default function Home() {
           <AwardsSection playHover={playHover} isRevealed={awardsRevealed} />
         </div>
 
-        {/* 06 / BEYOND THE CODE */}
-        <BeyondTheCodeSection playHover={playHover} />
+
 
         {/* FINAL WAR SCROLL-TYPED QUOTE */}
         <ScrollTypeQuote
