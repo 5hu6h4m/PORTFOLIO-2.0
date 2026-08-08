@@ -397,8 +397,8 @@ export function AboutSection({ playHover }: AboutSectionProps) {
   });
 
   // Camera Zoom & Depth Parallax Scrub
-  const cameraScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.97, 1.0, 1.02]);
-  const cameraZ = useTransform(scrollYProgress, [0, 0.5, 1], ['20px', '0px', '-20px']);
+  const cameraScale = useTransform(scrollYProgress, [0, 0.4, 0.8, 1], [0.96, 1.0, 1.0, 0.97]);
+  const sectionElevationY = useTransform(scrollYProgress, [0, 0.25], ['60px', '0px']);
 
   // Mouse movement tracking (Point 9)
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
@@ -419,8 +419,13 @@ export function AboutSection({ playHover }: AboutSectionProps) {
       ref={sectionRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      initial={{ opacity: 0, y: 70 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: false, amount: 0.15 }}
+      transition={{ duration: 1.1, ease: EASE }}
       style={{
         scale: cameraScale,
+        y: sectionElevationY,
         background: 'linear-gradient(to bottom, transparent 0%, rgba(244,240,232,0.6) 18%, rgba(244,240,232,0.92) 38%, #F4F0E8 56%)',
       }}
       className="pt-16 md:pt-24 pb-16 px-6 md:px-12 relative overflow-hidden rounded-t-3xl shadow-[0_-20px_80px_rgba(0,0,0,0.18)]"
