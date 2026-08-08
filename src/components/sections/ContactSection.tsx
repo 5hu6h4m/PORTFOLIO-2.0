@@ -133,6 +133,74 @@ function ContactPortalWorld({
   );
 }
 
+// ── 4-LINE ALTERNATING LEFT / RIGHT MASKED HEADING REVEAL ───────────────────
+function AlternatingEditorialHeader() {
+  const headerRef = useRef(null);
+  const inView = useInView(headerRef, { once: false, margin: '-40px' });
+
+  return (
+    <div ref={headerRef} className="text-center max-w-4xl mx-auto space-y-4">
+      <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#B55D3D]/10 text-[#B55D3D] border border-[#B55D3D]/20 mb-2">
+        <Sparkles className="w-3.5 h-3.5 text-[#B55D3D]" />
+        <span className="text-xs font-mono font-bold uppercase tracking-[0.25em]">
+          07 / THE LAST TRANSMISSION
+        </span>
+      </div>
+
+      <h2 className="text-5xl sm:text-7xl lg:text-8xl font-serif font-bold tracking-tight text-[#23201C] leading-[1.05] flex flex-col items-center justify-center overflow-hidden">
+        {/* Line 1: Enters from LEFT */}
+        <div className="overflow-hidden py-1">
+          <motion.div
+            initial={{ opacity: 0, x: -90 }}
+            animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -90 }}
+            transition={{ duration: 0.85, delay: 0.1, ease: EASE }}
+          >
+            LET’S BUILD
+          </motion.div>
+        </div>
+
+        {/* Line 2: Enters from RIGHT (Terracotta Italic Accent) */}
+        <div className="overflow-hidden py-1">
+          <motion.div
+            initial={{ opacity: 0, x: 90 }}
+            animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: 90 }}
+            transition={{ duration: 0.85, delay: 0.25, ease: EASE }}
+            className="italic font-normal text-[#B55D3D]"
+          >
+            SOMETHING
+          </motion.div>
+        </div>
+
+        {/* Line 3: Enters from LEFT */}
+        <div className="overflow-hidden py-1">
+          <motion.div
+            initial={{ opacity: 0, x: -90 }}
+            animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -90 }}
+            transition={{ duration: 0.85, delay: 0.4, ease: EASE }}
+          >
+            WORTH
+          </motion.div>
+        </div>
+
+        {/* Line 4: Enters from RIGHT */}
+        <div className="overflow-hidden py-1">
+          <motion.div
+            initial={{ opacity: 0, x: 90 }}
+            animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: 90 }}
+            transition={{ duration: 0.85, delay: 0.55, ease: EASE }}
+          >
+            REMEMBERING.
+          </motion.div>
+        </div>
+      </h2>
+
+      <p className="text-base sm:text-lg font-serif font-light text-[#787268] max-w-xl mx-auto leading-relaxed pt-4">
+        Have an idea, opportunity, collaboration or project in mind? I’d love to hear what you’re building.
+      </p>
+    </div>
+  );
+}
+
 export function ContactSection({ playClick, playHover, playSuccess }: ContactSectionProps) {
   const { personal } = PORTFOLIO_DATA;
   const sectionRef = useRef<HTMLElement>(null);
@@ -250,31 +318,8 @@ export function ContactSection({ playClick, playHover, playSuccess }: ContactSec
 
       <div className="relative z-10 max-w-6xl mx-auto w-full flex-1 flex flex-col justify-between space-y-16">
         
-        {/* 1. EDITORIAL CHAPTER HEADER */}
-        <motion.div
-          initial={{ opacity: 0, y: 35 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.2 }}
-          transition={{ duration: 0.9, ease: EASE }}
-          className="text-center max-w-3xl mx-auto space-y-4"
-        >
-          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#B55D3D]/10 text-[#B55D3D] border border-[#B55D3D]/20">
-            <Sparkles className="w-3.5 h-3.5 text-[#B55D3D]" />
-            <span className="text-xs font-mono font-bold uppercase tracking-[0.25em]">
-              07 / THE LAST TRANSMISSION
-            </span>
-          </div>
-
-          <h2 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-bold tracking-tight text-[#23201C] leading-[1.08]">
-            LET’S BUILD<br />
-            <span className="italic font-normal text-[#B55D3D]">SOMETHING</span><br />
-            WORTH REMEMBERING.
-          </h2>
-
-          <p className="text-base sm:text-lg font-serif font-light text-[#787268] max-w-xl mx-auto leading-relaxed pt-2">
-            Have an idea, opportunity, collaboration or project in mind? I’d love to hear what you’re building.
-          </p>
-        </motion.div>
+        {/* 1. EDITORIAL CHAPTER HEADER (ALTERNATING 4-LINE LEFT/RIGHT MASKED REVEAL) */}
+        <AlternatingEditorialHeader />
 
         {/* 2. FLOATING COMMUNICATION CONSOLE & DIRECT CONTACT STAGE */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start flex-1">
