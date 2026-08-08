@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef } from 'react';
 import { motion, useInView, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { KinematicTextMorph } from '@/components/ui/KinematicTextMorph';
 import { PORTFOLIO_DATA } from '@/data/portfolioData';
@@ -10,7 +10,7 @@ interface AboutSectionProps {
   playHover: () => void;
 }
 
-const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
   visible: (i = 0) => ({
@@ -19,64 +19,6 @@ const fadeUp = {
     transition: { duration: 0.7, delay: i * 0.1, ease: EASE },
   }),
 };
-
-// ── KINETIC CIPHER TEXT SCRAMBLE REVEAL COMPONENT ─────────────────────────────
-function TextScrambleReveal({
-  text,
-  inView,
-  delay = 0,
-  className = '',
-}: {
-  text: string;
-  inView: boolean;
-  delay?: number;
-  className?: string;
-}) {
-  const [displayText, setDisplayText] = useState('');
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789#@$%&*';
-
-  useEffect(() => {
-    if (!inView) {
-      setDisplayText('');
-      return;
-    }
-
-    let iteration = 0;
-    const totalFrames = text.length * 2.2;
-
-    const timeout = setTimeout(() => {
-      const interval = setInterval(() => {
-        setDisplayText(
-          text
-            .split('')
-            .map((char, index) => {
-              if (char === ' ') return ' ';
-              if (index < iteration / 2.2) {
-                return text[index];
-              }
-              return chars[Math.floor(Math.random() * chars.length)];
-            })
-            .join('')
-        );
-
-        iteration += 1;
-
-        if (iteration >= totalFrames) {
-          clearInterval(interval);
-          setDisplayText(text);
-        }
-      }, 22);
-
-      return () => clearInterval(interval);
-    }, delay * 1000);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [inView, text, delay]);
-
-  return <span className={className}>{displayText || (inView ? '' : text)}</span>;
-}
 
 function SubLabel({ index, title }: { index: string; title: string }) {
   return (
@@ -88,59 +30,54 @@ function SubLabel({ index, title }: { index: string; title: string }) {
   );
 }
 
-// ── FREE-FLOATING KINETIC EDITORIAL BIO SECTION WITH CIPHER TEXT SCRAMBLE ────
+// ── APPLE-GRADE MASKED EDITORIAL BIO REVEAL (NO CARDS, NO CHARACTER SCRAMBLE) ─
 function PersonalBioSection() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-80px' });
 
-  const textLines = [
+  const paragraphs = [
     "I’m a Computer Science student and frontend developer who enjoys turning ideas into clean, interactive web experiences.",
     "I’m currently exploring modern frontend technologies, 3D experiences and full-stack development while building projects that turn ideas into something people can actually use."
   ];
 
   return (
     <div ref={ref} className="w-full max-w-5xl mx-auto my-16 sm:my-24 px-4 select-none">
-      {/* 1. Tagline Cipher Scramble Reveal */}
-      <motion.div
-        initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
-        animate={inView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className="flex items-center gap-3 mb-6"
-      >
-        <span className="w-2 h-2 rounded-full bg-[#B85C3B] animate-pulse" />
-        <span className="text-xs sm:text-sm font-mono font-bold uppercase tracking-[0.25em] text-[#B85C3B]">
-          <TextScrambleReveal
-            text="Building for the web, learning every day."
-            inView={inView}
-            delay={0.1}
-          />
-        </span>
-      </motion.div>
+      {/* 1. Tagline Pill */}
+      <div className="overflow-hidden mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: EASE }}
+          className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#B85C3B]/10 text-[#B85C3B] border border-[#B85C3B]/20"
+        >
+          <Sparkles className="w-3.5 h-3.5 text-[#B85C3B]" />
+          <span className="text-xs sm:text-sm font-mono font-bold uppercase tracking-[0.25em]">
+            Building for the web, learning every day.
+          </span>
+        </motion.div>
+      </div>
 
-      {/* 2. Free Floating Kinetic Serif Paragraph (A to Z Character Cipher Lock-In Reveal) */}
-      <div className="space-y-5 mb-16">
-        {textLines.map((line, idx) => (
-          <motion.p
-            key={idx}
-            initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
-            animate={inView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
-            transition={{ duration: 0.9, delay: 0.2 + idx * 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="text-2xl sm:text-3xl lg:text-4xl font-serif text-[#25231F] leading-[1.35] font-normal tracking-tight"
-          >
-            <TextScrambleReveal
-              text={line}
-              inView={inView}
-              delay={0.3 + idx * 0.35}
-            />
-          </motion.p>
+      {/* 2. Apple-Grade Masked Paragraph Lines Reveal */}
+      <div className="space-y-6 mb-16">
+        {paragraphs.map((p, idx) => (
+          <div key={idx} className="overflow-hidden">
+            <motion.p
+              initial={{ opacity: 0, y: 55 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.9, delay: 0.15 + idx * 0.2, ease: EASE }}
+              className="text-2xl sm:text-3xl lg:text-4xl font-serif text-[#25231F] leading-[1.38] font-normal tracking-tight"
+            >
+              {p}
+            </motion.p>
+          </div>
         ))}
       </div>
 
-      {/* 3. Free Floating 3 Small Facts Editorial Row (NO BOX CARDS, NO BORDERS) */}
+      {/* 3. Ultra-Clean 3 Small Facts Editorial Row */}
       <motion.div
-        initial={{ opacity: 0, y: 25 }}
+        initial={{ opacity: 0, y: 30 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.8, delay: 1.1, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.85, delay: 0.55, ease: EASE }}
         className="grid grid-cols-1 sm:grid-cols-3 gap-8 pt-8 border-t border-[#E2DCD2]/80"
       >
         <div className="space-y-1.5">
@@ -148,11 +85,7 @@ function PersonalBioSection() {
             BASED IN
           </div>
           <div className="text-sm sm:text-base font-mono font-bold text-[#25231F] tracking-wide">
-            <TextScrambleReveal
-              text="NASHIK, INDIA"
-              inView={inView}
-              delay={1.2}
-            />
+            NASHIK, INDIA
           </div>
         </div>
 
@@ -161,11 +94,7 @@ function PersonalBioSection() {
             EDUCATION
           </div>
           <div className="text-sm sm:text-base font-mono font-bold text-[#25231F] tracking-wide">
-            <TextScrambleReveal
-              text="B.TECH • COMPUTER SCIENCE"
-              inView={inView}
-              delay={1.35}
-            />
+            B.TECH • COMPUTER SCIENCE
           </div>
         </div>
 
@@ -174,11 +103,7 @@ function PersonalBioSection() {
             CURRENTLY
           </div>
           <div className="text-sm sm:text-base font-mono font-bold text-[#25231F] tracking-wide">
-            <TextScrambleReveal
-              text="BUILDING + LEARNING"
-              inView={inView}
-              delay={1.5}
-            />
+            BUILDING + LEARNING
           </div>
         </div>
       </motion.div>
