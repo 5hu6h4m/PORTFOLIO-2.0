@@ -358,18 +358,21 @@ export function AwardsSection({ playHover, isRevealed = true }: AwardsSectionPro
 
   const [cutsceneState, setCutsceneState] = useState<'IDLE' | 'PLAYING' | 'FINISHED'>('IDLE');
 
-  // Permanent Bulletproof Scroll Observer: Trigger 3D Rubik's Cube cutscene when section enters viewport
+  // Permanent Every-Visit Scroll Observer: Trigger 3D Rubik's Cube cutscene EVERY TIME section enters viewport
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
 
-    let hasFired = false;
+    let isCurrentlyInView = false;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !hasFired) {
-          hasFired = true;
+        if (entry.isIntersecting && !isCurrentlyInView) {
+          isCurrentlyInView = true;
           setCutsceneState('PLAYING');
+        } else if (!entry.isIntersecting && isCurrentlyInView) {
+          isCurrentlyInView = false;
+          setCutsceneState('IDLE');
         }
       },
       {
