@@ -1,8 +1,8 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { motion, useScroll, useTransform, useInView } from 'framer-motion';
-import { ArrowUpRight, ExternalLink } from 'lucide-react';
+import { motion, useScroll, useTransform, useSpring, useInView } from 'framer-motion';
+import { ArrowUpRight, ExternalLink, Sparkles, FolderGit2 } from 'lucide-react';
 import { GithubIcon } from '@/components/ui/BrandIcons';
 import { PORTFOLIO_DATA, Project } from '@/data/portfolioData';
 import { CaseStudyModal } from './CaseStudyModal';
@@ -12,387 +12,279 @@ interface ProjectsSectionProps {
   playHover: () => void;
 }
 
-// Accent colors per project
-const CHAPTER_ACCENTS = ['#B85C3B', '#8E9A78', '#4A6FA5', '#9B5DE5'];
+const CHAPTER_ACCENTS = ['#B85C3B', '#8E9A78', '#4A6FA5', '#9B5DE5', '#D4A373'];
 
-interface ChapterProps {
+// ── BORDERLESS LUXURY AESTHETIC PROJECT CARD ────────────────────────────────
+function SingleProjectCard({
+  project,
+  index,
+  accent,
+  onOpenCase,
+  playClick,
+  playHover,
+}: {
   project: Project;
   index: number;
   accent: string;
   onOpenCase: (p: Project) => void;
   playClick: () => void;
   playHover: () => void;
-}
-
-function ProjectChapter({ project, index, accent, onOpenCase, playClick, playHover }: ChapterProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: false, margin: '-20% 0px -20% 0px' });
-  const [hovering, setHovering] = useState(false);
-
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ['start end', 'end start'],
-  });
-
-  const numY = useTransform(scrollYProgress, [0, 1], ['20px', '-20px']);
-  const lineW = useTransform(scrollYProgress, [0.2, 0.6], ['0%', '100%']);
-
+}) {
   return (
     <div
-      ref={ref}
-      className="relative min-h-screen flex items-center border-t border-[#E2DCD2] overflow-hidden group"
-      style={{ background: hovering ? `${accent}06` : 'transparent' }}
-      onMouseEnter={() => { setHovering(true); playHover(); }}
-      onMouseLeave={() => setHovering(false)}
+      onMouseEnter={playHover}
+      className="w-[92vw] max-w-6xl h-[78vh] sm:h-[80vh] max-h-[720px] rounded-[2.5rem] bg-[#FCFAF6] shadow-[0_25px_70px_rgba(0,0,0,0.08)] hover:shadow-[0_35px_90px_rgba(184,92,59,0.14)] transition-all duration-500 p-6 sm:p-10 md:p-12 flex flex-col justify-between group relative overflow-hidden select-none"
     >
-      {/* Animated reveal line */}
-      <motion.div
-        className="absolute top-0 left-0 h-px"
-        style={{ width: lineW, backgroundColor: accent }}
+      {/* Soft Ambient Radial Sheen - NO BORDER */}
+      <div
+        className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl pointer-events-none opacity-40 group-hover:opacity-70 transition-opacity duration-700"
+        style={{ background: `radial-gradient(circle, ${accent}25 0%, transparent 70%)` }}
       />
 
-      {/* Chapter content */}
-      <div className="w-full max-w-6xl mx-auto px-6 md:px-12 py-24 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-
-        {/* Left — Chapter number + title */}
-        <div className="lg:col-span-6 xl:col-span-5">
-          <motion.div
-            style={{ color: `${accent}18`, y: numY }}
-            className="text-[22vw] lg:text-[14vw] font-serif font-bold leading-none select-none pointer-events-none"
-          >
-            {String(index + 1).padStart(2, '0')}
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="-mt-8 md:-mt-16 relative z-10"
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-[10px] font-mono tracking-[0.25em] uppercase" style={{ color: accent }}>
-                {project.year}
-              </span>
-              <div className="flex-1 h-px max-w-[40px]" style={{ backgroundColor: accent }} />
-              <span className="text-[10px] font-mono tracking-[0.2em] text-[#9A948C] uppercase">
-                {project.category}
-              </span>
-            </div>
-
-            <h3
-              className="text-4xl md:text-5xl xl:text-6xl font-serif font-bold text-[#25231F] leading-tight mb-4"
-              style={{ letterSpacing: '-0.02em' }}
-            >
-              {project.title}
-            </h3>
-
-            <p className="text-base text-[#787268] font-light leading-relaxed mb-8 max-w-sm">
-              {project.description}
-            </p>
-
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => { playClick(); onOpenCase(project); }}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-mono uppercase tracking-wider border transition-all duration-300 cursor-pointer hover:scale-105"
-                style={{ borderColor: accent, color: accent, backgroundColor: 'transparent' }}
-              >
-                <span>Case Study</span>
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </button>
-
-              <a
-                href={project.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onMouseEnter={playHover}
-                className="p-2 rounded-full border border-[#E2DCD2] text-[#9A948C] hover:text-[#25231F] hover:border-[#25231F] transition-colors"
-                title="Live Site"
-              >
-                <ExternalLink className="w-4 h-4" />
-              </a>
-              <a
-                href={project.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onMouseEnter={playHover}
-                className="p-2 rounded-full border border-[#E2DCD2] text-[#9A948C] hover:text-[#25231F] hover:border-[#25231F] transition-colors"
-                title="GitHub"
-              >
-                <GithubIcon className="w-4 h-4" />
-              </a>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Right — Technical metadata panel */}
-        <motion.div
-          className="lg:col-span-6 xl:col-span-7"
-          initial={{ opacity: 0, y: 40 }}
-          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-          transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-        >
-          {/* Project subtitle */}
-          <div className="text-xs font-mono text-[#9A948C] uppercase tracking-widest mb-6">
-            {project.subtitle}
+      <div className="space-y-6 overflow-y-auto pr-1 scrollbar-none flex-1 z-10">
+        {/* Header Metadata Ribbon */}
+        <div className="flex items-center justify-between border-b border-[#E2DCD2]/70 pb-4">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <span className="px-4 py-1.5 rounded-full text-xs font-mono font-bold uppercase tracking-[0.2em] bg-[#B85C3B]/10 text-[#B85C3B]">
+              PROJECT // 0{index + 1}
+            </span>
+            <span className="text-xs font-mono tracking-[0.2em] text-[#787268] uppercase font-bold">
+              YEAR {project.year}
+            </span>
           </div>
 
-          {/* Metrics grid */}
-          <div className="grid grid-cols-2 gap-px bg-[#E2DCD2] rounded-2xl overflow-hidden mb-6">
-            {project.caseStudy.metrics.map((m, i) => (
-              <div key={i} className="bg-[#FAF8F3] p-5">
+          <div className="flex items-center gap-2.5">
+            <span className="w-2 h-2 rounded-full bg-[#8E9A78] animate-pulse" />
+            <span className="px-4 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider font-bold bg-[#FAF8F3] text-[#25231F] shadow-xs">
+              {project.category}
+            </span>
+          </div>
+        </div>
+
+        {/* Hero Title & Subtitle Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start pt-1">
+          <div className="lg:col-span-7 space-y-3">
+            <div className="text-xs font-mono text-[#B85C3B] uppercase tracking-[0.25em] font-bold flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#B85C3B]" />
+              <span>{project.subtitle}</span>
+            </div>
+            <h3 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-[#25231F] group-hover:text-[#B85C3B] transition-colors leading-[1.06] tracking-tight">
+              {project.title}
+            </h3>
+            <p className="text-xs sm:text-base text-[#787268] font-light leading-relaxed pt-1">
+              {project.description}
+            </p>
+          </div>
+
+          {/* Metrics Bento Grid — NO TEXT CLIPPING */}
+          <div className="lg:col-span-5 grid grid-cols-2 gap-3">
+            {project.caseStudy.metrics.map((m, idx) => (
+              <div
+                key={idx}
+                className="p-4 sm:p-5 rounded-2xl bg-[#FAF8F3] border border-[#E2DCD2]/50 space-y-1 overflow-hidden"
+              >
                 <div
-                  className="text-2xl md:text-3xl font-serif font-bold text-[#25231F] mb-1"
-                  style={{ color: i === 0 ? accent : '#25231F' }}
+                  className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold tracking-tight truncate"
+                  style={{ color: idx === 0 ? accent : '#25231F' }}
+                  title={m.value}
                 >
                   {m.value}
                 </div>
-                <div className="text-[10px] font-mono uppercase tracking-widest text-[#9A948C]">{m.label}</div>
+                <div className="text-[10px] font-mono uppercase tracking-widest text-[#787268] font-semibold truncate">
+                  {m.label}
+                </div>
               </div>
             ))}
           </div>
+        </div>
 
-          {/* Tech stack */}
+        {/* Architecture & Tech Stack Band */}
+        <div className="space-y-2.5 pt-5 border-t border-[#E2DCD2]/70">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-[#787268] font-bold flex items-center justify-between">
+            <span>CORE TECH STACK &amp; ARCHITECTURE</span>
+            <span className="text-[#B85C3B]">VERIFIED</span>
+          </div>
           <div className="flex flex-wrap gap-2">
             {project.tags.map((tag) => (
               <span
                 key={tag}
-                className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider border"
-                style={{ borderColor: `${accent}40`, color: accent }}
+                className="px-3.5 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider font-bold bg-[#FAF8F3] text-[#25231F] border border-[#E2DCD2]/60 hover:border-[#B85C3B]/40 transition-colors"
               >
                 {tag}
               </span>
             ))}
           </div>
-
-          {/* Role line */}
-          <div className="mt-6 pt-5 border-t border-[#E2DCD2] flex items-center justify-between">
-            <div>
-              <div className="text-[10px] font-mono text-[#9A948C] uppercase tracking-widest mb-1">Role</div>
-              <div className="text-sm font-mono text-[#25231F]">{project.role}</div>
-            </div>
-            <div>
-              <div className="text-[10px] font-mono text-[#9A948C] uppercase tracking-widest mb-1">Client</div>
-              <div className="text-sm font-mono text-[#25231F]">{project.client}</div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    </div>
-  );
-}
-
-// ── VIEW MORE — DARK FINAL CHAPTER ───────────────────────────────────────────
-function ViewMoreChapter({
-  extraProjects,
-  totalCount,
-  playHover,
-  playClick,
-  onOpenCase,
-}: {
-  extraProjects: Project[];
-  totalCount: number;
-  playHover: () => void;
-  playClick: () => void;
-  onOpenCase: (p: Project) => void;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: '-10%' });
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
-  const lineW = useTransform(scrollYProgress, [0.1, 0.5], ['0%', '100%']);
-  const github = PORTFOLIO_DATA.personal.github;
-  const extra = totalCount - 4;
-
-  return (
-    <div
-      ref={ref}
-      className="relative border-t border-[#E2DCD2] bg-[#161412] text-[#FAF8F3] overflow-hidden min-h-screen flex flex-col justify-center"
-    >
-      {/* Scroll-progress accent line */}
-      <motion.div
-        className="absolute top-0 left-0 h-px bg-[#B85C3B]"
-        style={{ width: lineW }}
-      />
-
-      {/* Ghost big number */}
-      <div
-        className="absolute top-0 right-[-2vw] text-[22vw] font-serif font-bold select-none pointer-events-none leading-none opacity-[0.07] text-[#B85C3B]"
-        style={{ transform: 'translateY(-12%)' }}
-      >
-        +{extra > 0 ? extra : 'all'}
+        </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 md:px-12 py-24 w-full">
-
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-16"
+      {/* Action Footer */}
+      <div className="pt-4 mt-2 border-t border-[#E2DCD2]/70 flex items-center justify-between z-10">
+        <button
+          onClick={() => { playClick(); onOpenCase(project); }}
+          className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-xs font-mono uppercase tracking-wider border border-[#B85C3B] text-[#B85C3B] bg-transparent hover:bg-[#B85C3B] hover:text-[#FCFAF6] transition-all duration-300 cursor-pointer shadow-xs font-bold"
         >
-          <div className="text-[10px] font-mono tracking-[0.3em] text-[#B85C3B] mb-4 uppercase">
-            {extra > 0 ? `+ ${extra} More Projects` : 'Full Archive'}
-          </div>
-          <h3
-            className="text-5xl md:text-7xl font-serif font-bold text-[#FAF8F3] leading-none mb-6"
-            style={{ letterSpacing: '-0.03em' }}
-          >
-            {"THERE'S"}<br />MORE.
-          </h3>
-          <p className="text-base text-[#FAF8F3]/60 font-light max-w-lg leading-relaxed">
-            Beyond the featured case files — the full archive of experiments, open-source tools, and production builds lives on GitHub.
-          </p>
-        </motion.div>
+          <span>Explore Case Study</span>
+          <ArrowUpRight className="w-4 h-4" />
+        </button>
 
-        {/* Extra project mini-cards */}
-        {extraProjects.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-16"
-          >
-            {extraProjects.map((project, i) => (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.7, delay: 0.2 + i * 0.1 }}
-                className="group p-6 rounded-2xl border border-[#FAF8F3]/10 bg-[#FAF8F3]/5 hover:bg-[#FAF8F3]/10 hover:border-[#B85C3B]/40 transition-all duration-300 cursor-pointer"
-                onClick={() => { playClick(); onOpenCase(project); }}
-                onMouseEnter={playHover}
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <div className="text-[10px] font-mono text-[#B85C3B] tracking-widest uppercase mb-1">
-                      {project.year}
-                    </div>
-                    <h4 className="text-lg font-serif font-bold text-[#FAF8F3] group-hover:text-[#B85C3B] transition-colors leading-tight">
-                      {project.title}
-                    </h4>
-                  </div>
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                    <ArrowUpRight className="w-5 h-5 text-[#B85C3B]" />
-                  </div>
-                </div>
-                <p className="text-xs text-[#FAF8F3]/50 font-light leading-relaxed mb-4 line-clamp-2">
-                  {project.description}
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {project.tags.slice(0, 3).map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-2 py-0.5 rounded text-[9px] font-mono border border-[#FAF8F3]/15 text-[#FAF8F3]/50"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                  {project.tags.length > 3 && (
-                    <span className="px-2 py-0.5 rounded text-[9px] font-mono border border-[#FAF8F3]/15 text-[#FAF8F3]/30">
-                      +{project.tags.length - 3}
-                    </span>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
-
-        {/* GitHub CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.9, delay: extraProjects.length > 0 ? 0.35 : 0.2 }}
-          className="flex flex-col sm:flex-row items-start sm:items-center gap-6 pt-10 border-t border-[#FAF8F3]/10"
-        >
-          <div>
-            <div className="text-xs font-mono text-[#FAF8F3]/40 mb-1 uppercase tracking-widest">
-              Full Project Archive
-            </div>
-            <div className="text-sm font-mono text-[#FAF8F3]/80">
-              All experiments, open-source tools &amp; production builds
-            </div>
-          </div>
+        <div className="flex items-center gap-3">
           <a
-            href={github}
+            href={project.liveUrl}
             target="_blank"
             rel="noopener noreferrer"
             onMouseEnter={playHover}
-            onClick={playClick}
-            className="flex-shrink-0 inline-flex items-center gap-3 px-8 py-4 rounded-full bg-[#FAF8F3] text-[#161412] text-xs font-mono tracking-widest uppercase hover:bg-[#B85C3B] hover:text-[#FAF8F3] transition-all duration-300 shadow-lg"
+            className="p-3 rounded-full border border-[#E2DCD2] bg-[#FAF8F3] text-[#787268] hover:text-[#25231F] hover:border-[#25231F] transition-all shadow-2xs"
+            title="Live Application"
+          >
+            <ExternalLink className="w-4 h-4" />
+          </a>
+          <a
+            href={project.githubUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onMouseEnter={playHover}
+            className="p-3 rounded-full border border-[#E2DCD2] bg-[#FAF8F3] text-[#787268] hover:text-[#25231F] hover:border-[#25231F] transition-all shadow-2xs"
+            title="GitHub Repository"
           >
             <GithubIcon className="w-4 h-4" />
-            <span>VIEW ALL ON GITHUB</span>
-            <ArrowUpRight className="w-4 h-4" />
           </a>
-        </motion.div>
-
+        </div>
       </div>
     </div>
   );
 }
 
-// ── MAIN EXPORT ───────────────────────────────────────────────────────────────
+// ── MAIN PROJECTS SECTION COMPONENT ──────────────────────────────────────────
 export function ProjectsSection({ playClick, playHover }: ProjectsSectionProps) {
   const { projects } = PORTFOLIO_DATA;
   const [activeCaseStudy, setActiveCaseStudy] = useState<Project | null>(null);
-  const headerRef = useRef(null);
-  const headerInView = useInView(headerRef, { once: true });
 
-  // First 4 = featured chapters; extras go into ViewMoreChapter mini-cards
-  const FEATURED_COUNT = 4;
-  const featuredProjects = projects.slice(0, FEATURED_COUNT);
-  const extraProjects = projects.slice(FEATURED_COUNT);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef(null);
+  const headerInView = useInView(headerRef, { once: false });
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end end'],
+  });
+
+  // Soft spring physics for butter-smooth horizontal scroll translation
+  const smoothProgress = useSpring(scrollYProgress, {
+    damping: 34,
+    stiffness: 75,
+    mass: 0.8,
+  });
+
+  // 600vh track translation bounds: Cards start strictly at Card 01 (0vw) -> -100vw -> -200vw -> -300vw -> -400vw -> -500vw
+  const trackX = useTransform(
+    smoothProgress,
+    [0.00, 0.16, 0.32, 0.48, 0.64, 0.80, 1.00],
+    ['0vw', '0vw', '-100vw', '-200vw', '-300vw', '-400vw', '-500vw']
+  );
 
   return (
-    <section id="projects" className="bg-[#FAF8F3] relative">
-      {/* Section Header */}
-      <div ref={headerRef} className="max-w-6xl mx-auto px-6 md:px-12 pt-24 pb-8">
+    <div id="projects" className="relative bg-transparent border-t border-[#E2DCD2]">
+      {/* SECTION HEADING — SCROLLS UP NATURALLY OFF-SCREEN */}
+      <motion.div
+        ref={headerRef}
+        initial={{ opacity: 0, x: -90 }}
+        animate={headerInView ? { opacity: 1, x: 0 } : {}}
+        transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+        className="max-w-7xl mx-auto px-6 md:px-12 pt-24 md:pt-28 pb-8 flex flex-col md:flex-row md:items-end justify-between border-b border-[#E2DCD2]"
+      >
+        <div>
+          <div className="flex items-center gap-2 text-xs md:text-sm font-mono tracking-[0.3em] uppercase text-[#B85C3B] mb-2 font-bold">
+            <Sparkles className="w-4 h-4 text-[#B85C3B]" />
+            <span>02 / FEATURED PROJECTS ARCHIVE — 5 CASE FILES</span>
+          </div>
+          <h2
+            className="text-4xl sm:text-6xl lg:text-7xl font-serif font-bold tracking-tight text-[#25231F]"
+            style={{ letterSpacing: '-0.03em' }}
+          >
+            FEATURED <span className="italic font-normal text-[#B85C3B]">PROJECTS</span>
+          </h2>
+        </div>
+
+        <div className="flex items-center gap-3 text-xs font-mono text-[#787268] mt-4 md:mt-0 font-bold">
+          <span className="text-[#B85C3B] uppercase tracking-widest font-bold">SCROLL RIGHT</span>
+          <span className="text-[#25231F]">PROJECTS 01 → 05</span>
+        </div>
+      </motion.div>
+
+      {/* STICKY 100VH HORIZONTAL SLIDER WITH TOP CLEARANCE FOR NAVBAR */}
+      <div ref={containerRef} className="relative w-full" style={{ height: '600vh' }}>
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={headerInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
-          className="flex items-end justify-between"
+          className="sticky top-0 h-screen w-full overflow-hidden flex items-center bg-[#FAF8F3] select-none z-20 pointer-events-none pt-24 sm:pt-28 pb-6"
         >
-          <div>
-            <div className="text-[10px] font-mono tracking-[0.3em] text-[#B85C3B] mb-4">
-              03 / FIELD WORK
+          {/* Volumetric background ambient glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-radial from-[#B85C3B]/10 via-[#8E9A78]/6 to-transparent blur-3xl pointer-events-none" />
+
+          {/* ── 6-SLIDE FULL-HEIGHT HORIZONTAL TRACK (600vw WIDE) ── */}
+          <motion.div
+            style={{ x: trackX }}
+            className="flex h-full w-[600vw] items-center pointer-events-auto"
+          >
+            {/* 5 Project Cards (Strict 01 -> 05 Sequence) */}
+            {projects.map((project, i) => (
+              <div
+                key={project.id}
+                className="w-screen h-full shrink-0 flex items-center justify-center p-4 sm:p-6 relative"
+              >
+                {/* Background Watermark Number */}
+                <div className="absolute top-1/2 right-12 -translate-y-1/2 text-[24vw] font-serif font-bold text-[#B85C3B]/5 select-none pointer-events-none leading-none">
+                  0{i + 1}
+                </div>
+
+                <SingleProjectCard
+                  project={project}
+                  index={i}
+                  accent={CHAPTER_ACCENTS[i % CHAPTER_ACCENTS.length]}
+                  onOpenCase={setActiveCaseStudy}
+                  playClick={playClick}
+                  playHover={playHover}
+                />
+              </div>
+            ))}
+
+            {/* Slide 6: Dark Archive Final Slide */}
+            <div className="w-screen h-full shrink-0 flex items-center justify-center p-4 sm:p-6 relative">
+              <div className="w-[92vw] max-w-6xl h-[78vh] sm:h-[80vh] max-h-[720px] rounded-[2.5rem] bg-[#161412] text-[#FAF8F3] p-8 sm:p-12 md:p-14 shadow-2xl border border-white/10 flex flex-col justify-between">
+                <div className="space-y-6">
+                  <div className="text-[10px] font-mono text-[#B85C3B] uppercase tracking-[0.25em] font-bold flex items-center gap-2">
+                    <FolderGit2 className="w-4 h-4 text-[#B85C3B]" />
+                    <span>FULL PROJECT REPOSITORY</span>
+                  </div>
+                  <h3 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-bold leading-none tracking-tight">
+                    EXPLORE MORE ON <br />
+                    <span className="text-[#B85C3B] italic font-light">GITHUB.</span>
+                  </h3>
+                  <p className="text-base sm:text-lg text-[#FAF8F3]/60 font-light leading-relaxed max-w-xl">
+                    Beyond the featured builds — access open-source tools, code repositories, experimental prototypes, and full-stack deployment scripts.
+                  </p>
+                </div>
+
+                <div className="pt-8 mt-8 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="text-xs sm:text-sm font-mono text-[#FAF8F3]/70">
+                    Open Source &amp; Engineering Contributions
+                  </div>
+                  <a
+                    href={PORTFOLIO_DATA.personal.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onMouseEnter={playHover}
+                    onClick={playClick}
+                    className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-[#FAF8F3] text-[#161412] text-xs sm:text-sm font-mono tracking-widest uppercase hover:bg-[#B85C3B] hover:text-[#FAF8F3] transition-all duration-300 font-bold shadow-xl"
+                  >
+                    <GithubIcon className="w-4.5 h-4.5" />
+                    <span>VIEW ALL REPOS ON GITHUB</span>
+                    <ArrowUpRight className="w-4.5 h-4.5" />
+                  </a>
+                </div>
+              </div>
             </div>
-            <h2
-              className="text-5xl md:text-7xl font-serif font-bold text-[#25231F] leading-none"
-              style={{ letterSpacing: '-0.03em' }}
-            >
-              CASE<br />FILES
-            </h2>
-          </div>
-          <div className="hidden md:block text-right">
-            <div className="text-[10px] font-mono text-[#9A948C] uppercase tracking-widest mb-1">Operations</div>
-            <div className="text-xs font-mono text-[#25231F]">{projects.length} Filed</div>
-          </div>
+          </motion.div>
         </motion.div>
       </div>
-
-      {/* Featured project chapters (max 4 full-screen) */}
-      {featuredProjects.map((project, i) => (
-        <ProjectChapter
-          key={project.id}
-          project={project}
-          index={i}
-          accent={CHAPTER_ACCENTS[i % CHAPTER_ACCENTS.length]}
-          onOpenCase={setActiveCaseStudy}
-          playClick={playClick}
-          playHover={playHover}
-        />
-      ))}
-
-      {/* Dark "View More / GitHub" final chapter — always present */}
-      <ViewMoreChapter
-        extraProjects={extraProjects}
-        totalCount={projects.length}
-        playHover={playHover}
-        playClick={playClick}
-        onOpenCase={setActiveCaseStudy}
-      />
 
       {/* Case Study Modal */}
       <CaseStudyModal
@@ -400,6 +292,6 @@ export function ProjectsSection({ playClick, playHover }: ProjectsSectionProps) 
         onClose={() => setActiveCaseStudy(null)}
         playClick={playClick}
       />
-    </section>
+    </div>
   );
 }

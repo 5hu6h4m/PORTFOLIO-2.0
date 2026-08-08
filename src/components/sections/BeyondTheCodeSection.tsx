@@ -11,52 +11,28 @@ interface BeyondTheCodeSectionProps {
 
 const INTERESTS = [
   {
-    icon: '🏎️',
-    title: 'F1 & Telemetry Engineering',
-    category: 'High Performance',
-    description: 'Fascinated by aerodynamic telemetry, sub-second pit strategy, and mechanical precision under extreme constraints.',
-  },
-  {
-    icon: '☕',
-    title: 'Specialty Coffee Brewing',
-    category: 'Daily Ritual',
-    description: 'Exploring V60 pour-over extraction variables, single-origin bean roasts, and precision brewing ratios.',
-  },
-  {
     icon: '🎧',
-    title: 'Ambient & Deep Focus Audio',
-    category: 'Flow State',
-    description: 'Curating atmospheric lo-fi and cinematic soundscapes for deep focus architecture and uninterrupted coding sessions.',
+    title: 'Listening to Music',
+    category: 'Audio & Vibes',
+    description: 'Immersing in ambient soundscapes, lo-fi beats, and curating playlists for deep focus and relaxation.',
   },
   {
-    icon: '📚',
-    title: 'Design Systems & Typography',
-    category: 'Craft & Aesthetic',
-    description: 'Studying Swiss grid systems, Bauhaus typography, and modern digital design tokens.',
+    icon: '✈️',
+    title: 'Travelling & Exploring',
+    category: 'Exploration',
+    description: 'Exploring new destinations, experiencing diverse cultures, road trips, and seeking fresh perspectives.',
   },
   {
-    icon: '♟️',
-    title: 'Tactical Chess & Logic',
-    category: 'Strategy',
-    description: 'Positional maneuvering, rapid tactical calculation, and pattern recognition under time controls.',
+    icon: '📸',
+    title: 'Photography',
+    category: 'Visual Craft',
+    description: 'Capturing candid moments, natural light contrast, architecture, and street aesthetics through the lens.',
   },
   {
-    icon: '🌌',
-    title: 'Astrophysics & Cosmos',
-    category: 'Curiosity',
-    description: 'Following deep-space exploration milestones, orbital mechanics, and quantum system principles.',
-  },
-  {
-    icon: '🏃',
-    title: 'Endurance & Athletic Conditioning',
-    category: 'Discipline',
-    description: 'Maintaining daily physical discipline, stamina building, and cognitive energy optimization.',
-  },
-  {
-    icon: '📷',
-    title: 'Minimalist Architecture Photography',
-    category: 'Perspective',
-    description: 'Capturing geometric urban shadows, structural lines, and natural light contrast in raw spaces.',
+    icon: '🎮',
+    title: 'Gaming',
+    category: 'Entertainment & Strategy',
+    description: 'Playing immersive and tactical video games, strategic maneuvering, and unwinding with friends.',
   },
 ];
 

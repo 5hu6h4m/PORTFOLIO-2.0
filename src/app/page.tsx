@@ -7,7 +7,8 @@ import { CustomCursor } from '@/components/ui/CustomCursor';
 import { Preloader } from '@/components/sections/Preloader';
 import { Header } from '@/components/sections/Header';
 import { HeroSection } from '@/components/sections/HeroSection';
-import { AboutSection, JourneySection, DiagonalLanesSection } from '@/components/sections/AboutSection';
+import { AboutSection } from '@/components/sections/AboutSection';
+import { ProjectsSection } from '@/components/sections/ProjectsSection';
 import { SkillsSection } from '@/components/sections/SkillsSection';
 import { LeadershipSection } from '@/components/sections/LeadershipSection';
 import { LearningJourneySection } from '@/components/sections/LearningJourneySection';
@@ -27,7 +28,7 @@ export default function Home() {
 
   const [loaded, setLoaded] = useState(false);
   
-  const [awardsRevealed, setAwardsRevealed] = useState(false);
+  const [awardsRevealed, setAwardsRevealed] = useState(true);
   const awardsTriggerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -67,13 +68,13 @@ export default function Home() {
       <Header playClick={playClick} playHover={playHover} />
 
       {/* FIXED 3D HERO CANVAS STAGE */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
+      <div className="fixed inset-0 z-0 pointer-events-auto">
         <SceneCanvas />
       </div>
 
       {/* HERO SCROLL CONTAINER (100VH) */}
-      <div id="hero" className="relative z-10 w-full min-h-screen">
-        <div className="relative w-full min-h-screen flex flex-col justify-between">
+      <div id="hero" className="relative z-10 w-full min-h-screen pointer-events-none">
+        <div className="relative w-full min-h-screen flex flex-col justify-between pointer-events-none">
           <HeroSection playClick={playClick} playHover={playHover} />
           {/* Smooth 38% bottom gradient overlay fade — sitting underneath hero buttons */}
           <div
@@ -99,17 +100,12 @@ export default function Home() {
           className="border-y border-[#E2DCD2]/60 bg-[#FAF8F3]"
         />
 
-        <section className="py-16 px-6 md:px-12 relative overflow-hidden bg-[#F4F0E8]">
-          <div className="max-w-6xl mx-auto">
-            <DiagonalLanesSection playHover={playHover} />
-          </div>
-        </section>
 
-        <div className="relative w-full">
-          <JourneySection />
-        </div>
 
-        {/* 02 / TECH STACK & ECOSYSTEM (5-Card Rainbow Arc Pinning) */}
+        {/* 02 / FEATURED PROJECTS (FIELD WORK / CASE FILES) */}
+        <ProjectsSection playClick={playClick} playHover={playHover} />
+
+        {/* 03 / TECH STACK & ECOSYSTEM (5-Card Rainbow Arc Pinning) */}
         <SkillsSection playClick={playClick} playHover={playHover} />
 
         {/* 03 / LEADERSHIP (LED. BUILT. WON.) */}

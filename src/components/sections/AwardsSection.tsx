@@ -117,18 +117,13 @@ function CompactCertificateCard({ cert, index, onSelect, playHover, isRevealed =
       onMouseLeave={handleMouseLeave}
       onMouseEnter={playHover}
       onClick={() => onSelect(cert)}
-      initial={{ opacity: 0, y: 50, scale: 0.92 }}
-      animate={
-        isRevealed
-          ? {
-              opacity: 1,
-              y: 0,
-              scale: 1,
-              rotateX,
-              rotateY,
-            }
-          : { opacity: 0, y: 50, scale: 0.92 }
-      }
+      initial={{ opacity: 0, y: 30, scale: 0.95 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, amount: 0.05 }}
+      animate={{
+        rotateX,
+        rotateY,
+      }}
       whileHover={{
         y: -10,
         scale: 1.03,
@@ -239,18 +234,12 @@ function ThreeJsRubiksCubeCutscene({ onComplete }: { onComplete: () => void }) {
   }, [onComplete]);
 
   useEffect(() => {
-    // Lock Lenis scroll while 3D cube solves so viewport stays fixed
+    // Lock Lenis scroll while 3D cube is open so viewport stays fixed
     if (typeof window !== 'undefined' && window.__lenis) {
       window.__lenis.stop();
     }
 
-    // Give full 5.8s duration for 3D speedcube solving moves, maroon glow, & 3D piece shatter burst
-    const timer = setTimeout(() => {
-      handleComplete();
-    }, 5800);
-
     return () => {
-      clearTimeout(timer);
       if (typeof window !== 'undefined' && window.__lenis) {
         window.__lenis.start();
       }
@@ -326,7 +315,7 @@ function ThreeJsRubiksCubeCutscene({ onComplete }: { onComplete: () => void }) {
 // ── MAIN CERTIFICATE SECTION ──────────────────────────────────────────────────
 export function AwardsSection({ playHover, isRevealed = true }: AwardsSectionProps) {
   const { certifications } = PORTFOLIO_DATA;
-  const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedCert, setSelectedCert] = useState<(typeof certifications)[0] | null>(null);
   const [showAll, setShowAll] = useState<boolean>(false);
   const [copiedId, setCopiedId] = useState<boolean>(false);
@@ -358,37 +347,28 @@ export function AwardsSection({ playHover, isRevealed = true }: AwardsSectionPro
   const sectionRef = useRef<HTMLDivElement>(null);
   const inView = useInView(sectionRef, { once: true, margin: '-80px' });
 
-  const categories = [
-    'ALL',
-    'Full-Stack Engineering',
-    'Frontend Architecture',
-    'Cloud & Infrastructure',
-    '3D & AI Graphics',
-    'Algorithmic Systems',
-  ];
+  const categories = useMemo(() => {
+    const cats = Array.from(new Set(certifications.map((c) => c.category)));
+    return ['All', ...cats];
+  }, [certifications]);
 
   const filteredCerts = useMemo(() => {
-    if (selectedCategory === 'ALL') return certifications;
-    return certifications.filter((c) => {
-      const catLower = c.category.toLowerCase();
-      const selLower = selectedCategory.toLowerCase();
-      if (selectedCategory === '3D & AI Graphics') {
-        return catLower.includes('3d') || catLower.includes('ai') || catLower.includes('graphics');
-      }
-      return catLower.includes(selLower.slice(0, 5));
-    });
+    if (!selectedCategory || selectedCategory === 'All' || selectedCategory === 'ALL') return certifications;
+    return certifications.filter((c) => c.category.toLowerCase() === selectedCategory.toLowerCase());
   }, [certifications, selectedCategory]);
 
   const [cutsceneState, setCutsceneState] = useState<'IDLE' | 'PLAYING' | 'FINISHED'>('IDLE');
+  const [hasTriggeredOnScroll, setHasTriggeredOnScroll] = useState<boolean>(false);
 
-  // Trigger 3D Rubik's Cube cutscene when section is revealed/inView
+  // Trigger 3D Rubik's Cube cutscene when section scrolls into view
   useEffect(() => {
-    if ((isRevealed || inView) && cutsceneState === 'IDLE') {
+    if (inView && !hasTriggeredOnScroll && cutsceneState === 'IDLE') {
+      setHasTriggeredOnScroll(true);
       setCutsceneState('PLAYING');
     }
-  }, [isRevealed, inView, cutsceneState]);
+  }, [inView, hasTriggeredOnScroll, cutsceneState]);
 
-  // Listen for navbar click event to re-trigger cutscene every time user navigates to #certificates
+  // Listen for navbar click event to re-trigger cutscene when navigating to #certificates
   useEffect(() => {
     const handleNavTrigger = (e: CustomEvent) => {
       if (e.detail?.href === '#certificates') {
@@ -422,7 +402,7 @@ export function AwardsSection({ playHover, isRevealed = true }: AwardsSectionPro
 
   return (
     <section
-      ref={sectionRef}
+      ref={sectionRef as any}
       className="pt-20 md:pt-28 pb-20 px-4 sm:px-6 md:px-12 bg-[#F4F0E8] text-[#23201C] relative overflow-hidden select-none border-t border-[#E2DCD2]"
     >
       {/* Three.js WebGL Rubik's Cube Full Screen 3D Cutscene with smooth AnimatePresence crossfade */}
@@ -434,7 +414,7 @@ export function AwardsSection({ playHover, isRevealed = true }: AwardsSectionPro
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-0 pointer-events-none z-[9999]"
+            className="fixed inset-0 pointer-events-auto z-[9999]"
           >
             <ThreeJsRubiksCubeCutscene onComplete={handleCutsceneComplete} />
           </motion.div>
@@ -462,7 +442,19 @@ export function AwardsSection({ playHover, isRevealed = true }: AwardsSectionPro
             </h2>
           </div>
 
-          <div className="text-right text-xs font-mono text-[#787268] uppercase tracking-widest font-bold shrink-0">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 text-xs font-mono text-[#787268] uppercase tracking-widest font-bold shrink-0">
+            <button
+              onClick={() => {
+                playHover();
+                setCutsceneState('PLAYING');
+              }}
+              className="px-3.5 py-1.5 rounded-full bg-[#B55D3D]/10 text-[#B55D3D] border border-[#B55D3D]/30 hover:bg-[#B55D3D] hover:text-[#FCFAF6] transition-all duration-300 flex items-center gap-2 shadow-xs cursor-pointer active:scale-95"
+              title="Launch 3D Rubik's Cube Decryption"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-[#B55D3D]" />
+              <span>LAUNCH 3D CUBE DECRYPTION</span>
+            </button>
+
             <div className="flex items-center gap-2 text-[#B55D3D] justify-end">
               <Award className="w-4 h-4 text-[#8A2E2B]" />
               <span>{certifications.length} VERIFIED CREDENTIAL SIGNALS</span>
@@ -475,7 +467,7 @@ export function AwardsSection({ playHover, isRevealed = true }: AwardsSectionPro
           {/* Category Filter Tabs */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
-            animate={cutsceneState === 'FINISHED' ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
             className="flex flex-wrap items-center gap-2 mb-8"
           >
@@ -519,7 +511,7 @@ export function AwardsSection({ playHover, isRevealed = true }: AwardsSectionPro
                     index={index}
                     onSelect={(c) => setSelectedCert(c)}
                     playHover={playHover}
-                    isRevealed={cutsceneState === 'FINISHED'}
+                    isRevealed={isRevealed}
                   />
                 ))}
               </AnimatePresence>

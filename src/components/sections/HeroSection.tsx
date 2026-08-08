@@ -53,7 +53,7 @@ export function HeroSection({ playClick, playHover }: HeroSectionProps) {
   };
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-between pt-24 sm:pt-32 lg:pt-36 pb-12 px-6 md:px-12 overflow-hidden bg-transparent select-none">
+    <section className="relative min-h-screen flex flex-col justify-between pt-24 sm:pt-32 lg:pt-36 pb-12 px-6 md:px-12 overflow-hidden bg-transparent select-none pointer-events-none">
       {/* Warm Ambient Radial Glow */}
       <div className="absolute top-1/3 right-1/4 w-[420px] h-[420px] bg-[#B85C3B]/10 rounded-full blur-[140px] pointer-events-none" />
 
@@ -86,18 +86,18 @@ export function HeroSection({ playClick, playHover }: HeroSectionProps) {
           bleed through the transparent top of the About section */}
       <motion.div
         style={{ opacity: responsiveOpacity, y: responsiveY }}
-        className="flex flex-col flex-1 justify-between"
+        className="flex flex-col flex-1 justify-between pointer-events-none"
       >
 
       {/* Ultra-Clean Content Area */}
       <div className="relative z-10 max-w-7xl mx-auto w-full my-auto pt-[32vh] sm:pt-[26vh] lg:pt-0 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pointer-events-none">
-        <div className="lg:col-span-8 pointer-events-auto">
+        <div className="lg:col-span-8 pointer-events-none">
           {/* Availability Status Pill */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.15 }}
-            className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FAF8F3]/90 backdrop-blur-md border border-[#E2DCD2] text-[11px] font-mono text-[#787268] mb-6 shadow-xs"
+            className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FAF8F3]/90 backdrop-blur-md border border-[#E2DCD2] text-[11px] font-mono text-[#787268] mb-6 shadow-xs pointer-events-auto"
           >
             <span className="w-2 h-2 rounded-full bg-[#B85C3B] animate-pulse" />
             <span className="font-semibold text-[#25231F] tracking-wider uppercase">{personal.statusPill}</span>

@@ -168,8 +168,7 @@ export function LearningJourneySection({ playClick, playHover, isAwardsRevealed 
 
   return (
     <div id="journey-roadmap" className="relative bg-transparent border-t border-[#E2DCD2]">
-      {/* Anchor targets for both #projects and #journey nav links */}
-      <div id="projects" className="absolute top-0 left-0 w-full h-1 pointer-events-none" />
+      {/* Anchor target for #journey nav link */}
       <div id="journey" className="absolute top-0 left-0 w-full h-1 pointer-events-none" />
 
       {/* SECTION HEADING — SCROLLS UP NATURALLY OFF-SCREEN */}

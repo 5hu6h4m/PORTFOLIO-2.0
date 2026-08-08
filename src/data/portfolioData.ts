@@ -199,14 +199,10 @@ export const PORTFOLIO_DATA = {
 
     // — BEYOND CODE — hobbies
     hobbies: [
-      { icon: "🎵", label: "Music" },
-      { icon: "📚", label: "Reading" },
-      { icon: "🎮", label: "Gaming" },
-      { icon: "🌐", label: "Open Source" },
-      { icon: "🏋️", label: "Gym" },
+      { icon: "🎧", label: "Music" },
+      { icon: "✈️", label: "Travel & Exploring" },
       { icon: "📸", label: "Photography" },
-      { icon: "✈️", label: "Travel" },
-      { icon: "📺", label: "Tech Talks" },
+      { icon: "🎮", label: "Gaming" },
     ],
 
     // — CURRENT FOCUS — goals

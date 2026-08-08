@@ -662,17 +662,21 @@ export function HeroSculpture({ mouse, skipScatter = false, onSolveComplete }: H
 
         if (shatterData) {
           // Click & Cutscene shatter physics: explode outwards then float gently in 3D background space
-          meshObj.position.x += shatterData.vel[0] * delta * 2.5;
-          meshObj.position.y += shatterData.vel[1] * delta * 2.5;
-          meshObj.position.z += shatterData.vel[2] * delta * 2.5;
+          meshObj.position.x += shatterData.vel[0] * delta * 3.5;
+          meshObj.position.y += shatterData.vel[1] * delta * 3.5;
+          meshObj.position.z += shatterData.vel[2] * delta * 3.5;
 
-          meshObj.rotation.x += delta * (0.6 + (idx % 5) * 0.1);
-          meshObj.rotation.y += delta * (0.6 + (idx % 5) * 0.1);
+          meshObj.rotation.x += delta * (1.5 + (idx % 5) * 0.2);
+          meshObj.rotation.y += delta * (1.5 + (idx % 5) * 0.2);
+          meshObj.rotation.z += delta * (1.0 + (idx % 3) * 0.2);
 
-          // Damp velocity so pieces spread out across background and float gently
-          shatterData.vel[0] *= 0.96;
-          shatterData.vel[1] *= 0.96;
-          shatterData.vel[2] *= 0.96;
+          // Maintain minimum continuous drift speed so scattered pieces keep floating across the screen!
+          const currentSpeed = Math.hypot(...shatterData.vel);
+          if (currentSpeed > 1.2) {
+            shatterData.vel[0] *= 0.96;
+            shatterData.vel[1] *= 0.96;
+            shatterData.vel[2] *= 0.96;
+          }
         } else if (isAssemblingPage) {
           // Travel assembly
           const t = Math.sin(time * 3 + idx) * 0.5 + 0.5;
@@ -760,17 +764,37 @@ export function HeroSculpture({ mouse, skipScatter = false, onSolveComplete }: H
               e.stopPropagation();
               if (shatteredMap[i]) return;
               playShatterSound();
+
+              // High-velocity outward explosive vector from cube center
+              const [gx, gy, gz] = item.gridPos;
+              const dirX = gx === 0 ? (Math.random() - 0.5) * 2 : gx;
+              const dirY = gy === 0 ? (Math.random() - 0.5) * 2 : gy;
+              const dirZ = gz === 0 ? (Math.random() - 0.5) * 2 : gz;
+              const norm = Math.hypot(dirX, dirY, dirZ) || 1;
+
+              const speed = 12.0 + Math.random() * 8.0;
+              const outX = (dirX / norm) * speed + (Math.random() - 0.5) * 3.0;
+              const outY = (dirY / norm) * speed + (Math.random() - 0.5) * 3.0;
+              const outZ = (dirZ / norm) * speed + (Math.random() - 0.5) * 3.0;
+
               setShatteredMap((prev) => ({
                 ...prev,
                 [i]: {
-                  vel: [
-                    (Math.random() - 0.5) * 4,
-                    (Math.random() - 0.5) * 4,
-                    (Math.random() - 0.5) * 4,
-                  ],
+                  vel: [outX, outY, outZ],
                   scale: 0.85,
                 },
               }));
+            }}
+            onPointerOver={(e) => {
+              e.stopPropagation();
+              if (typeof document !== 'undefined') {
+                document.body.style.cursor = 'pointer';
+              }
+            }}
+            onPointerOut={() => {
+              if (typeof document !== 'undefined') {
+                document.body.style.cursor = 'auto';
+              }
             }}
           >
             <boxGeometry args={[0.39, 0.39, 0.39]} />
