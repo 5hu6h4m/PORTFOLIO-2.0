@@ -345,7 +345,6 @@ export function AwardsSection({ playHover, isRevealed = true }: AwardsSectionPro
   };
 
   const sectionRef = useRef<HTMLDivElement>(null);
-  const inView = useInView(sectionRef, { once: true, margin: '-80px' });
 
   const categories = useMemo(() => {
     const cats = Array.from(new Set(certifications.map((c) => c.category)));
@@ -358,15 +357,30 @@ export function AwardsSection({ playHover, isRevealed = true }: AwardsSectionPro
   }, [certifications, selectedCategory]);
 
   const [cutsceneState, setCutsceneState] = useState<'IDLE' | 'PLAYING' | 'FINISHED'>('IDLE');
-  const [hasTriggeredOnScroll, setHasTriggeredOnScroll] = useState<boolean>(false);
 
-  // Trigger 3D Rubik's Cube cutscene when section scrolls into view
+  // Permanent Bulletproof Scroll Observer: Trigger 3D Rubik's Cube cutscene when section enters viewport
   useEffect(() => {
-    if (inView && !hasTriggeredOnScroll && cutsceneState === 'IDLE') {
-      setHasTriggeredOnScroll(true);
-      setCutsceneState('PLAYING');
-    }
-  }, [inView, hasTriggeredOnScroll, cutsceneState]);
+    const el = sectionRef.current;
+    if (!el) return;
+
+    let hasFired = false;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasFired) {
+          hasFired = true;
+          setCutsceneState('PLAYING');
+        }
+      },
+      {
+        threshold: 0.12,
+        rootMargin: '0px 0px -50px 0px',
+      }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   // Listen for navbar click event to re-trigger cutscene when navigating to #certificates
   useEffect(() => {
