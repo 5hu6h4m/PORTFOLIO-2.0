@@ -30,23 +30,19 @@ function SubLabel({ index, title }: { index: string; title: string }) {
   );
 }
 
-// ── APPLE-GRADE MASKED EDITORIAL BIO REVEAL (NO CARDS, NO CHARACTER SCRAMBLE) ─
+// ── REPEATABLE MASKED EDITORIAL BIO WITH TERRACOTTA HIGHLIGHTED WORDS ─────────
 function PersonalBioSection() {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
-
-  const paragraphs = [
-    "I’m a Computer Science student and frontend developer who enjoys turning ideas into clean, interactive web experiences.",
-    "I’m currently exploring modern frontend technologies, 3D experiences and full-stack development while building projects that turn ideas into something people can actually use."
-  ];
+  // once: false allows the reveal animation to repeat every time user scrolls into view
+  const inView = useInView(ref, { once: false, margin: '-60px' });
 
   return (
-    <div ref={ref} className="w-full max-w-5xl mx-auto my-16 sm:my-24 px-4 select-none">
+    <div ref={ref} className="w-full max-w-5xl mx-auto my-14 sm:my-20 px-4 select-none">
       {/* 1. Tagline Pill */}
       <div className="overflow-hidden mb-8">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
+          initial={{ opacity: 0, y: 25 }}
+          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 25 }}
           transition={{ duration: 0.8, ease: EASE }}
           className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#B85C3B]/10 text-[#B85C3B] border border-[#B85C3B]/20"
         >
@@ -57,26 +53,35 @@ function PersonalBioSection() {
         </motion.div>
       </div>
 
-      {/* 2. Apple-Grade Masked Paragraph Lines Reveal */}
+      {/* 2. Apple-Grade Masked Paragraph Lines with Terracotta Highlighted Words */}
       <div className="space-y-6 mb-16">
-        {paragraphs.map((p, idx) => (
-          <div key={idx} className="overflow-hidden">
-            <motion.p
-              initial={{ opacity: 0, y: 55 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.9, delay: 0.15 + idx * 0.2, ease: EASE }}
-              className="text-2xl sm:text-3xl lg:text-4xl font-serif text-[#25231F] leading-[1.38] font-normal tracking-tight"
-            >
-              {p}
-            </motion.p>
-          </div>
-        ))}
+        <div className="overflow-hidden">
+          <motion.p
+            initial={{ opacity: 0, y: 45 }}
+            animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 45 }}
+            transition={{ duration: 0.9, delay: 0.15, ease: EASE }}
+            className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif text-[#25231F] leading-[1.45] font-normal tracking-tight"
+          >
+            I’m a <span className="text-[#B85C3B] font-semibold italic">Computer Science student</span> and <span className="text-[#B85C3B] font-semibold">frontend developer</span> who enjoys turning ideas into <span className="text-[#B85C3B] italic font-light">clean, interactive web experiences.</span>
+          </motion.p>
+        </div>
+
+        <div className="overflow-hidden">
+          <motion.p
+            initial={{ opacity: 0, y: 45 }}
+            animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 45 }}
+            transition={{ duration: 0.9, delay: 0.35, ease: EASE }}
+            className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif text-[#25231F] leading-[1.45] font-normal tracking-tight"
+          >
+            I’m currently exploring <span className="text-[#B85C3B] font-semibold">modern frontend technologies</span>, <span className="text-[#B85C3B] italic font-light">3D experiences</span> and <span className="text-[#B85C3B] font-semibold">full-stack development</span> while building projects that turn ideas into something people can actually use.
+          </motion.p>
+        </div>
       </div>
 
       {/* 3. Ultra-Clean 3 Small Facts Editorial Row */}
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={inView ? { opacity: 1, y: 0 } : {}}
+        initial={{ opacity: 0, y: 25 }}
+        animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 25 }}
         transition={{ duration: 0.85, delay: 0.55, ease: EASE }}
         className="grid grid-cols-1 sm:grid-cols-3 gap-8 pt-8 border-t border-[#E2DCD2]/80"
       >
