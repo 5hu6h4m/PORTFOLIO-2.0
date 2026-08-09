@@ -16,7 +16,13 @@ function CubePiece({
   return (
     <motion.div
       className="absolute pointer-events-none"
-      style={{ left: `${x}%`, top: `${y}%`, width: size, height: size }}
+      style={{
+        left: `${x}%`,
+        top: `${y}%`,
+        width: size,
+        height: size,
+        willChange: 'transform, opacity',
+      }}
       initial={{ opacity: 0, rotate: 0 }}
       animate={{ y: [-10, -300], x: [0, drift], rotate: [0, rotSpeed * 360], opacity: [0, 0.6, 0.5, 0] }}
       transition={{ duration, repeat: Infinity, ease: 'linear', delay }}
@@ -59,10 +65,10 @@ export function Preloader({ onComplete }: PreloaderProps) {
       // Hold big for 600ms
       await new Promise(r => setTimeout(r, 600));
 
-      // Phase 2: Logo shrinks up and settles right above text
+      // Phase 2: Logo shrinks up and settles right above text (larger shrink scale)
       setPhase('shrink');
       await logoControls.start({
-        scale: 0.62,
+        scale: 0.82,
         y: 0,
         transition: { duration: 0.85, ease: [0.76, 0, 0.24, 1] },
       });
@@ -79,12 +85,12 @@ export function Preloader({ onComplete }: PreloaderProps) {
     let currentIndex = 0;
 
     const getDelay = (i: number) => {
-      if (i === 0) return 300;
+      if (i === 0) return 150;
       const prev = fullText[i - 1];
-      if (prev === '.') return 850; // deliberate cinematic pause at sentence end
-      if (i < 14) return 120;       // slower start (EVERY CLICK HAS)
-      if (i < 28) return 60;        // smooth middle (A REASON. THIS ONE)
-      return 220;                   // dramatic slow finish (STARTS HERE.)
+      if (prev === '.') return 350; // faster cinematic pause at sentence end
+      if (i < 14) return 45;        // fast start (EVERY CLICK HAS)
+      if (i < 28) return 20;        // very fast middle (A REASON. THIS ONE)
+      return 70;                    // deliberate finish (STARTS HERE.)
     };
 
     const typeNext = () => {
@@ -99,11 +105,11 @@ export function Preloader({ onComplete }: PreloaderProps) {
           if (typeof window !== 'undefined')
             window.dispatchEvent(new CustomEvent('portfolio-preloader-complete'));
           setTimeout(onComplete, 900);
-        }, 800);
+        }, 400);
       }
     };
 
-    const t = setTimeout(typeNext, 200);
+    const t = setTimeout(typeNext, 100);
     return () => clearTimeout(t);
   }, [phase, onComplete]);
 
@@ -111,6 +117,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
   const typed1 = typedText.slice(0, 25);
   const typed2 = typedText.slice(25);
 
+  // Generate 12 cube-fragment-style particles for phone lag optimization
   const cubePieces = useMemo(() => {
     const colors = [
       'rgba(184,92,59,0.6)',
@@ -119,7 +126,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
       'rgba(255,200,117,0.28)',
       'rgba(184,92,59,0.38)',
     ];
-    return Array.from({ length: 24 }, (_, i) => ({
+    return Array.from({ length: 12 }, (_, i) => ({
       id: i,
       size: Math.random() * 34 + 18,
       x: Math.random() * 100,
@@ -180,7 +187,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
                   {/* Line 1 — full 100% opacity ivory */}
                   <p
                     className="font-serif italic font-bold text-[#FAF7F2] leading-[1.4] tracking-wide whitespace-nowrap"
-                    style={{ fontSize: 'clamp(2.2rem, 5.8vw, 4.5rem)' }}
+                    style={{ fontSize: 'clamp(1.1rem, 4.8vw, 3.8rem)' }}
                   >
                     {typed1}
                   </p>
@@ -188,7 +195,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
                   {/* Line 2 — full 100% opacity rust accent */}
                   <p
                     className="font-serif italic font-bold text-[#B85C3B] leading-[1.4] tracking-wide whitespace-nowrap"
-                    style={{ fontSize: 'clamp(2.2rem, 5.8vw, 4.5rem)' }}
+                    style={{ fontSize: 'clamp(1.1rem, 4.8vw, 3.8rem)' }}
                   >
                     {typed2}
                     <span
