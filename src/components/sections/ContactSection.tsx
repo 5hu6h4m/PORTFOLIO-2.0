@@ -134,7 +134,7 @@ function ContactPortalWorld({
 // ── 4-LINE ALTERNATING LEFT / RIGHT MASKED HEADING REVEAL ───────────────────
 function AlternatingEditorialHeader() {
   const headerRef = useRef(null);
-  const inView = useInView(headerRef, { once: false, margin: '-40px' });
+  const inView = useInView(headerRef, { once: false, amount: 0.35 });
 
   return (
     <div ref={headerRef} className="text-center max-w-4xl mx-auto space-y-4">
@@ -149,9 +149,9 @@ function AlternatingEditorialHeader() {
         {/* Line 1: Enters from LEFT */}
         <div className="overflow-hidden py-1">
           <motion.div
-            initial={{ opacity: 0, x: -90 }}
-            animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -90 }}
-            transition={{ duration: 0.85, delay: 0.1, ease: EASE }}
+            initial={{ opacity: 0, x: -140 }}
+            animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -140 }}
+            transition={{ duration: 0.9, delay: 0.05, ease: EASE }}
           >
             LET’S BUILD
           </motion.div>
@@ -160,9 +160,9 @@ function AlternatingEditorialHeader() {
         {/* Line 2: Enters from RIGHT (Terracotta Italic Accent) */}
         <div className="overflow-hidden py-1">
           <motion.div
-            initial={{ opacity: 0, x: 90 }}
-            animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: 90 }}
-            transition={{ duration: 0.85, delay: 0.25, ease: EASE }}
+            initial={{ opacity: 0, x: 140 }}
+            animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: 140 }}
+            transition={{ duration: 0.9, delay: 0.2, ease: EASE }}
             className="italic font-normal text-[#B55D3D]"
           >
             SOMETHING
@@ -172,9 +172,9 @@ function AlternatingEditorialHeader() {
         {/* Line 3: Enters from LEFT */}
         <div className="overflow-hidden py-1">
           <motion.div
-            initial={{ opacity: 0, x: -90 }}
-            animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -90 }}
-            transition={{ duration: 0.85, delay: 0.4, ease: EASE }}
+            initial={{ opacity: 0, x: -140 }}
+            animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -140 }}
+            transition={{ duration: 0.9, delay: 0.35, ease: EASE }}
           >
             WORTH
           </motion.div>
@@ -183,9 +183,9 @@ function AlternatingEditorialHeader() {
         {/* Line 4: Enters from RIGHT */}
         <div className="overflow-hidden py-1">
           <motion.div
-            initial={{ opacity: 0, x: 90 }}
-            animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: 90 }}
-            transition={{ duration: 0.85, delay: 0.55, ease: EASE }}
+            initial={{ opacity: 0, x: 140 }}
+            animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: 140 }}
+            transition={{ duration: 0.9, delay: 0.5, ease: EASE }}
           >
             REMEMBERING.
           </motion.div>
