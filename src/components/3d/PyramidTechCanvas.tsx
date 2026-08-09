@@ -230,6 +230,8 @@ export function PyramidTechCanvas({
       <Canvas
         camera={{ position: [0, 2.2, 8.2], fov: 38 }}
         gl={{ antialias: true, alpha: true }}
+        dpr={[1, 1.5]}
+        frameloop={inView ? 'always' : 'demand'}
       >
         {/* Volumetric Warm Lighting */}
         <ambientLight intensity={1.1} color="#FAF8F3" />

@@ -148,19 +148,9 @@ export function Header({ playClick, playHover }: HeaderProps) {
             href="#"
             onClick={() => handleNavClick('#', 'home')}
             onMouseEnter={playHover}
-            className="flex items-center gap-3 group"
+            className="flex items-center group"
           >
-            <div className="w-9 h-9 rounded-full bg-[#25231F] text-[#FAF8F3] flex items-center justify-center font-serif font-bold text-sm border border-[#E2DCD2] group-hover:bg-[#B85C3B] transition-colors shadow-sm">
-              {personal.brandMark}
-            </div>
-            <div className="hidden sm:block text-left">
-              <div className="text-xs font-mono font-bold tracking-widest text-[#25231F] uppercase">
-                {personal.name}
-              </div>
-              <div className="text-[9px] font-mono text-[#787268] uppercase tracking-widest">
-                Full Stack Engineer
-              </div>
-            </div>
+            <img src="/logoP.png" alt="Logo" className="h-14 sm:h-16 md:h-18 w-auto object-contain group-hover:scale-105 transition-transform duration-300" />
           </a>
 
           {/* Center Floating Pill Navigation (Desktop) */}
@@ -227,7 +217,7 @@ export function Header({ playClick, playHover }: HeaderProps) {
             className="fixed inset-0 z-[9980] bg-[#FAF8F3] flex flex-col justify-between p-8 md:p-12 select-none"
           >
             <div className="flex items-center justify-between pt-4">
-              <span className="font-serif font-bold text-xl text-[#25231F]">{personal.brandMark}</span>
+              <img src="/logoP.png" alt="Logo" className="h-12 sm:h-14 w-auto object-contain" />
               <button
                 onClick={() => setMobileMenuOpen(false)}
                 className="p-3 rounded-full bg-[#25231F] text-[#FAF8F3]"

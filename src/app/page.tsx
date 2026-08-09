@@ -63,8 +63,8 @@ export default function Home() {
       {/* Global Custom Cursor */}
       <CustomCursor />
 
-      {/* Header Floating Nav Bar */}
-      <Header playClick={playClick} playHover={playHover} />
+      {/* Header Floating Nav Bar (only shown after preloader completes) */}
+      {loaded && <Header playClick={playClick} playHover={playHover} />}
 
       {/* FIXED 3D HERO CANVAS STAGE */}
       <div className="fixed inset-0 z-0 pointer-events-auto">

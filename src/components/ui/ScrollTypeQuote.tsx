@@ -18,11 +18,11 @@ export function ScrollTypeQuote({ quote, subtext, badge, className = '' }: Scrol
     offset: ['start 0.95', 'center 0.20'],
   });
 
-  // Soft physics spring for ultra-fluid, cushioned character typing transitions
+  // Responsive spring for instant character typing reaction
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 90,
-    damping: 22,
-    mass: 0.6,
+    stiffness: 280,
+    damping: 32,
+    mass: 0.2,
   });
 
   const characters = quote.split('');

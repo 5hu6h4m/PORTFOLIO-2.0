@@ -77,11 +77,11 @@ export function SkillsSection({ playClick, playHover }: SkillsSectionProps) {
     offset: ['start start', 'end end'],
   });
 
-  // Soft weightless spring physics (damping 36, stiffness 50, mass 1)
+  // Responsive spring physics for instant scroll responsiveness
   const smoothProgress = useSpring(scrollYProgress, {
-    damping: 36,
-    stiffness: 50,
-    mass: 1,
+    damping: 32,
+    stiffness: 280,
+    mass: 0.2,
   });
 
   // Guaranteed 5-Card Arrival Timelines (All 5 Cards finish by 0.68, with a 32% Hold Runway at the end)

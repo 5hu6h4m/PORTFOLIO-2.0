@@ -15,7 +15,7 @@ export function KinematicTextMorph({ text, category }: KinematicTextMorphProps) 
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.05, // Slower, highly visible staggered character reveal
+        staggerChildren: 0.05,
         delayChildren: 0.1,
       },
     },

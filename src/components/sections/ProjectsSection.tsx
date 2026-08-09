@@ -168,11 +168,11 @@ export function ProjectsSection({ playClick, playHover }: ProjectsSectionProps) 
     offset: ['start start', 'end end'],
   });
 
-  // Soft spring physics for butter-smooth horizontal scroll translation
+  // Responsive spring physics for instant horizontal scroll translation
   const smoothProgress = useSpring(scrollYProgress, {
-    damping: 34,
-    stiffness: 75,
-    mass: 0.8,
+    damping: 32,
+    stiffness: 280,
+    mass: 0.2,
   });
 
   // 600vh track translation bounds: Cards start strictly at Card 01 (0vw) -> -100vw -> -200vw -> -300vw -> -400vw -> -500vw

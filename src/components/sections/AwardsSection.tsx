@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useMemo, useEffect, useCallback, Suspense } from 'react';
-import { motion, AnimatePresence, useInView } from 'framer-motion';
+import { motion, AnimatePresence, useInView, useMotionValue, useSpring } from 'framer-motion';
 import { Canvas } from '@react-three/fiber';
 import { HeroSculpture } from '@/components/3d/HeroSculpture';
 import {
@@ -23,6 +23,7 @@ import {
   ChevronRight,
   LayoutGrid,
   Layers,
+  Zap,
 } from 'lucide-react';
 import { PORTFOLIO_DATA } from '@/data/portfolioData';
 
@@ -49,18 +50,22 @@ const certMobileSlideVariants = {
   }),
 };
 
-// ── 3D ICON MAP FOR CERTIFICATE BADGES ─────────────────────────────────────────
 function BadgeIcon({ model, className = 'w-4 h-4' }: { model: string; className?: string }) {
   switch (model) {
     case 'trophy':
+    case 'Trophy':
       return <Trophy className={className} />;
     case 'star':
+    case 'Star':
       return <Star className={className} />;
     case 'shield':
+    case 'Shield':
       return <Shield className={className} />;
     case 'crown':
+    case 'Crown':
       return <Crown className={className} />;
     case 'medal':
+    case 'Medal':
       return <Medal className={className} />;
     default:
       return <Award className={className} />;
@@ -78,8 +83,11 @@ interface CompactCertificateCardProps {
 
 function CompactCertificateCard({ cert, index, onSelect, playHover, isRevealed = true }: CompactCertificateCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [rotateX, setRotateX] = useState(0);
-  const [rotateY, setRotateY] = useState(0);
+  const rawRotateX = useMotionValue(0);
+  const rawRotateY = useMotionValue(0);
+
+  const rotateX = useSpring(rawRotateX, { damping: 20, stiffness: 250 });
+  const rotateY = useSpring(rawRotateY, { damping: 20, stiffness: 250 });
   const [glarePos, setGlarePos] = useState({ x: 50, y: 50, opacity: 0 });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -94,8 +102,8 @@ function CompactCertificateCard({ cert, index, onSelect, playHover, isRevealed =
     const rY = ((mouseX - width / 2) / (width / 2)) * 12;
     const rX = -((mouseY - height / 2) / (height / 2)) * 12;
 
-    setRotateX(rX);
-    setRotateY(rY);
+    rawRotateX.set(rX);
+    rawRotateY.set(rY);
     setGlarePos({
       x: (mouseX / width) * 100,
       y: (mouseY / height) * 100,
@@ -104,8 +112,8 @@ function CompactCertificateCard({ cert, index, onSelect, playHover, isRevealed =
   };
 
   const handleMouseLeave = () => {
-    setRotateX(0);
-    setRotateY(0);
+    rawRotateX.set(0);
+    rawRotateY.set(0);
     setGlarePos((prev) => ({ ...prev, opacity: 0 }));
   };
 
@@ -120,9 +128,10 @@ function CompactCertificateCard({ cert, index, onSelect, playHover, isRevealed =
       initial={{ opacity: 0, y: 30, scale: 0.95 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, amount: 0.05 }}
-      animate={{
+      style={{
         rotateX,
         rotateY,
+        transformStyle: 'preserve-3d',
       }}
       whileHover={{
         y: -10,
@@ -136,7 +145,6 @@ function CompactCertificateCard({ cert, index, onSelect, playHover, isRevealed =
         y: { duration: 0.25 },
       }}
       className="group relative rounded-2xl bg-[#FCFAF6] border border-[#E2DCD2] hover:border-[#B55D3D] p-5 cursor-pointer transition-colors duration-300 select-none flex flex-col justify-between overflow-hidden shadow-sm"
-      style={{ transformStyle: 'preserve-3d' }}
     >
       {/* Dynamic 3D Glare Light Reflection Sheen Overlay */}
       <div
@@ -189,7 +197,7 @@ function CompactCertificateCard({ cert, index, onSelect, playHover, isRevealed =
         {/* Skills Tag Pills */}
         {cert.skills && cert.skills.length > 0 && (
           <div className="flex flex-wrap gap-1 pt-1">
-            {cert.skills.slice(0, 3).map((skill) => (
+            {cert.skills.slice(0, 3).map((skill: string) => (
               <span
                 key={skill}
                 className="px-2 py-0.5 rounded-md text-[9px] font-mono bg-[#E2DCD2]/40 text-[#23201C] border border-[#E2DCD2] font-semibold group-hover:border-[#B55D3D]/40 transition-colors"
@@ -292,7 +300,7 @@ function ThreeJsRubiksCubeCutscene({ onComplete }: { onComplete: () => void }) {
 
       <Canvas
         camera={{ position: [0, 0, 4.4], fov: 45 }}
-        dpr={[1, 2]}
+        dpr={[1, 1.5]}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         className="w-full h-full relative z-20"
       >
@@ -302,7 +310,6 @@ function ThreeJsRubiksCubeCutscene({ onComplete }: { onComplete: () => void }) {
 
         <Suspense fallback={null}>
           <HeroSculpture
-            mouse={{ normalizedX: 0, normalizedY: 0 }}
             skipScatter={true}
             onSolveComplete={handleComplete}
           />

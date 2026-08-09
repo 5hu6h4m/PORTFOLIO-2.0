@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useMemo, useEffect } from 'react';
+import { useInView } from 'framer-motion';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, Html } from '@react-three/drei';
 import * as THREE from 'three';
@@ -232,13 +233,17 @@ function AmbientDust() {
 
 // ── SCENE CANVAS ────────────────────────────────────────────────────────────
 export function KnowledgeSphereCanvas({ selectedTech, hoveredTech }: KnowledgeSphereProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { amount: 0.05 });
   const activeTech = selectedTech || hoveredTech;
 
   return (
-    <div className="w-full h-full min-h-[500px] relative">
+    <div ref={containerRef} className="w-full h-full min-h-[500px] relative">
       <Canvas
         camera={{ position: [0, 0, 7.5], fov: 45 }}
         gl={{ antialias: true, alpha: true }}
+        dpr={[1, 1.5]}
+        frameloop={isInView ? 'always' : 'demand'}
       >
         {/* Soft Volumetric Warm Lighting */}
         <ambientLight intensity={0.9} color="#FCFAF6" />

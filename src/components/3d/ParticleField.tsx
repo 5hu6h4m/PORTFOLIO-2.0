@@ -6,10 +6,9 @@ import * as THREE from 'three';
 
 interface ParticleFieldProps {
   count?: number;
-  mouse: { normalizedX: number; normalizedY: number };
 }
 
-export function ParticleField({ count = 250, mouse }: ParticleFieldProps) {
+export function ParticleField({ count = 250 }: ParticleFieldProps) {
   const pointsRef = useRef<THREE.Points>(null);
 
   const [positions, colors] = useMemo(() => {
@@ -41,15 +40,15 @@ export function ParticleField({ count = 250, mouse }: ParticleFieldProps) {
       pointsRef.current.rotation.y += delta * 0.04;
       pointsRef.current.rotation.x += delta * 0.02;
 
-      // Mouse position drift response
+      // Mouse position drift response via native R3F pointer
       pointsRef.current.position.x = THREE.MathUtils.lerp(
         pointsRef.current.position.x,
-        mouse.normalizedX * 0.4,
+        state.pointer.x * 0.4,
         0.03
       );
       pointsRef.current.position.y = THREE.MathUtils.lerp(
         pointsRef.current.position.y,
-        mouse.normalizedY * 0.4,
+        state.pointer.y * 0.4,
         0.03
       );
     }

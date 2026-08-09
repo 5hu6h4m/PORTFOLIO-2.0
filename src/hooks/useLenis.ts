@@ -20,13 +20,14 @@ export function useLenis() {
 
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.4,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Smooth inertia
+      duration: 1.2,
+      easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)), // Liquid smooth exponential inertia
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
       wheelMultiplier: 1.0,
       touchMultiplier: 1.5,
+      infinite: false,
     });
 
     lenisRef.current = lenis;
@@ -40,7 +41,7 @@ export function useLenis() {
     };
 
     gsap.ticker.add(updateTicker);
-    gsap.ticker.lagSmoothing(0);
+    gsap.ticker.lagSmoothing(1000, 16);
 
     return () => {
       gsap.ticker.remove(updateTicker);

@@ -12,7 +12,7 @@ if (typeof window !== 'undefined') {
 }
 
 interface HeroSculptureProps {
-  mouse: { normalizedX: number; normalizedY: number };
+  mouse?: { normalizedX: number; normalizedY: number };
   skipScatter?: boolean;
   onSolveComplete?: () => void;
 }
@@ -491,8 +491,8 @@ export function HeroSculpture({ mouse, skipScatter = false, onSolveComplete }: H
   // ── useFrame: Scramble, Assembly, Layer Solving & Master Animations ───────
   useFrame((state, delta) => {
     const time = state.clock.elapsedTime;
-    const mouseX = mouse.normalizedX;
-    const mouseY = mouse.normalizedY;
+    const mouseX = mouse?.normalizedX ?? state.pointer.x;
+    const mouseY = mouse?.normalizedY ?? state.pointer.y;
     const scrollP = skipScatter ? 0 : scrollProgressRef.current;
 
     // 1. Advance return-home / initial mount 3s weightless red scatter assembly
@@ -703,9 +703,19 @@ export function HeroSculpture({ mouse, skipScatter = false, onSolveComplete }: H
           const orbitalY = item.aboutPos[1] + Math.sin(orbitAngle) * 0.3;
           const orbitalZ = item.aboutPos[2];
 
-          const targetX = THREE.MathUtils.lerp(homeState.pos.x, orbitalX, aboutT);
-          const targetY = THREE.MathUtils.lerp(homeState.pos.y, orbitalY, aboutT);
-          const targetZ = THREE.MathUtils.lerp(homeState.pos.z, orbitalZ, aboutT);
+          // Compute smooth transition from scroll scatter to orbital spread
+          const scatterFactor = Math.min(scrollP / 0.12, 1);
+          const scrollScatterX = item.explodeDir[0] * scatterFactor * 1.5;
+          const scrollScatterY = item.explodeDir[1] * scatterFactor * 1.5;
+          const scrollScatterZ = item.explodeDir[2] * scatterFactor * 1.5;
+
+          const startX = homeState.pos.x + scrollScatterX;
+          const startY = homeState.pos.y + scrollScatterY;
+          const startZ = homeState.pos.z + scrollScatterZ;
+
+          const targetX = THREE.MathUtils.lerp(startX, orbitalX, aboutT);
+          const targetY = THREE.MathUtils.lerp(startY, orbitalY, aboutT);
+          const targetZ = THREE.MathUtils.lerp(startZ, orbitalZ, aboutT);
 
           meshObj.position.set(targetX, targetY, targetZ);
           meshObj.quaternion.slerp(homeState.rot, 0.1);
@@ -742,7 +752,19 @@ export function HeroSculpture({ mouse, skipScatter = false, onSolveComplete }: H
             }
           }
 
-          meshObj.position.lerp(currentTargetPos, 0.35);
+          // Apply gradual scroll-driven scatter offset starting from scrollP > 0
+          const scatterFactor = Math.min(scrollP / 0.12, 1);
+          const scrollScatterX = item.explodeDir[0] * scatterFactor * 1.5;
+          const scrollScatterY = item.explodeDir[1] * scatterFactor * 1.5;
+          const scrollScatterZ = item.explodeDir[2] * scatterFactor * 1.5;
+
+          const finalTargetPos = new THREE.Vector3(
+            currentTargetPos.x + scrollScatterX,
+            currentTargetPos.y + scrollScatterY,
+            currentTargetPos.z + scrollScatterZ
+          );
+
+          meshObj.position.lerp(finalTargetPos, 0.35);
           meshObj.quaternion.slerp(currentTargetRot, 0.35);
         }
       });

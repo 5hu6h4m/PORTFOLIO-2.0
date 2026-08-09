@@ -149,11 +149,11 @@ export function LearningJourneySection({ playClick, playHover, isAwardsRevealed 
     offset: ['start start', 'end end'],
   });
 
-  // Soft spring physics for butter-smooth horizontal scroll translation
+  // Responsive spring physics for instant horizontal scroll translation
   const smoothProgress = useSpring(scrollYProgress, {
-    damping: 34,
-    stiffness: 75,
-    mass: 0.8,
+    damping: 32,
+    stiffness: 280,
+    mass: 0.2,
   });
 
   // Precise Chapter Snap Translation Bounds across 600vh total scroll distance

@@ -19,10 +19,8 @@ const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 // ── 3D CUBE PARTICLE FIELD & ARCHITECTURAL GLASS PORTAL RING ────────────────
 function ContactPortalWorld({
-  mouse,
   scrollProgress,
 }: {
-  mouse: { x: number; y: number };
   scrollProgress: number;
 }) {
   const cubeMeshRef = useRef<THREE.InstancedMesh>(null);
@@ -69,9 +67,9 @@ function ContactPortalWorld({
         const floatY = Math.sin(time * p.speed + i) * 0.35;
         const floatX = Math.cos(time * p.speed * 0.8 + i) * 0.25;
 
-        // Subtle mouse repulsion
-        const dx = p.position.x - mouse.x * 4;
-        const dy = p.position.y - mouse.y * 3;
+        // Subtle mouse repulsion via native R3F pointer
+        const dx = p.position.x - state.pointer.x * 4;
+        const dy = p.position.y - state.pointer.y * 3;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         let repulseX = 0;
@@ -204,7 +202,7 @@ function AlternatingEditorialHeader() {
 export function ContactSection({ playClick, playHover, playSuccess }: ContactSectionProps) {
   const { personal } = PORTFOLIO_DATA;
   const sectionRef = useRef<HTMLElement>(null);
-  const [mouseState, setMouseState] = useState({ x: 0, y: 0 });
+  const isInView = useInView(sectionRef, { amount: 0.05 });
   const [currentScrollProgress, setCurrentScrollProgress] = useState(0);
 
   // Form states
@@ -228,9 +226,12 @@ export function ContactSection({ playClick, playHover, playSuccess }: ContactSec
     return scrollYProgress.onChange((v) => setCurrentScrollProgress(v));
   }, [scrollYProgress]);
 
+  const rawX = useMotionValue(0);
+  const rawY = useMotionValue(0);
+
   // Spring physics for mouse interaction (±2.5deg max tilt)
-  const springX = useSpring(mouseState.x, { stiffness: 80, damping: 20 });
-  const springY = useSpring(mouseState.y, { stiffness: 80, damping: 20 });
+  const springX = useSpring(rawX, { stiffness: 80, damping: 20 });
+  const springY = useSpring(rawY, { stiffness: 80, damping: 20 });
 
   const consoleRotateY = useTransform(springX, [-0.5, 0.5], [-3, 3]);
   const consoleRotateX = useTransform(springY, [-0.5, 0.5], [2, -2]);
@@ -240,11 +241,13 @@ export function ContactSection({ playClick, playHover, playSuccess }: ContactSec
     const rect = sectionRef.current.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
-    setMouseState({ x, y });
+    rawX.set(x);
+    rawY.set(y);
   };
 
   const handleMouseLeave = () => {
-    setMouseState({ x: 0, y: 0 });
+    rawX.set(0);
+    rawY.set(0);
   };
 
   const handleCopyEmail = () => {
@@ -302,12 +305,13 @@ export function ContactSection({ playClick, playHover, playSuccess }: ContactSec
           camera={{ position: [0, 0, 5], fov: 48 }}
           gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
           dpr={[1, 1.5]}
+          frameloop={isInView ? 'always' : 'demand'}
         >
           <ambientLight intensity={1.3} />
           <pointLight position={[5, 5, 5]} intensity={1.5} color="#FAF7F2" />
           <pointLight position={[-5, -5, -5]} intensity={1.0} color="#B55D3D" />
           <Suspense fallback={null}>
-            <ContactPortalWorld mouse={mouseState} scrollProgress={currentScrollProgress} />
+            <ContactPortalWorld scrollProgress={currentScrollProgress} />
           </Suspense>
         </Canvas>
       </div>

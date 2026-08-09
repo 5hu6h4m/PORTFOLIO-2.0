@@ -29,8 +29,8 @@ export function WorkspaceChapter({ playClick, playHover, playSuccess }: Workspac
     offset: ['start start', 'end end']
   });
 
-  // Smooth scroll progress using spring physics
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 60, damping: 20 });
+  // Responsive scroll progress using spring physics
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 280, damping: 32, mass: 0.2 });
 
   // Map scroll progress to scale and offset coordinates (centering on the ultrawide monitor screen)
   const scale = useTransform(smoothProgress, [0, 0.45, 0.75], [1, 5, 12]);
