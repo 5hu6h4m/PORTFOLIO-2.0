@@ -222,6 +222,9 @@ export function ContactSection({ playClick, playHover, playSuccess }: ContactSec
     offset: ['start end', 'end end'],
   });
 
+  const scale = useTransform(scrollYProgress, [0, 0.4, 0.8, 1], [0.96, 1.0, 1.0, 0.98]);
+  const y = useTransform(scrollYProgress, [0, 0.25], ['60px', '0px']);
+
   useEffect(() => {
     return scrollYProgress.onChange((v) => setCurrentScrollProgress(v));
   }, [scrollYProgress]);
@@ -297,6 +300,7 @@ export function ContactSection({ playClick, playHover, playSuccess }: ContactSec
       ref={sectionRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      style={{ scale, y }}
       className="relative min-h-screen bg-[#F7F3EC] text-[#23201C] py-24 px-6 md:px-12 overflow-hidden flex flex-col justify-between select-none rounded-t-3xl shadow-[0_-20px_80px_rgba(0,0,0,0.1)] border-t border-[#E2DCD2]"
     >
       {/* 3D WebGL Camera & Portal Canvas Stage Overlay */}

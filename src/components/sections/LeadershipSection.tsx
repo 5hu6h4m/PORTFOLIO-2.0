@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, useScroll, useTransform } from 'framer-motion';
 import { Trophy, Users, Zap, Award, Sparkles, ChevronRight, CheckCircle2 } from 'lucide-react';
 import { PORTFOLIO_DATA } from '@/data/portfolioData';
 
@@ -26,7 +26,7 @@ interface RowProps {
 
 function LeadershipRow({ item, index, accent, playHover }: RowProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: '-60px' });
+  const inView = useInView(ref, { once: false, margin: '-60px' });
   const [expanded, setExpanded] = useState(false);
   const [hovering, setHovering] = useState(false);
 
@@ -34,7 +34,7 @@ function LeadershipRow({ item, index, accent, playHover }: RowProps) {
     <motion.div
       ref={ref}
       initial={{ opacity: 0, y: 30 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
+      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
       transition={{ duration: 0.8, delay: index * 0.15, ease: [0.22, 1, 0.36, 1] }}
       className="group border-t border-[#E2DCD2] relative overflow-hidden transition-colors duration-300"
       style={{ backgroundColor: hovering ? '#F4F0E8' : 'transparent' }}
@@ -159,15 +159,29 @@ function LeadershipRow({ item, index, accent, playHover }: RowProps) {
 
 export function LeadershipSection({ playHover }: LeadershipSectionProps) {
   const { leadership } = PORTFOLIO_DATA;
+  const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef(null);
-  const headerInView = useInView(headerRef, { once: true });
+  const headerInView = useInView(headerRef, { once: false, margin: '-100px' });
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+
+  const scale = useTransform(scrollYProgress, [0, 0.4, 0.8, 1], [0.96, 1.0, 1.0, 0.97]);
+  const y = useTransform(scrollYProgress, [0, 0.25], ['60px', '0px']);
 
   return (
-    <section id="leadership" className="py-24 px-6 md:px-12 bg-[#FAF8F3] relative overflow-hidden">
+    <motion.section
+      id="leadership"
+      ref={sectionRef}
+      style={{ scale, y }}
+      className="py-24 px-6 md:px-12 bg-[#FAF8F3] relative overflow-hidden rounded-t-3xl shadow-[0_-20px_80px_rgba(0,0,0,0.1)] border-t border-[#E2DCD2]/60"
+    >
       {/* Background watermark kinetic 04 */}
       <motion.div
         initial={{ opacity: 0, x: 40 }}
-        animate={headerInView ? { opacity: 0.04, x: 0 } : {}}
+        animate={headerInView ? { opacity: 0.04, x: 0 } : { opacity: 0, x: 40 }}
         transition={{ duration: 1.2 }}
         className="absolute right-[-2vw] top-1/2 -translate-y-1/2 text-[30vw] font-serif font-bold leading-none select-none pointer-events-none text-[#25231F]"
         aria-hidden
@@ -210,7 +224,7 @@ export function LeadershipSection({ playHover }: LeadershipSectionProps) {
           {/* Right — Animated Impact Stat Badges */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
-            animate={headerInView ? { opacity: 1, y: 0 } : {}}
+            animate={headerInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="lg:col-span-5 grid grid-cols-3 gap-3"
           >
@@ -245,6 +259,6 @@ export function LeadershipSection({ playHover }: LeadershipSectionProps) {
         </div>
 
       </div>
-    </section>
+    </motion.section>
   );
 }

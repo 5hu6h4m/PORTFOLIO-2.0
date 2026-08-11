@@ -213,9 +213,13 @@ export function LearningJourneySection({ playClick, playHover, isAwardsRevealed 
             className="flex h-full w-[600vw] items-center pointer-events-auto"
           >
             {CHAPTERS.map((ch, idx) => (
-              <div
+              <motion.div
                 key={ch.id}
                 className="w-screen h-full shrink-0 flex items-center px-6 md:px-12 lg:px-20 relative"
+                initial={{ opacity: 0, y: 50, scale: 0.96 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: false, amount: 0.2 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               >
                 {/* Background Watermark Year */}
                 <div className="absolute top-1/2 right-12 -translate-y-1/2 text-[26vw] font-serif font-bold text-[#B85C3B]/6 select-none pointer-events-none leading-none">
@@ -396,7 +400,7 @@ export function LearningJourneySection({ playClick, playHover, isAwardsRevealed 
                   </div>
 
                 </div>
-              </div>
+              </motion.div>
             ))}
             
             {/* THE GOLDEN PORTAL */}

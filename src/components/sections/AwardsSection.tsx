@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useMemo, useEffect, useCallback, Suspense } from 'react';
-import { motion, AnimatePresence, useInView, useMotionValue, useSpring } from 'framer-motion';
+import { motion, AnimatePresence, useInView, useMotionValue, useSpring, useScroll, useTransform } from 'framer-motion';
 import { Canvas } from '@react-three/fiber';
 import { HeroSculpture } from '@/components/3d/HeroSculpture';
 import {
@@ -127,7 +127,7 @@ function CompactCertificateCard({ cert, index, onSelect, playHover, isRevealed =
       onClick={() => onSelect(cert)}
       initial={{ opacity: 0, y: 30, scale: 0.95 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true, amount: 0.05 }}
+      viewport={{ once: false, amount: 0.05 }}
       style={{
         rotateX,
         rotateY,
@@ -353,6 +353,14 @@ export function AwardsSection({ playHover, isRevealed = true }: AwardsSectionPro
 
   const sectionRef = useRef<HTMLDivElement>(null);
 
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+
+  const scale = useTransform(scrollYProgress, [0, 0.4, 0.8, 1], [0.96, 1.0, 1.0, 0.97]);
+  const y = useTransform(scrollYProgress, [0, 0.25], ['60px', '0px']);
+
   const categories = useMemo(() => {
     const cats = Array.from(new Set(certifications.map((c) => c.category)));
     return ['All', ...cats];
@@ -425,9 +433,10 @@ export function AwardsSection({ playHover, isRevealed = true }: AwardsSectionPro
   };
 
   return (
-    <section
+    <motion.section
       ref={sectionRef as any}
-      className="pt-20 md:pt-28 pb-20 px-4 sm:px-6 md:px-12 bg-[#F4F0E8] text-[#23201C] relative overflow-hidden select-none border-t border-[#E2DCD2]"
+      style={{ scale, y }}
+      className="pt-20 md:pt-28 pb-20 px-4 sm:px-6 md:px-12 bg-[#F4F0E8] text-[#23201C] relative overflow-hidden select-none border-t border-[#E2DCD2] rounded-t-3xl shadow-[0_-20px_80px_rgba(0,0,0,0.1)]"
     >
       {/* Three.js WebGL Rubik's Cube Full Screen 3D Cutscene with smooth AnimatePresence crossfade */}
       <AnimatePresence>
@@ -449,7 +458,8 @@ export function AwardsSection({ playHover, isRevealed = true }: AwardsSectionPro
         {/* ── SECTION HEADER ───────────────────────────────────────────────── */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.2 }}
           transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
           className="mb-10 border-b border-[#E2DCD2] pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4"
         >
@@ -491,7 +501,8 @@ export function AwardsSection({ playHover, isRevealed = true }: AwardsSectionPro
           {/* Category Filter Tabs */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.1 }}
             transition={{ duration: 0.7, delay: 0.1 }}
             className="flex flex-wrap items-center gap-2 mb-8"
           >
@@ -951,6 +962,6 @@ export function AwardsSection({ playHover, isRevealed = true }: AwardsSectionPro
           </motion.div>
         )}
       </AnimatePresence>
-    </section>
+    </motion.section>
   );
 }
