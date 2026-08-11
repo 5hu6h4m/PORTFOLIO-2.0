@@ -226,13 +226,9 @@ export function ProjectsSection({ playClick, playHover }: ProjectsSectionProps) 
           >
             {/* 5 Project Cards (Strict 01 -> 05 Sequence) */}
             {projects.map((project, i) => (
-              <motion.div
+              <div
                 key={project.id}
                 className="w-screen h-full shrink-0 flex items-center justify-center p-4 sm:p-6 relative"
-                initial={{ opacity: 0, y: 60, scale: 0.95 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                viewport={{ once: false, amount: 0.2 }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               >
                 {/* Background Watermark Number */}
                 <div className="absolute top-1/2 right-12 -translate-y-1/2 text-[24vw] font-serif font-bold text-[#B85C3B]/5 select-none pointer-events-none leading-none">
@@ -247,17 +243,11 @@ export function ProjectsSection({ playClick, playHover }: ProjectsSectionProps) 
                   playClick={playClick}
                   playHover={playHover}
                 />
-              </motion.div>
+              </div>
             ))}
 
             {/* Slide 6: Dark Archive Final Slide */}
-            <motion.div 
-              className="w-screen h-full shrink-0 flex items-center justify-center p-4 sm:p-6 relative"
-              initial={{ opacity: 0, y: 60, scale: 0.95 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: false, amount: 0.2 }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            >
+            <div className="w-screen h-full shrink-0 flex items-center justify-center p-4 sm:p-6 relative">
               <div className="w-[92vw] max-w-6xl h-[78vh] sm:h-[80vh] max-h-[720px] rounded-[2.5rem] bg-[#161412] text-[#FAF8F3] p-8 sm:p-12 md:p-14 shadow-2xl border border-white/10 flex flex-col justify-between">
                 <div className="space-y-6">
                   <div className="text-[10px] font-mono text-[#B85C3B] uppercase tracking-[0.25em] font-bold flex items-center gap-2">
@@ -291,7 +281,7 @@ export function ProjectsSection({ playClick, playHover }: ProjectsSectionProps) 
                   </a>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </motion.div>
         </motion.div>
       </div>

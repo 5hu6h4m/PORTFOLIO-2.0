@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { motion, useInView, useScroll, useTransform } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { Trophy, Users, Zap, Award, Sparkles, ChevronRight, CheckCircle2 } from 'lucide-react';
 import { PORTFOLIO_DATA } from '@/data/portfolioData';
 
@@ -159,24 +159,13 @@ function LeadershipRow({ item, index, accent, playHover }: RowProps) {
 
 export function LeadershipSection({ playHover }: LeadershipSectionProps) {
   const { leadership } = PORTFOLIO_DATA;
-  const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef(null);
   const headerInView = useInView(headerRef, { once: false, margin: '-100px' });
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start end', 'end start'],
-  });
-
-  const scale = useTransform(scrollYProgress, [0, 0.4, 0.8, 1], [0.96, 1.0, 1.0, 0.97]);
-  const y = useTransform(scrollYProgress, [0, 0.25], ['60px', '0px']);
-
   return (
-    <motion.section
+    <section
       id="leadership"
-      ref={sectionRef}
-      style={{ scale, y }}
-      className="py-24 px-6 md:px-12 bg-[#FAF8F3] relative overflow-hidden rounded-t-3xl shadow-[0_-20px_80px_rgba(0,0,0,0.1)] border-t border-[#E2DCD2]/60"
+      className="py-24 px-6 md:px-12 bg-[#FAF8F3] relative overflow-hidden border-t border-[#E2DCD2]/60"
     >
       {/* Background watermark kinetic 04 */}
       <motion.div
@@ -259,6 +248,6 @@ export function LeadershipSection({ playHover }: LeadershipSectionProps) {
         </div>
 
       </div>
-    </motion.section>
+    </section>
   );
 }

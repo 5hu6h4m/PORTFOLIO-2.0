@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useMemo, useEffect, useCallback, Suspense } from 'react';
-import { motion, AnimatePresence, useInView, useMotionValue, useSpring, useScroll, useTransform } from 'framer-motion';
+import { motion, AnimatePresence, useInView, useMotionValue, useSpring } from 'framer-motion';
 import { Canvas } from '@react-three/fiber';
 import { HeroSculpture } from '@/components/3d/HeroSculpture';
 import {
@@ -353,14 +353,6 @@ export function AwardsSection({ playHover, isRevealed = true }: AwardsSectionPro
 
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start end', 'end start'],
-  });
-
-  const scale = useTransform(scrollYProgress, [0, 0.4, 0.8, 1], [0.96, 1.0, 1.0, 0.97]);
-  const y = useTransform(scrollYProgress, [0, 0.25], ['60px', '0px']);
-
   const categories = useMemo(() => {
     const cats = Array.from(new Set(certifications.map((c) => c.category)));
     return ['All', ...cats];
@@ -433,10 +425,9 @@ export function AwardsSection({ playHover, isRevealed = true }: AwardsSectionPro
   };
 
   return (
-    <motion.section
+    <section
       ref={sectionRef as any}
-      style={{ scale, y }}
-      className="pt-20 md:pt-28 pb-20 px-4 sm:px-6 md:px-12 bg-[#F4F0E8] text-[#23201C] relative overflow-hidden select-none border-t border-[#E2DCD2] rounded-t-3xl shadow-[0_-20px_80px_rgba(0,0,0,0.1)]"
+      className="pt-20 md:pt-28 pb-20 px-4 sm:px-6 md:px-12 bg-[#F4F0E8] text-[#23201C] relative overflow-hidden select-none border-t border-[#E2DCD2]"
     >
       {/* Three.js WebGL Rubik's Cube Full Screen 3D Cutscene with smooth AnimatePresence crossfade */}
       <AnimatePresence>
@@ -962,6 +953,6 @@ export function AwardsSection({ playHover, isRevealed = true }: AwardsSectionPro
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.section>
+    </section>
   );
 }
