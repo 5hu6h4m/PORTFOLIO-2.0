@@ -7,7 +7,7 @@ import { CustomCursor } from '@/components/ui/CustomCursor';
 import { Preloader } from '@/components/sections/Preloader';
 import { Header } from '@/components/sections/Header';
 import { HeroSection } from '@/components/sections/HeroSection';
-import { AboutSection } from '@/components/sections/AboutSection';
+import { AboutSection, DiagonalLanesSection } from '@/components/sections/AboutSection';
 import { ProjectsSection } from '@/components/sections/ProjectsSection';
 import { SkillsSection } from '@/components/sections/SkillsSection';
 import { LeadershipSection } from '@/components/sections/LeadershipSection';
@@ -90,6 +90,12 @@ export default function Home() {
       <div className="relative z-20 pointer-events-auto">
         {/* ABOUT & JOURNEY */}
         <AboutSection playHover={playHover} />
+
+        <section className="py-16 px-6 md:px-12 relative overflow-hidden bg-[#F4F0E8]">
+          <div className="max-w-6xl mx-auto">
+            <DiagonalLanesSection playHover={playHover} />
+          </div>
+        </section>
 
         {/* OPENING SCROLL-TYPED QUOTE */}
         <ScrollTypeQuote

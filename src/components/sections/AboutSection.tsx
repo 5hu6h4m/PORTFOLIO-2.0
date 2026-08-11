@@ -433,3 +433,269 @@ export function AboutSection({ playHover }: AboutSectionProps) {
     </motion.section>
   );
 }
+
+// ─── DIAGONAL CARD COMPONENT ─────────────────────────────────────────────────
+function DiagonalCard({
+  title,
+  description,
+  accent,
+  index,
+  direction,
+  playHover,
+}: {
+  title: string;
+  description: string;
+  accent: string;
+  index: number;
+  direction: 'up' | 'down';
+  playHover: () => void;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [spotlight, setSpotlight] = useState({ x: 50, y: 50, active: false });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = cardRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setSpotlight({ x, y, active: true });
+  };
+
+  const handleMouseLeave = () => setSpotlight((p) => ({ ...p, active: false }));
+
+  const initX = direction === 'up' ? -120 : 120;
+  const tiltDeg = direction === 'up' ? -8 : 8;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: initX, y: direction === 'up' ? 60 : -60, rotate: tiltDeg }}
+      whileInView={{ opacity: 1, x: 0, y: 0, rotate: 0 }}
+      viewport={{ once: true, margin: '-15% 0px' }}
+      transition={{
+        duration: 1.4,
+        delay: index * 0.18,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      whileHover={{ scale: 1.035, y: direction === 'up' ? -8 : 8, transition: { duration: 0.28, ease: 'easeOut' } }}
+      onMouseEnter={playHover}
+    >
+      <div
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        className="relative overflow-hidden cursor-default group whitespace-normal"
+        style={{
+          background: 'rgba(252,250,246,0.92)',
+          backdropFilter: 'blur(24px) saturate(1.6)',
+          WebkitBackdropFilter: 'blur(24px) saturate(1.6)',
+          border: '1px solid rgba(226,220,210,0.8)',
+          borderRadius: '28px',
+          boxShadow: '0 20px 70px rgba(37,35,31,0.14), 0 6px 20px rgba(184,92,59,0.1), inset 0 1px 0 rgba(255,255,255,0.9)',
+          padding: '44px 48px',
+          minWidth: 380,
+          maxWidth: 440,
+          transform: `rotate(${direction === 'up' ? -3 : 3}deg)`,
+        }}
+      >
+        <div
+          className="absolute inset-0 pointer-events-none transition-opacity duration-300 rounded-[28px]"
+          style={{
+            opacity: spotlight.active ? 1 : 0,
+            background: `radial-gradient(300px circle at ${spotlight.x}% ${spotlight.y}%, rgba(184,92,59,0.18) 0%, transparent 70%)`,
+          }}
+        />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white to-transparent pointer-events-none" />
+
+        <div className="relative z-10">
+          <div className="flex items-center gap-3 mb-6">
+            <span className="text-xs font-mono tracking-widest text-[#B85C3B] font-bold">{accent}</span>
+            <div className="flex-1 h-px bg-gradient-to-r from-[#B85C3B]/60 to-transparent" />
+          </div>
+          <h3 className="text-xl md:text-2xl font-serif font-bold text-[#25231F] mb-4 leading-snug group-hover:text-[#B85C3B] transition-colors duration-300">
+            {title}
+          </h3>
+          <p className="text-base text-[#787268] font-light leading-relaxed">
+            {description}
+          </p>
+        </div>
+
+        <div
+          className="absolute bottom-4 right-4 w-2.5 h-2.5 rounded-full opacity-50 group-hover:opacity-100 transition-opacity duration-500"
+          style={{ background: '#B85C3B' }}
+        />
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── DIAGONAL LANES SECTION ───────────────────────────────────────────────────
+export function DiagonalLanesSection({ playHover }: { playHover: () => void }) {
+  const { about } = PORTFOLIO_DATA;
+  const TILT = -7;
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const rawProgress = useMotionValue(0);
+  const smoothProgress = useSpring(rawProgress, { stiffness: 40, damping: 25 });
+
+  useEffect(() => {
+    const updateProgress = () => {
+      const el = containerRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const windowH = window.innerHeight;
+      const totalDist = rect.height + windowH;
+      const currentPos = windowH - rect.top;
+      const p = Math.min(1, Math.max(0, currentPos / totalDist));
+      rawProgress.set(p);
+    };
+
+    const lenis = typeof window !== 'undefined' ? window.__lenis : undefined;
+    if (lenis) {
+      lenis.on('scroll', updateProgress);
+    } else {
+      window.addEventListener('scroll', updateProgress, { passive: true });
+    }
+    updateProgress();
+
+    return () => {
+      if (lenis) {
+        lenis.off('scroll', updateProgress);
+      } else {
+        window.removeEventListener('scroll', updateProgress);
+      }
+    };
+  }, [rawProgress]);
+
+  const track1X = useTransform(smoothProgress, [0, 1], ['25%', '-115%']);
+  const track2X = useTransform(smoothProgress, [0, 1], ['-95%', '25%']);
+
+  const tripleValues = [...about.values, ...about.values, ...about.values];
+  const tripleFocus = [...about.currentFocus, ...about.currentFocus, ...about.currentFocus];
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative w-full overflow-visible"
+      style={{ paddingTop: '40px', paddingBottom: '80px' }}
+    >
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(ellipse 70% 45% at 20% 30%, rgba(184,92,59,0.09) 0%, transparent 70%), ' +
+            'radial-gradient(ellipse 60% 40% at 80% 70%, rgba(184,92,59,0.07) 0%, transparent 70%)',
+        }}
+      />
+
+      <div className="relative mb-14 overflow-visible">
+        <div
+          className="overflow-visible"
+          style={{
+            transform: `rotate(${TILT}deg)`,
+            transformOrigin: 'left center',
+          }}
+        >
+          <div className="pl-6 md:pl-16 mb-6 overflow-visible">
+            <div className="flex items-baseline gap-4">
+              <span className="text-sm font-mono tracking-[0.35em] text-[#B85C3B] uppercase font-bold">03 ✦</span>
+              <h2
+                className="font-serif font-bold leading-none select-none text-[#25231F]"
+                style={{
+                  fontSize: 'clamp(48px, 7.5vw, 88px)',
+                  letterSpacing: '-0.03em',
+                  textShadow: '0 4px 30px rgba(37,35,31,0.05)',
+                }}
+              >
+                WHAT DRIVES ME
+              </h2>
+            </div>
+            <div
+              className="mt-3"
+              style={{
+                height: '3px',
+                width: '380px',
+                background: 'linear-gradient(to right, #B85C3B, transparent)',
+                marginLeft: '56px',
+              }}
+            />
+          </div>
+
+          <motion.div
+            style={{ x: track1X }}
+            className="flex gap-8 items-stretch pt-2 pb-6 whitespace-nowrap overflow-visible"
+          >
+            {tripleValues.map((v, i) => (
+              <DiagonalCard
+                key={`${v.title}-${i}`}
+                title={v.title}
+                description={v.description}
+                accent={`0${(i % about.values.length) + 1} ✦`}
+                index={i % about.values.length}
+                direction="up"
+                playHover={playHover}
+              />
+            ))}
+          </motion.div>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-6 my-4 px-12 mb-14">
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#E2DCD2] to-transparent" />
+        <div className="w-2 h-2 rounded-full bg-[#B85C3B]/60" />
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#E2DCD2] to-transparent" />
+      </div>
+
+      <div className="relative overflow-visible">
+        <div
+          className="overflow-visible"
+          style={{
+            transform: `rotate(${TILT}deg)`,
+            transformOrigin: 'left center',
+          }}
+        >
+          <div className="pl-6 md:pl-16 mb-6 overflow-visible">
+            <div className="flex items-baseline gap-4">
+              <span className="text-sm font-mono tracking-[0.35em] text-[#B85C3B] uppercase font-bold">04 ⟶</span>
+              <h2
+                className="font-serif font-bold leading-none select-none text-[#25231F]"
+                style={{
+                  fontSize: 'clamp(48px, 7.5vw, 88px)',
+                  letterSpacing: '-0.03em',
+                  textShadow: '0 4px 30px rgba(37,35,31,0.05)',
+                }}
+              >
+                CURRENT FOCUS
+              </h2>
+            </div>
+            <div
+              className="mt-3"
+              style={{
+                height: '3px',
+                width: '380px',
+                background: 'linear-gradient(to right, #B85C3B, transparent)',
+                marginLeft: '56px',
+              }}
+            />
+          </div>
+
+          <motion.div
+            style={{ x: track2X }}
+            className="flex gap-8 items-stretch pt-2 pb-6 whitespace-nowrap overflow-visible"
+          >
+            {tripleFocus.map((goal, i) => (
+              <DiagonalCard
+                key={`${goal.title}-${i}`}
+                title={goal.title}
+                description={goal.description}
+                accent={`${goal.number} ⟶`}
+                index={i % about.currentFocus.length}
+                direction="up"
+                playHover={playHover}
+              />
+            ))}
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  );
+}
